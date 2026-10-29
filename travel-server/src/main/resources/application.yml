@@ -1,0 +1,116 @@
+server:
+  port: 8080          # 前端 README 里原本建议用 8080 起静态服务，已改为 5173，把 8080 让给后端
+
+spring:
+  application:
+    name: travel-server
+
+  # ---------- 顺便把前端页面也托管了 ----------
+  # 这样就不用再开一个 python -m http.server，打开 http://localhost:8080 就是完整应用，
+  # 而且是同源请求，连跨域都省了。
+  # 配置了两个相对路径，是因为启动时的工作目录可能不同：
+  #   cd travel-server 后启动  → ../travel-app
+  #   在项目根目录启动          → ./travel-app
+  # 两个都没有也不会报错，只是页面 404，接口照常可用。
+  web:
+    resources:
+      static-locations: file:./../travel-app/,file:./travel-app/
+      cache:
+        cachecontrol:
+          # 【不要删】前端是从工作目录直接读的，随时可能改。
+          # 不加这一行，响应里就只有 Last-Modified 没有 Cache-Control，
+          # 浏览器会按「启发式规则」把 app.js / style.css 缓存一阵子不校验。
+          # 后果：改完前端刷新页面还是旧代码 —— 踩过一次，点「预订」整页空白，
+          # 排查半天才发现浏览器跑的是修改前的 app.js。
+          # no-cache 不是「不缓存」，是「每次都必须回服务器校验」：
+          # 没改就 304 不传内容，改了立刻拿到新的。
+          no-cache: true
+
+  # ---------- MySQL ----------
+  # allowPublicKeyRetrieval=true 是必须的：MySQL 8 默认用 caching_sha2_password，
+  # 非 TLS 连接下驱动默认拒绝向服务器索取 RSA 公钥，少了这个参数会直接连不上：
+  #   SQLNonTransientConnectionException: Public Key Retrieval is not allowed
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: "jdbc:mysql://localhost:3306/travel_db?useUnicode=true&characterEncoding=utf8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai&createDatabaseIfNotExist=true"
+    username: root
+    password: "123456"
+
+  # ---------- Redis ----------
+  # timeout 设短一点：Redis 没启动时快速失败，接口不至于卡住
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      database: 0
+      timeout: 2s
+      connect-timeout: 2s
+      lettuce:
+        pool:
+          max-active: 8
+          max-idle: 8
+          min-idle: 0
+          max-wait: 2s
+
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true   # enName ↔ en_name 自动映射（默认就开着，写出来便于阅读）
+    # 控制台打印执行的 SQL，演示/答辩时很直观；上线可以删掉这行
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    banner: false
+    db-config:
+      id-type: auto                      # 主键交给 MySQL 的自增
+
+logging:
+  level:
+    com.youji.travel: info
+
+# ---------- 大模型：AI 行程规划 ----------
+# Key 从环境变量读取，不要写在这个文件里（它会被提交到仓库）。
+# Windows 下设置（设完要重启后端）：
+#   setx DEEPSEEK_API_KEY "sk-你的key"
+# 自检：启动后浏览器访问 http://localhost:8080/api/ai/status ，
+#       能看到 Key 配没配、模型名还能不能用。
+youji:
+  ai:
+    base-url: https://api.deepseek.com
+    api-key: ${DEEPSEEK_API_KEY:}
+    # 模型名是会过期的：deepseek-chat / deepseek-reasoner 已于 2026-07-24 停用，
+    # 用旧名会直接报错。拿不准就先查 /api/ai/status 里的 availableModels。
+    model: deepseek-flash
+    timeout-seconds: 120
+    # 想强制关掉思考模式（更快更省，质量略降）就取消下一行注释
+    # thinking: false
+
+  # ---------- 高德地图：给行程喂真实的交通数据 ----------
+  # 没有它行程照样生成，只是交通数字会变成模糊表述 —— 高德是增强，不是依赖。
+  # 申请：https://lbs.amap.com → 创建应用 → 添加 Key
+  #   【服务平台必须选「Web服务」】选成「Web端(JS API)」会返回 10002，用不了。
+  #   「数字签名」保持关闭，开了每个请求都要再补一个 sig 参数。
+  # Windows 下设置（设完要重启后端）：
+  #   setx AMAP_API_KEY "你的key"
+  # 自检：http://localhost:8080/api/amap/status
+  # 演示前预热（把 14 个城市的路线先算好，之后生成就是缓存命中、零等待）：
+  #   curl -X POST http://localhost:8080/api/amap/warmup
+  amap:
+    api-key: ${AMAP_API_KEY:}
+    enabled: true
+    # 每个城市参与两两配对的地点上限。调用量是平方增长的：
+    # 10 → 45 对/城市，12 → 66 对，15 → 105 对。
+    # 个人 Key 每天约 5000 次驾车路径规划，14 城预热一次在 10 这个档位是 630 次。
+    # 安全上限 12，再往上一天预热几次就把配额吃光了。
+    max-points: 10
+    # 同时飞到高德的请求数。**实测下来必须是 1**，不要凭直觉调大：
+    #   并发 4 → 43/45 条路线，撞 31 次 10021 限流，16.8 秒
+    #   并发 2 → 43/45 条路线，撞 29 次，18.2 秒
+    #   并发 1 → 45/45 条路线，撞 12 次，19.2 秒
+    # 瓶颈在高德那侧的限流，不在我们的并发度上 —— 调大既拿不到更多数据，
+    # 又白白多烧配额（31 次重试 vs 12 次），还可能触发 10004「封停一分钟」。
+    max-concurrency: 1
+    # 接地整体预算，超时就用已经算完的那部分，绝不把用户卡在这里
+    budget-ms: 8000
+    # 接地结果的缓存时长。这是配额的总闸门，别低于 72 小时
+    cache-ttl: 7d
+    # 降级结果（只算到一部分）的缓存时长。太短会导致「算不全 → 很快重算 → 又算不全」反复烧配额
+    degraded-ttl: 30m
