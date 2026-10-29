@@ -1,0 +1,31 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(powershell -NoProfile -Command 'Get-Process java -ErrorAction SilentlyContinue | Select-Object Id,StartTime,@{n='\\\\''CPU_s'\\\\'';e={[math]::Round\\($_.CPU,1\\)}} | Format-Table -AutoSize')",
+      "Bash(curl -s -w '\\\\nHTTP %{http_code}\\\\n' __TRACKED_VAR__/api/destinations -o list.json)",
+      "Bash(python -c ' *)",
+      "Bash(curl -s -w 'HTTP %{http_code}\\\\n' __TRACKED_VAR__/api/destinations/1 -o d1.json)",
+      "Bash(curl -s -w '  HTTP %{http_code}\\\\n' __TRACKED_VAR__/api/destinations/999)",
+      "Bash(curl -s -w '  HTTP %{http_code}\\\\n' __TRACKED_VAR__/api/destinations/abc)",
+      "Bash(curl -s -w 'HTTP %{http_code}\\\\n' __TRACKED_VAR__/api/destinations -o list.json)",
+      "Bash(powershell -NoProfile -Command \"Get-NetTCPConnection -LocalPort 8080 -ErrorAction SilentlyContinue | Select-Object -First 3 LocalAddress,LocalPort,State,OwningProcess | Format-Table -AutoSize\")",
+      "Bash(unzip -l target/travel-server-1.0.0.jar)",
+      "Bash(unzip -p target/travel-server-1.0.0.jar BOOT-INF/classes/application.yml)",
+      "Bash(unzip -p target/travel-server-1.0.0.jar BOOT-INF/classes/com/youji/travel/entity/DestinationAttraction.class)",
+      "Bash(echo \"mvn 退出码: $?\")",
+      "Bash(powershell -NoProfile -Command 'foreach \\($p in 3306,6379,8080\\) { $r = Test-NetConnection -ComputerName 127.0.0.1 -Port $p -WarningAction SilentlyContinue; '\\\\''{0}  {1}'\\\\'' -f $p, $\\(if\\($r.TcpTestSucceeded\\){'\\\\''已在运行'\\\\''}else{'\\\\''未启动'\\\\''}\\) }')",
+      "Bash(./travel-server/redis/redis-cli.exe -p 6379 ping)",
+      "Bash(\"/c/Program Files/MySQL/MySQL Server 8.0/bin/mysql.exe\" -uroot -p123456 -N -e \"SELECT CONCAT\\('目的地 ', COUNT\\(*\\), ' 条'\\) FROM travel_db.destination;\")",
+      "Bash(awk '{print $5/1048576 \" MB\", $9}')",
+      "Bash(powershell -NoProfile -Command \"Start-Process -FilePath 'java' -ArgumentList '-jar','target\\\\travel-server-1.0.0.jar'\")",
+      "Bash(powershell -NoProfile -Command \"Start-Process -FilePath 'python' -ArgumentList '-m','http.server','5173','--bind','127.0.0.1'\")",
+      "Bash(curl -s -o /dev/null -w \"后端  GET /api/destinations      → HTTP %{http_code}\\\\n\" http://localhost:8080/api/destinations)",
+      "Bash(curl -s -o /dev/null -w \"前端  GET /index.html           → HTTP %{http_code}\\\\n\" http://127.0.0.1:5173/index.html)",
+      "Bash(curl -s -o /dev/null -w \"Redis PING                      → %{http_code}\\\\n\" http://127.0.0.1:6379)",
+      "Bash(powershell -NoProfile -Command \"Get-Process java -ErrorAction SilentlyContinue | Stop-Process -Force\")",
+      "Bash(echo \"构建退出码: $?\")",
+      "Bash(powershell -NoProfile -Command 'Get-Process java,javaw -ErrorAction SilentlyContinue | ForEach-Object { $_.Kill\\(\\); '\\\\''killed PID '\\\\'' + $_.Id }')",
+      "Bash(powershell -NoProfile -Command \"Get-Process java -ErrorAction SilentlyContinue | Measure-Object | Select-Object -ExpandProperty Count\")"
+    ]
+  }
+}

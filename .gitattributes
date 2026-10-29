@@ -1,0 +1,22 @@
+# 自动识别文本文件，统一换行符，避免 Windows / Linux 协作时整文件 diff
+* text=auto
+
+# Windows 脚本必须保持 CRLF，否则双击运行会出错
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.vbs text eol=crlf
+
+# 源码与 Shell 脚本统一 LF
+*.java text eol=lf
+*.sh   text eol=lf
+*.yml  text eol=lf
+*.xml  text eol=lf
+
+# 二进制文件不做换行符转换
+*.jar   binary
+*.docx  binary
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.gif   binary
+*.ico   binary

@@ -1,0 +1,35 @@
+# ========== 依赖 / 构建产物 ==========
+node_modules/
+target/
+*.class
+*.jar
+*.war
+
+# ========== 日志与运行时数据 ==========
+logs/
+*.log
+*.rdb
+dump.rdb
+
+# Redis 免安装包（第三方二进制，约 40MB，不入库）
+travel-server/redis/
+
+# ========== 数据库本地备份 ==========
+*.sql.bak
+*.dump
+
+# ========== 密钥 / 本地配置 ==========
+# 真实密钥放环境变量（DEEPSEEK_API_KEY / AMAP_API_KEY），不要写进仓库
+.env
+.env.*
+!.env.example
+application-local.yml
+.claude/settings.local.json
+
+# ========== 编辑器 / 操作系统 ==========
+.vscode/
+.idea/
+*.iml
+.DS_Store
+Thumbs.db
+desktop.ini
