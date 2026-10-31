@@ -154,12 +154,14 @@ function reportVueError(err, info) {
   if (!box) {
     box = document.createElement('div');
     box.id = 'boot-error';
-    box.style.cssText = 'position:fixed;left:0;right:0;bottom:0;z-index:99999;' +
-      'background:#b91c1c;color:#fff;padding:12px 16px;font:12px/1.6 Consolas,monospace;' +
-      'white-space:pre-wrap;max-height:45vh;overflow:auto';
+    box.style.cssText = 'position:fixed;left:0;right:0;top:0;z-index:99999;' +
+      'background:#b91c1c;color:#fff;padding:16px 18px;font:700 16px/1.7 Consolas,monospace;' +
+      'white-space:pre-wrap;max-height:60vh;overflow:auto';
     document.body.appendChild(box);
   }
   box.textContent += '[vue:' + info + '] ' + msg + '\n';
+  // 同时写进标签标题，截图里的 tab 就能直接看到
+  document.title = '[ERR] ' + ((err && err.message) || String(err)).slice(0, 80);
 }
 
 const app = createApp(App);
