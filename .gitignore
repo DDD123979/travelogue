@@ -43,3 +43,7 @@ application-local.yml
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# pnpm 本地缓存（测试工具留下的，不要入库）
+.pnpm-store/
+.deploy/
