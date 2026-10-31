@@ -57,8 +57,11 @@ spring:
 mybatis-plus:
   configuration:
     map-underscore-to-camel-case: true   # enName ↔ en_name 自动映射（默认就开着，写出来便于阅读）
-    # 控制台打印执行的 SQL，演示/答辩时很直观；上线可以删掉这行
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    # 控制台打印执行的 SQL，演示/答辩时很直观。
+    # 线上务必关掉：每查一次库就打一行，用户名、BCrypt 哈希都会进日志，还会拖慢请求。
+    # 关法：在 systemd 的 EnvironmentFile（/opt/youji/.env）里加
+    #   MYBATIS_LOG_IMPL=org.apache.ibatis.logging.nologging.NoLoggingImpl
+    log-impl: ${MYBATIS_LOG_IMPL:org.apache.ibatis.logging.stdout.StdOutImpl}
   global-config:
     banner: false
     db-config:

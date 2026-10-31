@@ -70,6 +70,38 @@ curl -s http://127.0.0.1:8080/api/ai/status
 
 阿里云控制台的**防火墙**（不是安全组）只需放行 `22`、`80`、`443`，**3306 / 6379 一律不要开**。
 
+## 每日备份（强烈建议）
+
+生产库只在这台机器的一块盘上，误删或磁盘故障就没了。仓库里带了脚本：
+
+```bash
+sudo install -m 755 /opt/youji/deploy/backup.sh /usr/local/bin/youji-backup.sh
+echo '0 3 * * * root /usr/local/bin/youji-backup.sh >> /var/log/youji-backup.log 2>&1' \
+  | sudo tee /etc/cron.d/youji-backup
+sudo chmod 644 /etc/cron.d/youji-backup
+
+# 手动跑一次确认能出文件
+sudo /usr/local/bin/youji-backup.sh
+ls -lh /var/backups/youji/
+```
+
+备份落在 `/var/backups/youji/travel_<日期>.sql.gz`，保留 7 天，脚本会校验文件非空且能解压。
+**异地**才是真备份——建议每周 `scp` 一份到本地电脑：
+
+```bash
+scp root@8.148.81.57:/var/backups/youji/travel_*.sql.gz ./
+```
+
+## 生产关闭 SQL 日志
+
+`application.yml` 的 `log-impl` 默认会打印每条 SQL（本地调试好用），线上要在 `/opt/youji/.env` 里关掉：
+
+```ini
+MYBATIS_LOG_IMPL=org.apache.ibatis.logging.nologging.NoLoggingImpl
+```
+
+改完 `sudo systemctl restart youji`。日志里不再出现 `==>  Preparing:` 就算生效。
+
 ## 日常更新
 
 ```bash
