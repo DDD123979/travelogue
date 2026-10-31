@@ -82,7 +82,8 @@ const App = {
     <header class="site-header" v-if="view.name !== 'login'">
       <div class="header-inner">
         <a class="logo" href="#/">
-          <span class="logo-mark">游</span>游迹
+          <img class="logo-img" src="img/logo.jpg" alt="游迹" />
+          <span class="logo-text">游迹</span>
         </a>
         <nav class="main-nav">
           <a class="nav-link" href="#/" :class="{ active: navActive === 'home' }">首页🤩</a>

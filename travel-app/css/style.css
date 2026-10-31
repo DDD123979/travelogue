@@ -2507,3 +2507,22 @@ input:-webkit-autofill:focus {
   .guide-intro h1 { font-size: calc(20px * var(--fs)); }
   .nav-ai { font-size: calc(13px * var(--fs)); }
 }
+/* 左上角图标：换成霓虹 logo 图，保留像素风边框与投影 */
+.logo-img {
+  width: 36px;
+  height: 36px;
+  object-fit: cover;
+  display: block;
+  border: 2px solid var(--primary);
+  box-shadow: 0 0 14px rgba(53, 224, 143, 0.35), 3px 3px 0 #05080c;
+  image-rendering: -webkit-optimize-contrast;
+}
+
+.logo-text {
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+@media (max-width: 800px) {
+  .logo-img { width: 30px; height: 30px; }
+}
