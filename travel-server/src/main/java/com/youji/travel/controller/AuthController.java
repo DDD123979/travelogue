@@ -6,6 +6,7 @@ import com.youji.travel.dto.AuthResponse;
 import com.youji.travel.dto.ForgotRequest;
 import com.youji.travel.dto.ResetRequest;
 import com.youji.travel.dto.UserDTO;
+import com.youji.travel.dto.UsernameRequest;
 import com.youji.travel.entity.User;
 import com.youji.travel.service.TokenService;
 import com.youji.travel.service.UserService;
