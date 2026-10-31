@@ -120,7 +120,7 @@ const DetailPage = {
             <div class="value">{{ item.days }}</div>
             <div class="label">最佳季节</div>
             <div class="value">{{ item.bestSeason }}</div>
-            <button class="btn btn-primary" @click="planWithAi">✨ 用 AI 生成行程</button>
+            <button class="btn btn-primary" @click="planWithAi">🤖 让小迹排行程</button>
           </aside>
         </div>
       </template>

@@ -1,5 +1,5 @@
 /* =========================================================
- * pages/ai.js — AI 行程规划页
+ * pages/ai.js — 小迹 AI 智能导游
  * （由原单文件 app.js 拆分，加载顺序见 index.html）
  * ========================================================= */
 
@@ -97,10 +97,17 @@ const AiPage = {
   },
   template: `
     <div class="page container">
-      <h1 class="page-title">AI 行程规划</h1>
+      <section class="guide-head">
+        <div class="guide-avatar">🤖</div>
+        <div class="guide-intro">
+          <h1>小迹 AI 智能导游</h1>
+          <p>说个城市、定几天，我按当地节奏排一份能直接照着走的行程——交通时间会用高德实时数据核对。</p>
+        </div>
+      </section>
 
       <div class="ai-layout">
         <aside class="ai-form">
+          <div class="ai-form-title">告诉小迹 <span>3 步</span></div>
           <label class="ai-label">目的地</label>
           <select class="ai-input" v-model.number="destId">
             <option v-for="d in list" :key="d.id" :value="d.id">
@@ -120,7 +127,7 @@ const AiPage = {
           </div>
 
           <button class="btn btn-primary ai-submit" :disabled="running || !destId" @click="start">
-            {{ running ? '生成中…' : '✨ 生成行程' }}
+            {{ running ? '小迹正在排…' : '🤖 让小迹排行程' }}
           </button>
           <button v-if="running" class="btn btn-outline ai-submit" @click="stop">停止生成</button>
 
@@ -130,16 +137,18 @@ const AiPage = {
         </aside>
 
         <section class="ai-output">
-          <div class="empty" v-if="!text && !error && !status">
-            <div class="icon">✨</div>
-            <p>选好目的地和天数，点「生成行程」<br />AI 会排出一份逐日行程，边写边显示。</p>
+          <div class="guide-bubble" v-if="!text && !error && !status">
+            <div class="bubble-who">小迹</div>
+            <p>你好，我是小迹 👋<br />选个城市、定几天，我马上给你排一趟能落地的行程。</p>
           </div>
 
           <div class="ai-status" v-if="status"><span class="ai-dot"></span>{{ status }}</div>
           <div class="ai-error" v-if="error">{{ error }}</div>
 
-          <article class="ai-markdown" :class="{ streaming: running }"
-            v-if="text" v-html="rendered"></article>
+          <div class="guide-bubble result" v-if="text">
+            <div class="bubble-who">小迹 <span v-if="running">正在输入…</span></div>
+            <article class="ai-markdown" :class="{ streaming: running }" v-html="rendered"></article>
+          </div>
         </section>
       </div>
     </div>

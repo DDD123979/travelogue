@@ -2392,3 +2392,118 @@ input:-webkit-autofill:focus {
 .type-side .type-num { color: #7d93a2; }
 .type-group.active .type-head { color: var(--primary); }
 .type-group.active .type-num { color: var(--primary); }
+/* ============================================================
+ * 小迹 AI 智能导游：头部 + 对话气泡
+ * ============================================================ */
+.guide-head {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 4px 0 22px;
+}
+
+.guide-avatar {
+  flex: none;
+  width: 62px;
+  height: 62px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30px;
+  background: var(--surface);
+  border: 2px solid var(--primary);
+  box-shadow: 0 0 20px rgba(53, 224, 143, 0.35), 4px 4px 0 #05080c;
+}
+
+.guide-intro h1 {
+  font-size: calc(26px * var(--fs));
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--text);
+}
+
+.guide-intro p {
+  margin-top: 6px;
+  max-width: 62ch;
+  font-size: calc(13.5px * var(--fs));
+  line-height: 1.75;
+  color: var(--text-secondary);
+}
+
+/* 表单区顶部的小标题 */
+.ai-form-title {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 14px;
+  padding-bottom: 8px;
+  border-bottom: 1px dashed var(--border);
+  font-size: calc(14px * var(--fs));
+  font-weight: 600;
+  color: var(--text);
+}
+
+.ai-form-title span {
+  font-size: calc(11px * var(--fs));
+  font-weight: 400;
+  color: var(--text-muted);
+  letter-spacing: 0.08em;
+}
+
+/* 导游说话的对话块 */
+.guide-bubble {
+  position: relative;
+  padding: 16px 18px;
+  background: var(--surface);
+  border: 2px solid var(--border);
+  box-shadow: var(--shadow-sm);
+}
+
+.guide-bubble::before {
+  content: '';
+  position: absolute;
+  left: -8px;
+  top: 18px;
+  width: 10px;
+  height: 10px;
+  background: var(--surface);
+  border-left: 2px solid var(--primary);
+  border-bottom: 2px solid var(--primary);
+  transform: rotate(45deg);
+}
+
+.guide-bubble.result {
+  border-left: 3px solid var(--primary);
+}
+
+.guide-bubble.result::before { display: none; }
+
+.bubble-who {
+  margin-bottom: 8px;
+  font-size: calc(12px * var(--fs));
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--primary);
+}
+
+.bubble-who span {
+  margin-left: 8px;
+  font-weight: 400;
+  color: var(--text-muted);
+  letter-spacing: 0;
+}
+
+.guide-bubble p {
+  font-size: calc(14px * var(--fs));
+  line-height: 1.85;
+  color: var(--text-secondary);
+}
+
+/* 导航里这一项文字最长，别让它换行把顶栏顶开 */
+.nav-ai { white-space: nowrap; }
+
+@media (max-width: 900px) {
+  .guide-avatar { width: 48px; height: 48px; font-size: 24px; }
+  .guide-intro h1 { font-size: calc(20px * var(--fs)); }
+  .nav-ai { font-size: calc(13px * var(--fs)); }
+}
