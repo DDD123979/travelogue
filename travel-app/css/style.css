@@ -2526,3 +2526,11 @@ input:-webkit-autofill:focus {
 @media (max-width: 800px) {
   .logo-img { width: 30px; height: 30px; }
 }
+/* logo 不再套绿色描边和光晕（图片本身自带霓虹字，再加框就重了） */
+.logo-img {
+  border: 0;
+  box-shadow: none;
+  border-radius: 4px;
+}
+
+.logo-img:hover { filter: brightness(1.15); }
