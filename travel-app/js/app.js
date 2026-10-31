@@ -85,9 +85,9 @@ const App = {
           <span class="logo-mark">游</span>游迹
         </a>
         <nav class="main-nav">
-          <a class="nav-link" href="#/" :class="{ active: navActive === 'home' }">首页</a>
-          <a class="nav-link" href="#/destinations" :class="{ active: navActive === 'destinations' }">目的地</a>
-          <a class="nav-link" href="#/ranking" :class="{ active: navActive === 'ranking' }">排行</a>
+          <a class="nav-link" href="#/" :class="{ active: navActive === 'home' }">首页🤩</a>
+          <a class="nav-link" href="#/destinations" :class="{ active: navActive === 'destinations' }">目的地🤑</a>
+          <a class="nav-link" href="#/ranking" :class="{ active: navActive === 'ranking' }">排行😋</a>
           <a class="nav-link nav-ai" href="#/ai" :class="{ active: navActive === 'ai' }">小迹AI智能导游🤖</a>
 
           <!-- 收藏不再占导航位：右上角用户菜单里已经有「我的收藏」，收藏数量也在菜单头部显示 -->
