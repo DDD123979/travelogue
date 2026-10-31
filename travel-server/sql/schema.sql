@@ -15,6 +15,7 @@ CREATE DATABASE IF NOT EXISTS travel_db
 USE travel_db;
 
 -- 有外键依赖，先删从表
+DROP TABLE IF EXISTS travel_post;
 DROP TABLE IF EXISTS destination_attraction;
 DROP TABLE IF EXISTS destination_tag;
 DROP TABLE IF EXISTS destination;
@@ -123,3 +124,20 @@ CREATE TABLE destination_attraction (
 --
 --   金额一律 INT（整元）：没有精度问题，和 destination.price_from 的口径也一致。
 -- ---------------------------------------------------------
+
+-- ---------------------------------------------------------
+-- 社区分享（旅行心得 + 照片）
+--   images 存逗号分隔的地址，不单独开图片表：一条最多 4 张，拆表要多个 join
+-- ---------------------------------------------------------
+CREATE TABLE travel_post (
+  id             BIGINT       NOT NULL AUTO_INCREMENT COMMENT '主键',
+  username       VARCHAR(50)  NOT NULL                COMMENT '作者用户名',
+  destination_id BIGINT       NOT NULL                COMMENT '关联目的地',
+  content        VARCHAR(800) NOT NULL                COMMENT '心得正文',
+  images         VARCHAR(1000) NOT NULL DEFAULT ''    COMMENT '逗号分隔的图片地址',
+  like_count     INT          NOT NULL DEFAULT 0      COMMENT '点赞数',
+  created_at     DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '发布时间',
+  PRIMARY KEY (id),
+  KEY idx_time (created_at),
+  KEY idx_destination (destination_id, created_at)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '社区分享';

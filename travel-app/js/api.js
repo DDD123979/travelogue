@@ -367,4 +367,58 @@ const api = {
 
     return full;
   },
+
+  /* ---------- 社区：旅行分享 ---------- */
+
+  /** 帖子列表；传 destinationId 只看某个城市 */
+  getPosts(destinationId) {
+    if (USE_MOCK) return Promise.resolve([]);
+    const qs = destinationId ? '?destinationId=' + encodeURIComponent(destinationId) : '';
+    return request('/api/posts' + qs);
+  },
+
+  /** 发布分享：{ destinationId, content, images: [url...] } */
+  createPost(payload) {
+    return request('/api/posts', { method: 'POST', body: JSON.stringify(payload) });
+  },
+
+  /** 点赞（可重复点，不做去重） */
+  likePost(id) {
+    return request('/api/posts/' + id + '/like', { method: 'POST' });
+  },
+
+  /** 删除自己的分享 */
+  deletePost(id) {
+    return request('/api/posts/' + id, { method: 'DELETE' });
+  },
+
+  /**
+   * 上传一张照片，返回 { url }。
+   * 这里不能用 request()：它固定带 Content-Type: application/json，
+   * 而 multipart 必须让浏览器自己生成 boundary。
+   */
+  async uploadImage(file) {
+    if (USE_MOCK) throw new Error('上传需要连接后端：请用 http://localhost:8080 打开');
+    const form = new FormData();
+    form.append('file', file);
+    const res = await fetch(API_BASE + '/api/uploads', {
+      method: 'POST',
+      headers: authHeaders(),
+      body: form,
+    });
+    if (res.status === 401) {
+      handleUnauthorized();
+      throw new Error('登录状态已失效，请重新登录');
+    }
+    if (!res.ok) {
+      let message = '上传失败';
+      try {
+        const body = await res.json();
+        if (body && body.message) message = body.message;
+      } catch (e) { /* 忽略非 JSON 响应 */ }
+      throw new Error(message);
+    }
+    return res.json();
+  },
+
 };

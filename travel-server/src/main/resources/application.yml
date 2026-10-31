@@ -2,6 +2,10 @@ server:
   port: 8080          # 前端 README 里原本建议用 8080 起静态服务，已改为 5173，把 8080 让给后端
 
 spring:
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 12MB
   application:
     name: travel-server
 
@@ -78,6 +82,9 @@ logging:
 # 自检：启动后浏览器访问 http://localhost:8080/api/ai/status ，
 #       能看到 Key 配没配、模型名还能不能用。
 youji:
+  # 照片上传目录：默认放在前端静态目录下，由同一个静态资源处理器直接对外提供
+  upload:
+    dir: "${UPLOAD_DIR:../travel-app/uploads}"
   ai:
     base-url: https://api.deepseek.com
     api-key: ${DEEPSEEK_API_KEY:}
