@@ -7,8 +7,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
+import javax.imageio.ImageReadParam;
+import javax.imageio.ImageReader;
 import javax.imageio.ImageWriteParam;
 import javax.imageio.ImageWriter;
+import javax.imageio.stream.ImageInputStream;
 import javax.imageio.stream.ImageOutputStream;
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -26,23 +29,27 @@ import java.util.Map;
 /**
  * 照片上传。
  *
- * 只接受 jpg / png / webp，单张不超过 5MB；文件名由服务端生成（UUID），
- * 不采用用户传来的原文件名，避免路径穿越和同名覆盖。
+ * 只接受 jpg / png / webp；文件名由服务端生成（UUID），不用用户传来的名字。
  *
- * 落盘前统一压一遍：长边不超过 1600px、JPEG q0.82，同时生成
- * 480px 的缩略图（xxx_thumb.jpg）。手机原图动辄 4-5MB，直接存下来
- * 在 3-5Mbps 的小带宽服务器上，列表页一张图就要等十几秒。
+ * 落盘前统一压一遍：长边 1600px、JPEG q0.82，同时生成 480px 缩略图。
+ * 手机原图动辄 5-10MB，直接存下来在小带宽服务器上一张要等十几秒。
+ *
+ * 大图不能直接 ImageIO.read()：一张 12000x9000 的照片解码成 RGB 要 400MB+，
+ * 1.6G 内存的机器上会 OOM。所以先读尺寸，再按比例降采样解码。
  */
 @Service
 public class UploadService {
 
-    private static final long MAX_BYTES = 5L * 1024 * 1024;
+    /** 允许上传的原始文件上限。手机随手拍的大图也能进来，压缩交给服务端 */
+    private static final long MAX_BYTES = 25L * 1024 * 1024;
 
-    /** 长边上限：列表和详情都够用，体积能压到原来的 1/20 */
     private static final int MAX_EDGE = 1600;
     private static final int THUMB_EDGE = 480;
     private static final float QUALITY = 0.82f;
     private static final float THUMB_QUALITY = 0.78f;
+
+    /** 解码时先降到这个边长以内，避免一次性展开超大位图 */
+    private static final int DECODE_EDGE = 2400;
 
     private static final Map<String, String> ALLOWED = Map.of(
             "image/jpeg", ".jpg",
@@ -66,7 +73,7 @@ public class UploadService {
             throw ApiException.badRequest("没有收到图片");
         }
         if (file.getSize() > MAX_BYTES) {
-            throw ApiException.badRequest("单张图片不能超过 5MB");
+            throw ApiException.badRequest("单张图片不能超过 25MB");
         }
         String type = file.getContentType() == null ? "" : file.getContentType().toLowerCase();
         String ext = ALLOWED.get(type);
@@ -74,7 +81,7 @@ public class UploadService {
             throw ApiException.badRequest("只支持 jpg / png / webp 格式");
         }
 
-        String base = UUIDBase.newId();
+        String base = java.util.UUID.randomUUID().toString().replace("-", "");
         String name = base + ext;
         Path target = dir.resolve(name).normalize();
         if (!target.startsWith(dir)) {
@@ -90,7 +97,7 @@ public class UploadService {
 
         BufferedImage image = decode(raw);
         if (image == null) {
-            // 解不出来的（极少见）就原样存，至少不丢用户的图
+            // 解不出来的（极少见）原样存，至少不丢用户的图
             try {
                 Files.write(target, raw);
             } catch (IOException e) {
@@ -110,10 +117,32 @@ public class UploadService {
 
     /* ---------- 内部实现 ---------- */
 
+    /**
+     * 先读尺寸、算降采样比例，再解码。
+     * 例：12000px 宽 → subsample=5 → 只解出 2400px，内存占用降到 1/25。
+     */
     private BufferedImage decode(byte[] raw) {
-        try {
-            return ImageIO.read(new ByteArrayInputStream(raw));
-        } catch (IOException e) {
+        try (ImageInputStream iis = ImageIO.createImageInputStream(new ByteArrayInputStream(raw))) {
+            if (iis == null) return null;
+            Iterator<ImageReader> readers = ImageIO.getImageReaders(iis);
+            if (!readers.hasNext()) return null;
+            ImageReader reader = readers.next();
+            try {
+                reader.setInput(iis, true, true);
+                int w = reader.getWidth(0);
+                int h = reader.getHeight(0);
+                int longer = Math.max(w, h);
+                int subsample = Math.max(1, (int) Math.ceil((double) longer / DECODE_EDGE));
+
+                ImageReadParam param = reader.getDefaultReadParam();
+                if (subsample > 1) {
+                    param.setSourceSubsampling(subsample, subsample, 0, 0);
+                }
+                return reader.read(0, param);
+            } finally {
+                reader.dispose();
+            }
+        } catch (IOException | RuntimeException e) {
             return null;
         }
     }
@@ -133,7 +162,6 @@ public class UploadService {
         BufferedImage out = new BufferedImage(nw, nh, BufferedImage.TYPE_INT_RGB);
         Graphics2D g = out.createGraphics();
         try {
-            // 转 JPEG 后没有透明通道，先铺白底，避免 PNG 透明区变黑
             g.setColor(Color.WHITE);
             g.fillRect(0, 0, nw, nh);
             g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
@@ -173,14 +201,6 @@ public class UploadService {
             throw new IllegalStateException("图片写入失败", e);
         } finally {
             writer.dispose();
-        }
-    }
-
-    /** 单独的 ID 生成器，避免和业务代码抢命名 */
-    private static final class UUIDBase {
-        static String newId() {
-            String id = java.util.UUID.randomUUID().toString().replace("-", "");
-            return id.substring(0, 32);
         }
     }
 }
