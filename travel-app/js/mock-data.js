@@ -367,7 +367,7 @@ const MOCK_DESTINATIONS = [
     days: '3 天',
     bestSeason: '3-5 月 / 9-11 月',
     gradient: ['#E8734B', '#B8451F'],
-    image: '',
+    image: 'img/destinations/chongqing.jpg',
     tags: ['火锅', '山城', '夜景'],
     description: '立体到有点魔幻的山城：轻轨从居民楼里穿过，洪崖洞的灯一亮像动画，长江索道横跨江面。火锅和小面是日常，爬坡上坎是运动。',
     highlight: {
@@ -391,7 +391,7 @@ const MOCK_DESTINATIONS = [
     days: '3 天',
     bestSeason: '4-10 月',
     gradient: ['#6FAE8E', '#3F7D68'],
-    image: '',
+    image: 'img/destinations/guilin.jpg',
     tags: ['山水', '竹筏', '阳朔'],
     description: '喀斯特山水甲天下：漓江竹筏、阳朔田园、遇龙河的稻田与峰林，随手一拍都是水墨画。',
     highlight: {
@@ -415,7 +415,7 @@ const MOCK_DESTINATIONS = [
     days: '2-3 天',
     bestSeason: '3-5 月 / 9-11 月',
     gradient: ['#8FB8A8', '#5E8F7E'],
-    image: '',
+    image: 'img/destinations/suzhou.jpg',
     tags: ['园林', '评弹', '水乡'],
     description: '园林与评弹组成的江南：拙政园一步一景，平江路的巷子适合慢慢走，晚上听一段昆曲就更完整了。',
     highlight: {
@@ -439,7 +439,7 @@ const MOCK_DESTINATIONS = [
     days: '3 天',
     bestSeason: '5-10 月',
     gradient: ['#7FB6D9', '#4A83AB'],
-    image: '',
+    image: 'img/destinations/qingdao.jpg',
     tags: ['海滨', '老建筑', '啤酒'],
     description: '红瓦绿树、碧海蓝天：老城区的德式建筑、八大关的梧桐、夏天配一袋散装啤酒，是北方最舒服的海边城市。',
     highlight: {
@@ -463,7 +463,7 @@ const MOCK_DESTINATIONS = [
     days: '3-4 天',
     bestSeason: '4-10 月',
     gradient: ['#7FA87F', '#4E7A4E'],
-    image: '',
+    image: 'img/destinations/zhangjiajie.jpg',
     tags: ['峰林', '云雾', '徒步'],
     description: '石英砂岩峰林拔地而起，云雾一起就像悬浮的山，也是电影取景地。爬山强度大，但风景值回票价。',
     highlight: {
@@ -487,7 +487,7 @@ const MOCK_DESTINATIONS = [
     days: '3 天',
     bestSeason: '5-10 月',
     gradient: ['#D9A566', '#A87338'],
-    image: '',
+    image: 'img/destinations/dunhuang.jpg',
     tags: ['壁画', '戈壁', '丝路'],
     description: '戈壁上的千年佛国：莫高窟的壁画、鸣沙山的落日、夜市里的杏皮水，一次把历史与荒漠都看了。',
     highlight: {
