@@ -14,12 +14,18 @@ const CATEGORY_META = {
   都市风情: { emoji: '🌃', hook: '夜景、街区与烟火气' },
 };
 
+/* 景点类型的固定展示顺序：类型只有 4 个，固定顺序比按数量排更好认 */
+const TYPE_ORDER = ['自然生态', '人文古迹', '街区市集', '观景夜景'];
+
 const HomePage = {
   components: { DestinationCard },
   setup() {
     const keyword = ref('');
     const list = ref([]);
     const loading = ref(true);
+
+    // 左侧侧边栏当前选中的类型；数据加载完默认选第一个
+    const activeType = ref('');
 
     onMounted(async () => {
       try {
@@ -28,6 +34,10 @@ const HomePage = {
         console.error(e);
       } finally {
         loading.value = false;
+      }
+      // 默认展开第一个类型（自然生态），让首页一打开就有内容可看
+      if (!activeType.value && attractionTypes.value.length) {
+        activeType.value = attractionTypes.value[0].name;
       }
     });
 
@@ -43,7 +53,6 @@ const HomePage = {
     });
 
     // 分类卡片：数量和顺序都由数据算出来，以后加目的地不用改这里。
-    // 按「目的地多的排前面」排序，数量一样时按名字，避免每次刷新顺序乱跳。
     const categories = computed(() => {
       const count = new Map();
       for (const d of list.value) {
@@ -62,20 +71,21 @@ const HomePage = {
         .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name, 'zh'));
     });
 
-    // 景点类型：从所有目的地的 attractions 里统计。
-    // 顺序固定成「自然生态 → 人文古迹 → 街区市集 → 观景夜景」，
-    // 不按数量排 —— 类型就 4 个，固定的顺序更好记。
-    const TYPE_ORDER = ['自然生态', '人文古迹', '街区市集', '观景夜景'];
+    // 景点类型（侧边栏）：每个类型下挂着"包含该类型景点的目的地"
     const attractionTypes = computed(() => {
-      const count = new Map();
+      const byType = new Map();
       for (const d of list.value) {
         for (const a of d.attractions || []) {
           if (!a.type) continue;
-          count.set(a.type, (count.get(a.type) || 0) + 1);
+          if (!byType.has(a.type)) byType.set(a.type, new Map());
+          byType.get(a.type).set(d.id, d);
         }
       }
-      return [...count.entries()]
-        .map(([name, n]) => ({ name, count: n }))
+      return [...byType.entries()]
+        .map(([name, destMap]) => ({
+          name,
+          destinations: [...destMap.values()].sort((a, b) => b.rating - a.rating),
+        }))
         .sort((a, b) => {
           const ia = TYPE_ORDER.indexOf(a.name);
           const ib = TYPE_ORDER.indexOf(b.name);
@@ -83,7 +93,23 @@ const HomePage = {
         });
     });
 
-    return { keyword, list, loading, search, heroBg, categories, attractionTypes };
+    // 右侧列表跟着选中类型走
+    const activeDestinations = computed(() => {
+      const hit = attractionTypes.value.find((t) => t.name === activeType.value);
+      return hit ? hit.destinations : [];
+    });
+
+    return {
+      keyword,
+      list,
+      loading,
+      search,
+      heroBg,
+      categories,
+      attractionTypes,
+      activeType,
+      activeDestinations,
+    };
   },
   template: `
     <div>
@@ -102,7 +128,7 @@ const HomePage = {
         </div>
       </section>
 
-      <!-- 经典分类：先让人按「想怎么玩」挑，比直接扫目的地列表快 -->
+      <!-- 经典分类：按「想怎么玩」挑城市 -->
       <section class="section container">
         <div class="section-head with-sub">
           <div>
@@ -125,32 +151,45 @@ const HomePage = {
             <span class="cat-count">{{ c.count }} 个目的地 →</span>
           </a>
         </div>
-
-        <!-- 景点类型：再细一层。分类是「去什么样的城市」，类型是「到了之后逛什么」 -->
-        <div class="type-row" v-if="!loading && attractionTypes.length">
-          <span class="type-label">按景点类型</span>
-          <a
-            class="type-pill"
-            v-for="t in attractionTypes"
-            :key="t.name"
-            :href="'#/destinations?atype=' + encodeURIComponent(t.name)"
-          >
-            {{ t.name }}<i>{{ t.count }}</i>
-          </a>
-        </div>
       </section>
 
+      <!-- 按景点类型逛：左侧类型导航，右侧跟着切换目的地 -->
       <section class="section container">
-        <div class="section-head with-sub">
-          <div>
-            <h2>热门目的地</h2>
-            <p class="section-sub">按口碑和当下季节挑的 6 个，第一次来先从这里选</p>
+        <div class="browse" v-if="!loading && attractionTypes.length">
+          <aside class="type-side">
+            <h3 class="side-title">按景点类型逛</h3>
+            <div
+              class="type-group"
+              v-for="(t, i) in attractionTypes"
+              :key="t.name"
+              :class="{ active: t.name === activeType }"
+            >
+              <button class="type-head" type="button" @click="activeType = t.name">
+                <span class="type-name">{{ t.name }}</span>
+                <span class="type-num">{{ t.destinations.length }}</span>
+              </button>
+              <ul class="type-dests" v-show="t.name === activeType">
+                <li v-for="d in t.destinations" :key="d.id">
+                  <a :href="'#/destinations/' + d.id">{{ d.name }}</a>
+                </li>
+              </ul>
+            </div>
+          </aside>
+
+          <div class="type-main">
+            <div class="section-head with-sub">
+              <div>
+                <h2>{{ activeType }}</h2>
+                <p class="section-sub">
+                  共 {{ activeDestinations.length }} 个目的地，都能逛到「{{ activeType }}」类的景点
+                </p>
+              </div>
+              <a href="#/destinations">查看全部目的地 →</a>
+            </div>
+            <div class="card-grid">
+              <DestinationCard v-for="d in activeDestinations" :key="d.id" :item="d" />
+            </div>
           </div>
-          <a href="#/destinations">查看全部 {{ list.length }} 个 →</a>
-        </div>
-        <div class="loading" v-if="loading"><span></span><br />加载中…</div>
-        <div class="card-grid" v-else>
-          <DestinationCard v-for="d in list.slice(0, 6)" :key="d.id" :item="d" />
         </div>
       </section>
     </div>

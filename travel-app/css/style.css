@@ -1430,50 +1430,6 @@ textarea.ai-input {
   font-size: calc(12px * var(--fs));
   color: var(--primary);
 }
-/* ============================================================
- * 首页：景点类型（分类卡片下面那一排胶囊）
- * ============================================================ */
-.type-row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px;
-  margin-top: 16px;
-  padding-top: 14px;
-  border-top: 1px dashed var(--border);
-}
-
-.type-label {
-  font-size: calc(12px * var(--fs));
-  color: var(--text-muted);
-  margin-right: 2px;
-}
-
-.type-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  background: #fff;
-  color: var(--text);
-  font-size: calc(13px * var(--fs));
-  transition: border-color 0.18s, color 0.18s, background 0.18s;
-}
-
-.type-pill:hover {
-  border-color: var(--primary);
-  color: var(--primary);
-  background: var(--primary-light);
-}
-
-.type-pill i {
-  font-style: normal;
-  font-size: calc(11px * var(--fs));
-  color: var(--text-muted);
-}
-
 /* 详情页：行程里的景点类型标签 */
 .type-tag {
   font-size: calc(11px * var(--fs));
@@ -1498,4 +1454,93 @@ textarea.ai-input {
   font-size: inherit;
   cursor: pointer;
   text-decoration: underline;
+}
+/* ============================================================
+ * 首页：按景点类型逛（左侧边栏 + 右侧目的地）
+ * ============================================================ */
+.browse {
+  display: grid;
+  grid-template-columns: 232px minmax(0, 1fr);
+  gap: 28px;
+  align-items: start;
+}
+
+.type-side {
+  position: sticky;
+  top: calc(var(--header-h) + 16px);
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 12px;
+}
+
+.side-title {
+  font-size: calc(13px * var(--fs));
+  font-weight: 600;
+  color: var(--text-muted);
+  letter-spacing: 0.5px;
+  padding: 0 8px 8px;
+}
+
+.type-group + .type-group { margin-top: 2px; }
+
+.type-head {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 9px 10px;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  color: var(--text);
+  font-size: calc(14px * var(--fs));
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.16s, color 0.16s;
+}
+
+.type-head:hover { background: var(--bg-soft); }
+
+/* 当前选中的类型：左侧一道主色竖条 + 浅色底 */
+.type-group.active .type-head {
+  background: var(--primary-light);
+  color: var(--primary);
+  font-weight: 600;
+  box-shadow: inset 3px 0 0 var(--primary);
+}
+
+.type-num {
+  font-size: calc(12px * var(--fs));
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.type-group.active .type-num { color: var(--primary); }
+
+/* 展开后的目的地名：就是"每个类型里的数据"，点名字直达详情页 */
+.type-dests {
+  list-style: none;
+  margin: 4px 0 8px;
+  padding: 0 0 0 10px;
+  border-left: 1px dashed var(--border);
+}
+
+.type-dests a {
+  display: block;
+  padding: 5px 8px;
+  border-radius: 6px;
+  font-size: calc(13px * var(--fs));
+  color: var(--text-secondary);
+}
+
+.type-dests a:hover { background: var(--bg-soft); color: var(--primary); }
+
+.type-main { min-width: 0; }
+
+@media (max-width: 900px) {
+  .browse { grid-template-columns: 1fr; gap: 18px; }
+  .type-side { position: static; }
+  .type-dests { display: flex; flex-wrap: wrap; gap: 4px 0; border-left: 0; padding-left: 0; }
 }
