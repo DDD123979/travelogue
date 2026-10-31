@@ -82,6 +82,7 @@ const DetailPage = {
                   <span class="timeline-dot"></span>
                   <div class="timeline-head">
                     <span class="day">第 {{ day.no }} 天</span>
+                    <span class="type-tag" v-if="day.item.type">{{ day.item.type }}</span>
                     <span class="time">{{ day.item.time }}</span>
                   </div>
                   <div class="timeline-title">{{ day.item.name }}</div>

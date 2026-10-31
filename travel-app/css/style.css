@@ -1430,3 +1430,72 @@ textarea.ai-input {
   font-size: calc(12px * var(--fs));
   color: var(--primary);
 }
+/* ============================================================
+ * 首页：景点类型（分类卡片下面那一排胶囊）
+ * ============================================================ */
+.type-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px dashed var(--border);
+}
+
+.type-label {
+  font-size: calc(12px * var(--fs));
+  color: var(--text-muted);
+  margin-right: 2px;
+}
+
+.type-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--text);
+  font-size: calc(13px * var(--fs));
+  transition: border-color 0.18s, color 0.18s, background 0.18s;
+}
+
+.type-pill:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: var(--primary-light);
+}
+
+.type-pill i {
+  font-style: normal;
+  font-size: calc(11px * var(--fs));
+  color: var(--text-muted);
+}
+
+/* 详情页：行程里的景点类型标签 */
+.type-tag {
+  font-size: calc(11px * var(--fs));
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: var(--primary-light);
+  color: var(--primary);
+  white-space: nowrap;
+}
+
+/* 列表页：当前生效的类型筛选提示 */
+.filter-hint {
+  color: var(--text-muted);
+  font-size: calc(13px * var(--fs));
+}
+
+.link-btn {
+  background: none;
+  border: 0;
+  padding: 0 0 0 4px;
+  color: var(--primary);
+  font-size: inherit;
+  cursor: pointer;
+  text-decoration: underline;
+}

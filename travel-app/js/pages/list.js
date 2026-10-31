@@ -43,11 +43,20 @@ const ListPage = {
           d.name.includes(kw) ||
           d.location.includes(kw) ||
           d.tags.some((t) => t.includes(kw));
-        return okCat && okKw;
+        // 景点类型：目的地下至少有一个该类型的景点就算命中
+        const okType =
+          !atype.value || (d.attractions || []).some((a) => a.type === atype.value);
+        return okCat && okKw && okType;
       })
     );
 
-    return { loading, keyword, category, categories, filtered };
+    // 清掉类型筛选：回到不带参数的列表页
+    function clearType() {
+      atype.value = '';
+      go('/destinations');
+    }
+
+    return { loading, keyword, category, categories, filtered, atype, clearType };
   },
   template: `
     <div class="page container">
@@ -67,7 +76,13 @@ const ListPage = {
 
       <div class="loading" v-if="loading"><span></span><br />加载中…</div>
       <template v-else>
-        <div class="result-count">共 {{ filtered.length }} 个目的地</div>
+        <div class="result-count">
+          共 {{ filtered.length }} 个目的地
+          <span v-if="atype" class="filter-hint">
+            · 只看含「{{ atype }}」类景点
+            <button class="link-btn" @click="clearType">清除</button>
+          </span>
+        </div>
         <div class="card-grid" v-if="filtered.length">
           <DestinationCard v-for="d in filtered" :key="d.id" :item="d" />
         </div>

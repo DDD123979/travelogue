@@ -15,6 +15,11 @@ public class AttractionDTO {
 
     private String name;
 
+
+    /** 景点类型：自然生态 / 人文古迹 / 街区市集 / 观景夜景 */
+
+    private String type;
+
     /** 建议时长，来自实体里的 duration */
     private String time;
 

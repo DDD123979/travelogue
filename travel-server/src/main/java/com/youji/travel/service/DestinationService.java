@@ -81,7 +81,7 @@ public class DestinationService {
         Map<Long, List<AttractionDTO>> attractionMap = attractions.stream().collect(Collectors.groupingBy(
                 DestinationAttraction::getDestinationId,
                 Collectors.mapping(
-                        a -> new AttractionDTO(a.getName(), a.getDuration(), a.getAttrDesc()),
+                        a -> new AttractionDTO(a.getName(), a.getAttractionType(), a.getDuration(), a.getAttrDesc()),
                         Collectors.toList())));
 
         return destinations.stream()

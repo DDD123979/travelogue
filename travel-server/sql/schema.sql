@@ -84,11 +84,13 @@ CREATE TABLE destination_attraction (
   id             BIGINT       NOT NULL AUTO_INCREMENT COMMENT '主键',
   destination_id BIGINT       NOT NULL                COMMENT '所属目的地',
   name           VARCHAR(80)  NOT NULL                COMMENT '景点名',
+  attraction_type VARCHAR(20) NOT NULL DEFAULT '人文古迹' COMMENT '景点类型：自然生态 / 人文古迹 / 街区市集 / 观景夜景',
   duration       VARCHAR(20)  NOT NULL                COMMENT '建议时长，如 2-3 小时',
   attr_desc      VARCHAR(300) NOT NULL                COMMENT '景点说明',
   sort_order     INT          NOT NULL DEFAULT 0      COMMENT '同一目的地内的展示顺序',
   PRIMARY KEY (id),
-  KEY idx_destination (destination_id, sort_order)
+  KEY idx_destination (destination_id, sort_order),
+  KEY idx_type (attraction_type)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '推荐景点';
 
 -- ---------------------------------------------------------

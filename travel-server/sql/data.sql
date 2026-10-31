@@ -24,114 +24,114 @@ DELETE FROM destination;
 -- 1. 成都（四川省 · 美食休闲）
 INSERT INTO destination (id, name, en_name, category, location, rating, price_from, days, best_season, gradient_start, gradient_end, image, description, sort_order) VALUES (1, '成都', 'CHENGDU', '美食休闲', '四川省', 4.8, 1280, '3-4 天', '3-6 月 / 9-11 月', '#F2A65A', '#E8734B', 'https://tse3-mm.cn.bing.net/th/id/OIP-C.kWYtd52T85vk6lyqRou5mAHaFj?pid=1.7', '一座把“慢”刻进日常的城市——在人民公园喝一盏盖碗茶，去巷子里涮一顿热辣火锅，再到熊猫基地看滚滚打滚。成都的松弛感，值得专程前往。', 1);
 INSERT INTO destination_tag (destination_id, tag, sort_order) VALUES (1, '火锅', 1), (1, '大熊猫', 2), (1, '慢生活', 3);
-INSERT INTO destination_attraction (destination_id, name, duration, attr_desc, sort_order) VALUES
-  (1, '大熊猫繁育研究基地', '半天', '近距离观察国宝大熊猫，建议早上前往，熊猫更活跃。', 1),
-  (1, '宽窄巷子', '2-3 小时', '清代古街巷，体验老成都的茶馆文化与市井生活。', 2),
-  (1, '都江堰 · 青城山', '一天', '两千余年历史的水利工程与世界文化遗产名山。', 3);
+INSERT INTO destination_attraction (destination_id, name, attraction_type, duration, attr_desc, sort_order) VALUES
+  (1, '大熊猫繁育研究基地', '自然生态', '半天', '近距离观察国宝大熊猫，建议早上前往，熊猫更活跃。', 1),
+  (1, '宽窄巷子', '街区市集', '2-3 小时', '清代古街巷，体验老成都的茶馆文化与市井生活。', 2),
+  (1, '都江堰 · 青城山', '人文古迹', '一天', '两千余年历史的水利工程与世界文化遗产名山。', 3);
 
 -- 2. 杭州（浙江省 · 江南水乡）
 INSERT INTO destination (id, name, en_name, category, location, rating, price_from, days, best_season, gradient_start, gradient_end, image, description, sort_order) VALUES (2, '杭州', 'HANGZHOU', '江南水乡', '浙江省', 4.7, 1250, '2-3 天', '3-5 月 / 9-11 月', '#6FAE8E', '#4F8F70', 'https://tse4-mm.cn.bing.net/th/id/OIP-C.qWwGEn3poNnSGDvfEOBKRwHaDQ?pid=1.7', '从西湖十景到龙井茶山，杭州把江南的婉约揉进了日常。春天的苏堤春晓、秋天的满陇桂雨，随便挑个周末都值得去住两天。', 2);
 INSERT INTO destination_tag (destination_id, tag, sort_order) VALUES (2, '西湖', 1), (2, '茶山', 2), (2, '江南', 3);
-INSERT INTO destination_attraction (destination_id, name, duration, attr_desc, sort_order) VALUES
-  (2, '西湖风景名胜区', '半天', '环湖骑行或漫步苏堤白堤，经典十景一路串联。', 1),
-  (2, '灵隐寺 · 飞来峰', '半天', '千年古刹与五代石窟造像，清晨人少更清净。', 2),
-  (2, '龙井村', '2-3 小时', '茶山步道漫步，春季可体验采茶与炒茶。', 3);
+INSERT INTO destination_attraction (destination_id, name, attraction_type, duration, attr_desc, sort_order) VALUES
+  (2, '西湖风景名胜区', '自然生态', '半天', '环湖骑行或漫步苏堤白堤，经典十景一路串联。', 1),
+  (2, '灵隐寺 · 飞来峰', '人文古迹', '半天', '千年古刹与五代石窟造像，清晨人少更清净。', 2),
+  (2, '龙井村', '自然生态', '2-3 小时', '茶山步道漫步，春季可体验采茶与炒茶。', 3);
 
 -- 3. 西安（陕西省 · 历史古迹）
 INSERT INTO destination (id, name, en_name, category, location, rating, price_from, days, best_season, gradient_start, gradient_end, image, description, sort_order) VALUES (3, '西安', 'XIAN', '历史古迹', '陕西省', 4.7, 1380, '3 天', '3-5 月 / 9-10 月', '#CE9B6A', '#B0794E', 'https://tse1-mm.cn.bing.net/th/id/OIP-C.uYrlzJpJd7Dt6MrMj2jDiQHaE7?pid=1.7', '十三朝古都，一步一历史。在城墙上骑行看落日，去兵马俑穿越回秦代，晚上以回民街的一碗泡馍收尾——古都的厚重与烟火气并存。', 3);
 INSERT INTO destination_tag (destination_id, tag, sort_order) VALUES (3, '古都', 1), (3, '兵马俑', 2), (3, '美食', 3);
-INSERT INTO destination_attraction (destination_id, name, duration, attr_desc, sort_order) VALUES
-  (3, '秦始皇兵马俑博物馆', '半天', '世界第八大奇迹，建议提前预约讲解。', 1),
-  (3, '西安城墙', '2 小时', '保存最完整的古代城垣，傍晚骑行体验最佳。', 2),
-  (3, '大唐不夜城', '夜间', '灯火璀璨的唐风街区，感受盛唐夜色。', 3);
+INSERT INTO destination_attraction (destination_id, name, attraction_type, duration, attr_desc, sort_order) VALUES
+  (3, '秦始皇兵马俑博物馆', '人文古迹', '半天', '世界第八大奇迹，建议提前预约讲解。', 1),
+  (3, '西安城墙', '人文古迹', '2 小时', '保存最完整的古代城垣，傍晚骑行体验最佳。', 2),
+  (3, '大唐不夜城', '观景夜景', '夜间', '灯火璀璨的唐风街区，感受盛唐夜色。', 3);
 
 -- 4. 三亚（海南省 · 海岛度假）
 INSERT INTO destination (id, name, en_name, category, location, rating, price_from, days, best_season, gradient_start, gradient_end, image, description, sort_order) VALUES (4, '三亚', 'SANYA', '海岛度假', '海南省', 4.6, 2280, '4-5 天', '10 月-次年 4 月', '#58AAD1', '#3B87B5', 'https://tse3-mm.cn.bing.net/th/id/OIP-C.IVy_n3FSBVgsnaDEswiNSAHaE8?pid=1.7', '中国最南端的热带海滨。亚龙湾的白沙滩、蜈支洲岛的潜水、后海村的日落冲浪——冬天避寒、夏天玩水，度假感直接拉满。', 4);
 INSERT INTO destination_tag (destination_id, tag, sort_order) VALUES (4, '海岛', 1), (4, '潜水', 2), (4, '度假', 3);
-INSERT INTO destination_attraction (destination_id, name, duration, attr_desc, sort_order) VALUES
-  (4, '亚龙湾', '半天', '“天下第一湾”，沙白水清，适合亲子与休闲。', 1),
-  (4, '蜈支洲岛', '一天', '水质极佳的潜水胜地，水上项目丰富。', 2),
-  (4, '后海村', '半天', '冲浪爱好者聚集地，日落时分尤其治愈。', 3);
+INSERT INTO destination_attraction (destination_id, name, attraction_type, duration, attr_desc, sort_order) VALUES
+  (4, '亚龙湾', '自然生态', '半天', '“天下第一湾”，沙白水清，适合亲子与休闲。', 1),
+  (4, '蜈支洲岛', '自然生态', '一天', '水质极佳的潜水胜地，水上项目丰富。', 2),
+  (4, '后海村', '自然生态', '半天', '冲浪爱好者聚集地，日落时分尤其治愈。', 3);
 
 -- 5. 大理（云南省 · 自然风光）
 INSERT INTO destination (id, name, en_name, category, location, rating, price_from, days, best_season, gradient_start, gradient_end, image, description, sort_order) VALUES (5, '大理', 'DALI', '自然风光', '云南省', 4.8, 1050, '3-4 天', '3-5 月 / 11-12 月', '#7FA8D9', '#5C82B8', 'https://tse3-mm.cn.bing.net/th/id/OIP-C.oiSYeDts7lozStuVyxD-TgHaEK?pid=1.7', '苍山洱海间的小城故事。租一辆电动车环洱海，在喜洲看稻田与白族院落，傍晚坐在古城墙下听风——大理适合所有想停下来的人。', 5);
 INSERT INTO destination_tag (destination_id, tag, sort_order) VALUES (5, '洱海', 1), (5, '古城', 2), (5, '风花雪月', 3);
-INSERT INTO destination_attraction (destination_id, name, duration, attr_desc, sort_order) VALUES
-  (5, '洱海生态廊道', '半天', '骑行或自驾环海，随手一拍都是屏保。', 1),
-  (5, '喜洲古镇', '2-3 小时', '白族民居与稻田风光，破酥粑粑值得一尝。', 2),
-  (5, '苍山', '半天', '乘感通索道登山，俯瞰洱海全景。', 3);
+INSERT INTO destination_attraction (destination_id, name, attraction_type, duration, attr_desc, sort_order) VALUES
+  (5, '洱海生态廊道', '自然生态', '半天', '骑行或自驾环海，随手一拍都是屏保。', 1),
+  (5, '喜洲古镇', '人文古迹', '2-3 小时', '白族民居与稻田风光，破酥粑粑值得一尝。', 2),
+  (5, '苍山', '自然生态', '半天', '乘感通索道登山，俯瞰洱海全景。', 3);
 
 -- 6. 北京（北京市 · 历史古迹）
 INSERT INTO destination (id, name, en_name, category, location, rating, price_from, days, best_season, gradient_start, gradient_end, image, description, sort_order) VALUES (6, '北京', 'BEIJING', '历史古迹', '北京市', 4.9, 1680, '4 天', '4-5 月 / 9-10 月', '#C96A5E', '#A84E44', 'https://tse4-mm.cn.bing.net/th/id/OIP-C.04DCfcfZK6E_pNMteKz3hwHaEK?pid=1.7', '红墙金瓦与胡同烟火同框。清晨看一次天安门升旗，下午钻进胡同里喝茶，傍晚登景山俯瞰故宫全景——经典与生活感可以兼得。', 6);
 INSERT INTO destination_tag (destination_id, tag, sort_order) VALUES (6, '故宫', 1), (6, '长城', 2), (6, '胡同', 3);
-INSERT INTO destination_attraction (destination_id, name, duration, attr_desc, sort_order) VALUES
-  (6, '故宫博物院', '半天', '明清两代皇宫，需提前 7 天实名预约。', 1),
-  (6, '八达岭长城', '半天', '“不到长城非好汉”，建议早出发避开人流。', 2),
-  (6, '什刹海 · 胡同', '2-3 小时', '鼓楼一带串胡同，感受老北京的日常。', 3);
+INSERT INTO destination_attraction (destination_id, name, attraction_type, duration, attr_desc, sort_order) VALUES
+  (6, '故宫博物院', '人文古迹', '半天', '明清两代皇宫，需提前 7 天实名预约。', 1),
+  (6, '八达岭长城', '人文古迹', '半天', '“不到长城非好汉”，建议早出发避开人流。', 2),
+  (6, '什刹海 · 胡同', '街区市集', '2-3 小时', '鼓楼一带串胡同，感受老北京的日常。', 3);
 
 -- 7. 厦门（福建省 · 海岛度假）
 INSERT INTO destination (id, name, en_name, category, location, rating, price_from, days, best_season, gradient_start, gradient_end, image, description, sort_order) VALUES (7, '厦门', 'XIAMEN', '海岛度假', '福建省', 4.6, 1180, '3 天', '4-6 月 / 9-11 月', '#5FB8A5', '#3E9A87', 'https://tse3-mm.cn.bing.net/th/id/OIP-C.bGG31Z_caTYG32T7mwVY3AHaEH?pid=1.7', '一座适合 City Walk 的海上花园。鼓浪屿的老别墅、环岛路的骑行海风、沙坡尾的文艺小店——节奏慢、风景好，怎么逛都舒服。', 7);
 INSERT INTO destination_tag (destination_id, tag, sort_order) VALUES (7, '海滨', 1), (7, '文艺', 2), (7, 'CityWalk', 3);
-INSERT INTO destination_attraction (destination_id, name, duration, attr_desc, sort_order) VALUES
-  (7, '鼓浪屿', '一天', '万国建筑博览与琴岛巷弄，轮渡前往。', 1),
-  (7, '环岛路', '2-3 小时', '沿海骑行绿道，一边是海一边是城。', 2),
-  (7, '沙坡尾', '2 小时', '老渔港改造的文艺街区，咖啡与市集。', 3);
+INSERT INTO destination_attraction (destination_id, name, attraction_type, duration, attr_desc, sort_order) VALUES
+  (7, '鼓浪屿', '人文古迹', '一天', '万国建筑博览与琴岛巷弄，轮渡前往。', 1),
+  (7, '环岛路', '自然生态', '2-3 小时', '沿海骑行绿道，一边是海一边是城。', 2),
+  (7, '沙坡尾', '街区市集', '2 小时', '老渔港改造的文艺街区，咖啡与市集。', 3);
 
 -- 8. 丽江（云南省 · 自然风光）
 INSERT INTO destination (id, name, en_name, category, location, rating, price_from, days, best_season, gradient_start, gradient_end, image, description, sort_order) VALUES (8, '丽江', 'LIJIANG', '自然风光', '云南省', 4.5, 1320, '3-4 天', '4-6 月 / 9-11 月', '#9C8FC4', '#7A6BA8', 'https://tse2-mm.cn.bing.net/th/id/OIP-C.OtJaU0g07mYhUS0OJdPFOAHaDv?pid=1.7', '玉龙雪山下的柔软时光。白天上雪山看冰川，傍晚在四方街晒太阳，夜里听一场纳西古乐——也可以哪儿都不去，就在客栈院子里发呆。', 8);
 INSERT INTO destination_tag (destination_id, tag, sort_order) VALUES (8, '雪山', 1), (8, '古城', 2), (8, '民宿', 3);
-INSERT INTO destination_attraction (destination_id, name, duration, attr_desc, sort_order) VALUES
-  (8, '玉龙雪山', '一天', '乘大索道登4506米冰川公园，记得提前订票。', 1),
-  (8, '丽江古城', '半天', '世界文化遗产，小桥流水与纳西院落。', 2),
-  (8, '束河古镇', '半天', '比大研古镇更安静，适合喝茶发呆。', 3);
+INSERT INTO destination_attraction (destination_id, name, attraction_type, duration, attr_desc, sort_order) VALUES
+  (8, '玉龙雪山', '自然生态', '一天', '乘大索道登4506米冰川公园，记得提前订票。', 1),
+  (8, '丽江古城', '人文古迹', '半天', '世界文化遗产，小桥流水与纳西院落。', 2),
+  (8, '束河古镇', '人文古迹', '半天', '比大研古镇更安静，适合喝茶发呆。', 3);
 
 -- 9. 广州（广东省 · 美食休闲）
 INSERT INTO destination (id, name, en_name, category, location, rating, price_from, days, best_season, gradient_start, gradient_end, image, description, sort_order) VALUES (9, '广州', 'GUANGZHOU', '美食休闲', '广东省', 4.6, 1100, '2-3 天', '10 月-次年 3 月', '#EBB15C', '#DE9435', 'https://tse4-mm.cn.bing.net/th/id/OIP-C.vS-OKpXo-DCW8LihhulvSAHaFj?pid=1.7', '“食在广州”名不虚传：早茶一盅两件、街头烧腊与糖水，从西关老骑楼一路吃到珠江新城。美食之外，还有沙面的欧式街巷与夜游珠江。', 9);
 INSERT INTO destination_tag (destination_id, tag, sort_order) VALUES (9, '早茶', 1), (9, '美食', 2), (9, '夜游珠江', 3);
-INSERT INTO destination_attraction (destination_id, name, duration, attr_desc, sort_order) VALUES
-  (9, '沙面岛', '2 小时', '珠江畔的欧式建筑群，适合漫步拍照。', 1),
-  (9, '广州塔', '2-3 小时', '登塔俯瞰珠江夜景，城市地标。', 2),
-  (9, '陈家祠', '1-2 小时', '岭南建筑艺术的巅峰，砖雕灰塑精美。', 3);
+INSERT INTO destination_attraction (destination_id, name, attraction_type, duration, attr_desc, sort_order) VALUES
+  (9, '沙面岛', '人文古迹', '2 小时', '珠江畔的欧式建筑群，适合漫步拍照。', 1),
+  (9, '广州塔', '观景夜景', '2-3 小时', '登塔俯瞰珠江夜景，城市地标。', 2),
+  (9, '陈家祠', '人文古迹', '1-2 小时', '岭南建筑艺术的巅峰，砖雕灰塑精美。', 3);
 
 -- 10. 武汉（湖北省 · 历史古迹）
 INSERT INTO destination (id, name, en_name, category, location, rating, price_from, days, best_season, gradient_start, gradient_end, image, description, sort_order) VALUES (10, '武汉', 'WUHAN', '历史古迹', '湖北省', 4.6, 1080, '3 天', '3-5 月 / 9-11 月', '#E58BA8', '#C4657F', 'https://tse4-mm.cn.bing.net/th/id/OIP-C.3qgHfDDXpp1nYcRHMj2quwHaEA?pid=1.7', '长江与汉水交汇处的“九省通衢”。登黄鹤楼看大江东去，三月去武大赴一场樱花雨，早上以一碗热干面开场、夜宵用小龙虾收尾——江湖气与烟火气都很足的江城。', 10);
 INSERT INTO destination_tag (destination_id, tag, sort_order) VALUES (10, '黄鹤楼', 1), (10, '樱花', 2), (10, '热干面', 3);
-INSERT INTO destination_attraction (destination_id, name, duration, attr_desc, sort_order) VALUES
-  (10, '黄鹤楼', '2 小时', '江南三大名楼之首，登楼可俯瞰长江大桥与武汉三镇。', 1),
-  (10, '武汉大学 · 东湖', '半天', '三月樱花季最美，平日的珞珈山与东湖绿道也值得慢走。', 2),
-  (10, '户部巷 · 江汉路', '2-3 小时', '早点一条街与百年老建筑，热干面、豆皮、鸭脖一路吃过去。', 3);
+INSERT INTO destination_attraction (destination_id, name, attraction_type, duration, attr_desc, sort_order) VALUES
+  (10, '黄鹤楼', '人文古迹', '2 小时', '江南三大名楼之首，登楼可俯瞰长江大桥与武汉三镇。', 1),
+  (10, '武汉大学 · 东湖', '自然生态', '半天', '三月樱花季最美，平日的珞珈山与东湖绿道也值得慢走。', 2),
+  (10, '户部巷 · 江汉路', '街区市集', '2-3 小时', '早点一条街与百年老建筑，热干面、豆皮、鸭脖一路吃过去。', 3);
 
 -- 11. 长沙（湖南省 · 美食休闲）
 INSERT INTO destination (id, name, en_name, category, location, rating, price_from, days, best_season, gradient_start, gradient_end, image, description, sort_order) VALUES (11, '长沙', 'CHANGSHA', '美食休闲', '湖南省', 4.6, 980, '2-3 天', '3-5 月 / 9-11 月', '#D9553F', '#AE3A2A', 'https://tse2-mm.cn.bing.net/th/id/OIP-C.qVqPnNBz7zY4YKdHNUb1-gHaE-?pid=1.7', '把辣和夜生活都拉到顶的城市。白天登岳麓山、去橘子洲头看湘江北去，晚上钻进坡子街一路吃到深夜——长沙的快乐来得很直接。', 11);
 INSERT INTO destination_tag (destination_id, tag, sort_order) VALUES (11, '湘菜', 1), (11, '橘子洲', 2), (11, '夜生活', 3);
-INSERT INTO destination_attraction (destination_id, name, duration, attr_desc, sort_order) VALUES
-  (11, '橘子洲头', '2 小时', '湘江中的狭长洲岛，看青年艺术雕塑与两岸江景。', 1),
-  (11, '岳麓山 · 岳麓书院', '半天', '千年学府与山林步道，秋天爱晚亭一带红叶最好看。', 2),
-  (11, '坡子街 · 太平老街', '2-3 小时', '小吃与夜市集中地，臭豆腐、糖油粑粑一路尝过去。', 3);
+INSERT INTO destination_attraction (destination_id, name, attraction_type, duration, attr_desc, sort_order) VALUES
+  (11, '橘子洲头', '自然生态', '2 小时', '湘江中的狭长洲岛，看青年艺术雕塑与两岸江景。', 1),
+  (11, '岳麓山 · 岳麓书院', '人文古迹', '半天', '千年学府与山林步道，秋天爱晚亭一带红叶最好看。', 2),
+  (11, '坡子街 · 太平老街', '街区市集', '2-3 小时', '小吃与夜市集中地，臭豆腐、糖油粑粑一路尝过去。', 3);
 
 -- 12. 南京（江苏省 · 历史古迹）
 INSERT INTO destination (id, name, en_name, category, location, rating, price_from, days, best_season, gradient_start, gradient_end, image, description, sort_order) VALUES (12, '南京', 'NANJING', '历史古迹', '江苏省', 4.7, 1150, '2-3 天', '3-5 月 / 10-11 月', '#B6A15E', '#8E7A3F', 'https://tse1-mm.cn.bing.net/th/id/OIP-C.dOg9dJwc2Aogdrd_c1EtggHaE8?pid=1.7', '六朝古都，也是被梧桐树包住的城市。中山陵的长阶、明孝陵的神道、入夜后秦淮河上的桨声灯影——南京的厚重里带着一点温柔。', 12);
 INSERT INTO destination_tag (destination_id, tag, sort_order) VALUES (12, '六朝古都', 1), (12, '梧桐', 2), (12, '秦淮河', 3);
-INSERT INTO destination_attraction (destination_id, name, duration, attr_desc, sort_order) VALUES
-  (12, '夫子庙 · 秦淮河', '2-3 小时', '夜游画舫看两岸灯火，江南贡院与乌衣巷都在附近。', 1),
-  (12, '中山陵 · 明孝陵', '半天', '钟山风景区一线串联，秋天的石象路色彩最好。', 2),
-  (12, '南京博物院', '2-3 小时', '国内三大博物馆之一，需提前预约。', 3);
+INSERT INTO destination_attraction (destination_id, name, attraction_type, duration, attr_desc, sort_order) VALUES
+  (12, '夫子庙 · 秦淮河', '街区市集', '2-3 小时', '夜游画舫看两岸灯火，江南贡院与乌衣巷都在附近。', 1),
+  (12, '中山陵 · 明孝陵', '人文古迹', '半天', '钟山风景区一线串联，秋天的石象路色彩最好。', 2),
+  (12, '南京博物院', '人文古迹', '2-3 小时', '国内三大博物馆之一，需提前预约。', 3);
 
 -- 13. 上海（上海市 · 都市风情）
 INSERT INTO destination (id, name, en_name, category, location, rating, price_from, days, best_season, gradient_start, gradient_end, image, description, sort_order) VALUES (13, '上海', 'SHANGHAI', '都市风情', '上海市', 4.8, 1580, '3-4 天', '3-5 月 / 9-11 月', '#5468A8', '#39467C', 'https://tse1-mm.cn.bing.net/th/id/OIP-C.i5wUMb5aTFSB-TGWt-b62wHaE7?pid=1.7', '一边是外滩的万国建筑与陆家嘴的天际线，一边是武康路、安福路的梧桐街区。上海适合用 CityWalk 的方式慢慢逛，咖啡馆和小马路永远逛不完。', 13);
 INSERT INTO destination_tag (destination_id, tag, sort_order) VALUES (13, '外滩', 1), (13, '梧桐区', 2), (13, 'CityWalk', 3);
-INSERT INTO destination_attraction (destination_id, name, duration, attr_desc, sort_order) VALUES
-  (13, '外滩 · 陆家嘴', '半天', '黄浦江两岸对望，亮灯后江景最好看，可乘轮渡往返。', 1),
-  (13, '武康路 · 安福路', '2-3 小时', '梧桐树下的老洋房与咖啡馆，适合散步拍照。', 2),
-  (13, '豫园 · 城隍庙', '2 小时', '明代园林与老城厢小吃，人多建议早去。', 3);
+INSERT INTO destination_attraction (destination_id, name, attraction_type, duration, attr_desc, sort_order) VALUES
+  (13, '外滩 · 陆家嘴', '观景夜景', '半天', '黄浦江两岸对望，亮灯后江景最好看，可乘轮渡往返。', 1),
+  (13, '武康路 · 安福路', '街区市集', '2-3 小时', '梧桐树下的老洋房与咖啡馆，适合散步拍照。', 2),
+  (13, '豫园 · 城隍庙', '人文古迹', '2 小时', '明代园林与老城厢小吃，人多建议早去。', 3);
 
 -- 14. 深圳（广东省 · 都市风情）
 INSERT INTO destination (id, name, en_name, category, location, rating, price_from, days, best_season, gradient_start, gradient_end, image, description, sort_order) VALUES (14, '深圳', 'SHENZHEN', '都市风情', '广东省', 4.5, 1250, '2-3 天', '10 月-次年 4 月', '#2F9BA8', '#1C717E', 'https://tse2-mm.cn.bing.net/th/id/OIP-C.Bp20dUqVCiv1sKaDy0GWDQHaE7?pid=1.7', '四十多年长成的一座年轻都市，高楼与海岸线挤在同一帧画面里。白天逛华侨城创意园，傍晚去深圳湾看对岸香港的灯火，夜里再上平安金融中心俯瞰全城。', 14);
 INSERT INTO destination_tag (destination_id, tag, sort_order) VALUES (14, '天际线', 1), (14, '海滨', 2), (14, '科技感', 3);
-INSERT INTO destination_attraction (destination_id, name, duration, attr_desc, sort_order) VALUES
-  (14, '深圳湾公园', '2 小时', '沿海骑行与观鸟，傍晚可看对岸香港的灯火。', 1),
-  (14, '平安金融中心 · 市民中心', '2-3 小时', '福田中轴线的高楼群，云际观光层可俯瞰全城。', 2),
-  (14, '大鹏所城 · 西涌', '一天', '古城与海滩一线，是深圳少见的慢节奏去处。', 3);
+INSERT INTO destination_attraction (destination_id, name, attraction_type, duration, attr_desc, sort_order) VALUES
+  (14, '深圳湾公园', '自然生态', '2 小时', '沿海骑行与观鸟，傍晚可看对岸香港的灯火。', 1),
+  (14, '平安金融中心 · 市民中心', '观景夜景', '2-3 小时', '福田中轴线的高楼群，云际观光层可俯瞰全城。', 2),
+  (14, '大鹏所城 · 西涌', '人文古迹', '一天', '古城与海滩一线，是深圳少见的慢节奏去处。', 3);
 
 -- =========================================================
 --  酒店（「预订」功能里用户可选的住宿，共 42 家 = 14 城 × 3 家）

@@ -62,7 +62,28 @@ const HomePage = {
         .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name, 'zh'));
     });
 
-    return { keyword, list, loading, search, heroBg, categories };
+    // 景点类型：从所有目的地的 attractions 里统计。
+    // 顺序固定成「自然生态 → 人文古迹 → 街区市集 → 观景夜景」，
+    // 不按数量排 —— 类型就 4 个，固定的顺序更好记。
+    const TYPE_ORDER = ['自然生态', '人文古迹', '街区市集', '观景夜景'];
+    const attractionTypes = computed(() => {
+      const count = new Map();
+      for (const d of list.value) {
+        for (const a of d.attractions || []) {
+          if (!a.type) continue;
+          count.set(a.type, (count.get(a.type) || 0) + 1);
+        }
+      }
+      return [...count.entries()]
+        .map(([name, n]) => ({ name, count: n }))
+        .sort((a, b) => {
+          const ia = TYPE_ORDER.indexOf(a.name);
+          const ib = TYPE_ORDER.indexOf(b.name);
+          return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib);
+        });
+    });
+
+    return { keyword, list, loading, search, heroBg, categories, attractionTypes };
   },
   template: `
     <div>
@@ -102,6 +123,19 @@ const HomePage = {
             <span class="cat-name">{{ c.name }}</span>
             <span class="cat-hook">{{ c.hook }}</span>
             <span class="cat-count">{{ c.count }} 个目的地 →</span>
+          </a>
+        </div>
+
+        <!-- 景点类型：再细一层。分类是「去什么样的城市」，类型是「到了之后逛什么」 -->
+        <div class="type-row" v-if="!loading && attractionTypes.length">
+          <span class="type-label">按景点类型</span>
+          <a
+            class="type-pill"
+            v-for="t in attractionTypes"
+            :key="t.name"
+            :href="'#/destinations?atype=' + encodeURIComponent(t.name)"
+          >
+            {{ t.name }}<i>{{ t.count }}</i>
           </a>
         </div>
       </section>
