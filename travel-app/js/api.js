@@ -55,14 +55,52 @@ function authHeaders() {
 }
 
 /* ---------- 通用请求函数（真实后端使用） ---------- */
+
+/** 普通接口的超时：后端卡住时不要让页面无限转圈 */
+const REQUEST_TIMEOUT_MS = 15000;
+
+/**
+ * 401 统一处理：清掉本地会话并回到登录页。
+ * 登录/注册接口自己的 401 不在此列 —— 那是密码错误，页面要显示提示，不能跳走。
+ */
+function handleUnauthorized() {
+  try {
+    localStorage.removeItem(SESSION_KEY);
+  } catch {
+    /* 隐私模式下 localStorage 不可用，忽略 */
+  }
+  if (!location.hash.startsWith('#/login')) {
+    location.hash = '#/login';
+  }
+}
+
 async function request(path, options = {}) {
-  const res = await fetch(API_BASE + path, {
-    // 【顺序要紧】headers 必须写在 ...options 之前。
-    // 反过来写的话，options 里一旦带 headers（比如流式请求自己设的），
-    // 上面的 Content-Type 和 Authorization 会被整个覆盖掉。
-    headers: { 'Content-Type': 'application/json', ...authHeaders() },
-    ...options,
-  });
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+
+  let res;
+  try {
+    res = await fetch(API_BASE + path, {
+      // 【顺序要紧】headers 必须写在 ...options 之前。
+      // 反过来写的话，options 里一旦带 headers（比如流式请求自己设的），
+      // 上面的 Content-Type 和 Authorization 会被整个覆盖掉。
+      headers: { 'Content-Type': 'application/json', ...authHeaders() },
+      signal: controller.signal,
+      ...options,
+    });
+  } catch (err) {
+    if (err && err.name === 'AbortError') {
+      throw new Error('请求超时，请检查网络后重试');
+    }
+    throw err;
+  } finally {
+    clearTimeout(timer);
+  }
+
+  if (res.status === 401 && !path.startsWith('/api/auth/')) {
+    handleUnauthorized();
+  }
+
   if (!res.ok) {
     // 后端出错时返回 {"message": "中文提示"}，优先把它取出来显示，
     // 取不到才退回状态码 —— 否则用户只能看到「409 Conflict」这种看不懂的提示

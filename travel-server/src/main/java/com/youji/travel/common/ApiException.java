@@ -35,6 +35,11 @@ public class ApiException extends RuntimeException {
         return new ApiException(HttpStatus.CONFLICT, message);
     }
 
+    /** 429：登录失败次数过多之类，提示客户端稍后再试 */
+    public static ApiException tooManyRequests(String message) {
+        return new ApiException(HttpStatus.TOO_MANY_REQUESTS, message);
+    }
+
     public static ApiException unavailable(String message) {
         return new ApiException(HttpStatus.SERVICE_UNAVAILABLE, message);
     }

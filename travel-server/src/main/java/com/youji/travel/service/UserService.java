@@ -4,26 +4,43 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.youji.travel.common.ApiException;
 import com.youji.travel.entity.User;
 import com.youji.travel.mapper.UserMapper;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.time.Duration;
+import java.util.Locale;
 
 /**
  * 用户注册与登录。
  *
  * 密码用 BCrypt 哈希后存库，不存明文、不用 MD5（MD5 加盐也扛不住彩虹表）。
  * BCrypt 每次加密结果都不同（自带随机盐），校验用 matches()，不能用 equals。
+ *
+ * 登录失败次数记在 Redis 里：同一用户名连续错 5 次锁定 15 分钟。
+ * 不这么做的话，密码只要 6 位、站点又是公开的，撞库几乎无成本。
  */
 @Service
 public class UserService {
 
+    /** 同一用户名连续失败到这个次数就锁定 */
+    private static final int MAX_LOGIN_FAILS = 5;
+
+    /** 锁定窗口：从第一次失败开始算 */
+    private static final Duration LOGIN_LOCK = Duration.ofMinutes(15);
+
+    private static final String FAIL_KEY_PREFIX = "youji:login:fail:";
+
     private final UserMapper userMapper;
+    private final StringRedisTemplate redis;
 
     /** 无状态、线程安全，直接持有即可；不必引 spring-boot-starter-security */
     private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-    public UserService(UserMapper userMapper) {
+    public UserService(UserMapper userMapper, StringRedisTemplate redis) {
         this.userMapper = userMapper;
+        this.redis = redis;
     }
 
     /** 注册：用户名重复返回 409 */
@@ -52,12 +69,44 @@ public class UserService {
 
     /** 登录：用户名不存在和密码错误返回同一句提示，不泄露账号是否存在 */
     public User login(String username, String password) {
-        User user = findByUsername(username == null ? null : username.trim());
+        String name = username == null ? "" : username.trim();
+        String failKey = FAIL_KEY_PREFIX + name.toLowerCase(Locale.ROOT);
+
+        if (loginFails(failKey) >= MAX_LOGIN_FAILS) {
+            throw ApiException.tooManyRequests(
+                    "密码错误次数过多，账号已临时锁定，请 " + LOGIN_LOCK.toMinutes() + " 分钟后再试");
+        }
+
+        User user = findByUsername(name);
         if (user == null || password == null
                 || !passwordEncoder.matches(password, user.getPasswordHash())) {
+            recordLoginFail(failKey);
             throw ApiException.unauthorized("用户名或密码错误");
         }
+
+        // 登录成功就清零，避免"输错几次但最终成功"也被锁
+        redis.delete(failKey);
         return user;
+    }
+
+    private int loginFails(String key) {
+        String raw = redis.opsForValue().get(key);
+        if (raw == null) {
+            return 0;
+        }
+        try {
+            return Integer.parseInt(raw);
+        } catch (NumberFormatException e) {
+            return 0;
+        }
+    }
+
+    private void recordLoginFail(String key) {
+        Long count = redis.opsForValue().increment(key);
+        // 只在第一次失败时设过期：窗口从第一次失败开始算，而不是每次失败都顺延
+        if (count != null && count == 1L) {
+            redis.expire(key, LOGIN_LOCK);
+        }
     }
 
     public User findByUsername(String username) {
