@@ -1895,3 +1895,52 @@ textarea.ai-input {
     transition: none;
   }
 }
+/* ============================================================
+ * 详情页行程：一天多个去处（上午 / 下午 / 晚上）
+ * ============================================================ */
+.timeline-tip {
+  margin: 4px 0 14px;
+  font-size: calc(13px * var(--fs));
+  color: var(--text-muted);
+}
+
+.timeline-slot + .timeline-slot {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--border);
+}
+
+.slot-head {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 3px;
+}
+
+/* 上午 / 下午 / 晚上：小色块标签，比纯文字更容易扫 */
+.slot-label {
+  flex: none;
+  padding: 1px 7px;
+  border-radius: 4px;
+  background: var(--primary-light);
+  color: var(--primary);
+  font-size: calc(11px * var(--fs));
+  font-weight: 600;
+}
+
+.slot-name {
+  font-size: calc(15px * var(--fs));
+  font-weight: 600;
+}
+
+.slot-time {
+  font-size: calc(12px * var(--fs));
+  color: var(--text-muted);
+}
+
+.timeline-slot p {
+  font-size: calc(13px * var(--fs));
+  color: var(--text-secondary);
+  line-height: 1.75;
+}

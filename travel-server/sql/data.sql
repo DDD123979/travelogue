@@ -217,3 +217,103 @@ INSERT INTO destination_attraction (destination_id, name, attraction_type, durat
   (20, '莫高窟', '人文古迹', '半天', '千年壁画与彩塑，需提前预约，每批只能看八个洞窟。', 1),
   (20, '鸣沙山 · 月牙泉', '自然生态', '半天', '沙山环抱一弯泉水，傍晚骑骆驼看落日，起风时沙子会响。', 2),
   (20, '敦煌夜市', '街区市集', '2 小时', '杏皮水、驴肉黄面、胡杨木雕，晚上十点最热闹。', 3);
+
+-- 1. 补充景点（第 4、5 个）
+INSERT INTO destination_attraction (destination_id, name, attraction_type, duration, attr_desc, sort_order) VALUES
+  (1, '人民公园', '街区市集', '2 小时', '鹤鸣茶社喝盖碗茶、看采耳，成都人晒太阳的地方，周末最热闹。', 4),
+  (1, '春熙路 · 太古里', '街区市集', '2 小时', 'IFS 熊猫打卡、太古里逛街，晚上灯光和街拍最好看。', 5);
+
+-- 2. 补充景点（第 4、5 个）
+INSERT INTO destination_attraction (destination_id, name, attraction_type, duration, attr_desc, sort_order) VALUES
+  (2, '河坊街', '街区市集', '2 小时', '南宋御街一带，小吃和手作铺子集中，晚上灯笼亮起更热闹。', 4),
+  (2, '西溪湿地', '自然生态', '半天', '芦苇与水巷交错的湿地，坐船比走路更能看到深处。', 5);
+
+-- 3. 补充景点（第 4、5 个）
+INSERT INTO destination_attraction (destination_id, name, attraction_type, duration, attr_desc, sort_order) VALUES
+  (3, '回民街', '街区市集', '2 小时', '泡馍、肉夹馍、甑糕一条街，往里走到洒金桥更本地。', 4),
+  (3, '陕西历史博物馆', '人文古迹', '半天', '从周秦汉唐一路看下来，何家村窖藏是重点，需提前预约。', 5);
+
+-- 4. 补充景点（第 4、5 个）
+INSERT INTO destination_attraction (destination_id, name, attraction_type, duration, attr_desc, sort_order) VALUES
+  (4, '第一市场', '街区市集', '2 小时', '买海鲜找店加工，晚上最热闹，记得先问价再称重。', 4),
+  (4, '天涯海角', '自然生态', '半天', '两块刻字巨石和一段海岸线，日落时人少一些。', 5);
+
+-- 5. 补充景点（第 4、5 个）
+INSERT INTO destination_attraction (destination_id, name, attraction_type, duration, attr_desc, sort_order) VALUES
+  (5, '大理古城', '街区市集', '2 小时', '五华楼与洋人街，白天逛小店，晚上酒吧街热闹。', 4),
+  (5, '崇圣寺三塔', '人文古迹', '2 小时', '三塔倒影是大理的标志，公园里的倒影池角度最好。', 5);
+
+-- 6. 补充景点（第 4、5 个）
+INSERT INTO destination_attraction (destination_id, name, attraction_type, duration, attr_desc, sort_order) VALUES
+  (6, '天坛公园', '人文古迹', '半天', '祈年殿与回音壁，清晨能撞见本地人晨练、唱戏。', 4),
+  (6, '南锣鼓巷', '街区市集', '2 小时', '胡同商业街，往两边支巷走人少，更有生活气。', 5);
+
+-- 7. 补充景点（第 4、5 个）
+INSERT INTO destination_attraction (destination_id, name, attraction_type, duration, attr_desc, sort_order) VALUES
+  (7, '曾厝垵', '街区市集', '2 小时', '小吃与民宿集中的村子，晚上灯串一亮全是吃的。', 4),
+  (7, '南普陀寺', '人文古迹', '2 小时', '背靠五老峰，素饼有名，爬到后山能俯瞰厦大。', 5);
+
+-- 8. 补充景点（第 4、5 个）
+INSERT INTO destination_attraction (destination_id, name, attraction_type, duration, attr_desc, sort_order) VALUES
+  (8, '拉市海', '自然生态', '半天', '湿地与候鸟，骑马划船的集散地，认准正规马场。', 4),
+  (8, '束河四方街', '街区市集', '2 小时', '溪边喝茶听纳西古乐，比大研古城安静很多。', 5);
+
+-- 9. 补充景点（第 4、5 个）
+INSERT INTO destination_attraction (destination_id, name, attraction_type, duration, attr_desc, sort_order) VALUES
+  (9, '北京路', '街区市集', '2 小时', '千年古道遗址就在脚下，骑楼与小吃街混在一起。', 4),
+  (9, '越秀公园', '自然生态', '2 小时', '五羊石像是广州城徽，镇海楼里是广州博物馆。', 5);
+
+-- 10. 补充景点（第 4、5 个）
+INSERT INTO destination_attraction (destination_id, name, attraction_type, duration, attr_desc, sort_order) VALUES
+  (10, '江汉路步行街', '街区市集', '2 小时', '近代建筑群与老字号，晚上灯光亮起来最好看。', 4),
+  (10, '湖北省博物馆', '人文古迹', '半天', '曾侯乙编钟与越王勾践剑，免费但需提前预约。', 5);
+
+-- 11. 补充景点（第 4、5 个）
+INSERT INTO destination_attraction (destination_id, name, attraction_type, duration, attr_desc, sort_order) VALUES
+  (11, '爱晚亭 · 岳麓山南门', '自然生态', '2 小时', '秋天枫叶最盛，从南门上到爱晚亭约一小时。', 4),
+  (11, '文和友', '街区市集', '2 小时', '复古市井场景配小龙虾，排队要趁早取号。', 5);
+
+-- 12. 补充景点（第 4、5 个）
+INSERT INTO destination_attraction (destination_id, name, attraction_type, duration, attr_desc, sort_order) VALUES
+  (12, '总统府', '人文古迹', '2 小时', '从两江总督署到民国政府，园林与办公旧址并存。', 4),
+  (12, '老门东', '街区市集', '2 小时', '青砖小巷与先锋书店分店，晚上灯串亮起很出片。', 5);
+
+-- 13. 补充景点（第 4、5 个）
+INSERT INTO destination_attraction (destination_id, name, attraction_type, duration, attr_desc, sort_order) VALUES
+  (13, '田子坊', '街区市集', '2 小时', '石库门弄堂里的手作店，巷子窄、人多，工作日更舒服。', 4),
+  (13, '上海博物馆', '人文古迹', '半天', '青铜与陶瓷馆是强项，免费但需预约，至少留两小时。', 5);
+
+-- 14. 补充景点（第 4、5 个）
+INSERT INTO destination_attraction (destination_id, name, attraction_type, duration, attr_desc, sort_order) VALUES
+  (14, '华侨城创意园', '街区市集', '2 小时', '旧厂房改造的艺术区，咖啡、展览和二手书店。', 4),
+  (14, '深圳湾日落', '观景夜景', '1 小时', '人才公园一带看日落，对岸就是香港，风大记得带外套。', 5);
+
+-- 15. 补充景点（第 4、5 个）
+INSERT INTO destination_attraction (destination_id, name, attraction_type, duration, attr_desc, sort_order) VALUES
+  (15, '解放碑', '街区市集', '2 小时', '重庆的地标商圈，晚上人最多，周边小吃密集。', 4),
+  (15, '长江索道', '观景夜景', '1 小时', '横跨长江的空中巴士，从南岸往北岸坐人少一些。', 5);
+
+-- 16. 补充景点（第 4、5 个）
+INSERT INTO destination_attraction (destination_id, name, attraction_type, duration, attr_desc, sort_order) VALUES
+  (16, '象鼻山', '自然生态', '2 小时', '桂林城徽，江边看象鼻吸水，清晨有雾时最好看。', 4),
+  (16, '东西巷', '街区市集', '2 小时', '靖江王府旁的老街，晚上灯笼亮起，小吃集中。', 5);
+
+-- 17. 补充景点（第 4、5 个）
+INSERT INTO destination_attraction (destination_id, name, attraction_type, duration, attr_desc, sort_order) VALUES
+  (17, '虎丘', '人文古迹', '半天', '斜塔与剑池，苏东坡说"到苏州不游虎丘乃憾事"。', 4),
+  (17, '七里山塘', '街区市集', '2 小时', '沿河的老街，夜里灯笼与画舫，坐船看更完整。', 5);
+
+-- 18. 补充景点（第 4、5 个）
+INSERT INTO destination_attraction (destination_id, name, attraction_type, duration, attr_desc, sort_order) VALUES
+  (18, '青岛啤酒博物馆', '人文古迹', '2 小时', '百年厂房里看酿造流程，门票含两杯原浆，别开车。', 4),
+  (18, '天主教堂', '人文古迹', '1 小时', '哥特式双塔，教堂前广场是拍婚纱的聚集地。', 5);
+
+-- 19. 补充景点（第 4、5 个）
+INSERT INTO destination_attraction (destination_id, name, attraction_type, duration, attr_desc, sort_order) VALUES
+  (19, '十里画廊', '自然生态', '半天', '小火车穿行峰林，走路单程约一小时，风景在路上。', 4),
+  (19, '黄龙洞', '自然生态', '半天', '溶洞里的石笋与地下河，洞内恒温，夏天很凉快。', 5);
+
+-- 20. 补充景点（第 4、5 个）
+INSERT INTO destination_attraction (destination_id, name, attraction_type, duration, attr_desc, sort_order) VALUES
+  (20, '玉门关', '人文古迹', '半天', '"春风不度玉门关"的汉代关隘，戈壁风大，帽子要拿稳。', 4),
+  (20, '沙洲夜市', '街区市集', '2 小时', '烤肉、杏皮水与手工艺品，晚上十点最热闹。', 5);

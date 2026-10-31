@@ -34,7 +34,16 @@ const DetailPage = {
     // 没有景点数据时返回空数组，模板里整块不渲染。
     const itinerary = computed(() => {
       const list = (item.value && item.value.attractions) || [];
-      return list.slice(0, 3).map((a, i) => ({ no: i + 1, item: a }));
+      const days = [];
+      // 每天排 2 个去处：第一个上午、第二个下午；夜景类直接标晚上
+      for (let i = 0; i < list.length; i += 2) {
+        const items = list.slice(i, i + 2).map((a, idx) => ({
+          ...a,
+          slot: a.type === '观景夜景' ? '晚上' : (idx === 0 ? '上午' : '下午'),
+        }));
+        days.push({ no: days.length + 1, items });
+      }
+      return days;
     });
 
     return { item, loading, error, bg, store, planWithAi, itinerary };
@@ -77,16 +86,25 @@ const DetailPage = {
             <!-- 景点数据在库里每个目的地都有 3 条，正好排成 3 天；万一是空的就整块不显示 -->
             <template v-if="itinerary.length">
               <h2>参考行程</h2>
+              <p class="timeline-tip">
+                按 {{ itinerary.length }} 天排，每天 2 个去处；顺序和强度可以按体力、交通自己调
+              </p>
               <div class="timeline">
                 <div class="timeline-item" v-for="day in itinerary" :key="day.no">
                   <span class="timeline-dot"></span>
                   <div class="timeline-head">
                     <span class="day">第 {{ day.no }} 天</span>
-                    <span class="type-tag" v-if="day.item.type">{{ day.item.type }}</span>
-                    <span class="time">{{ day.item.time }}</span>
+                    <span class="time">{{ day.items.length }} 个去处</span>
                   </div>
-                  <div class="timeline-title">{{ day.item.name }}</div>
-                  <p>{{ day.item.desc }}</p>
+                  <div class="timeline-slot" v-for="a in day.items" :key="a.name">
+                    <div class="slot-head">
+                      <span class="slot-label">{{ a.slot }}</span>
+                      <span class="slot-name">{{ a.name }}</span>
+                      <span class="type-tag" v-if="a.type">{{ a.type }}</span>
+                      <span class="slot-time">{{ a.time }}</span>
+                    </div>
+                    <p>{{ a.desc }}</p>
+                  </div>
                 </div>
               </div>
             </template>
