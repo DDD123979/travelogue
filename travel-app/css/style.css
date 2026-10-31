@@ -1944,3 +1944,372 @@ textarea.ai-input {
   color: var(--text-secondary);
   line-height: 1.75;
 }
+/* ============================================================
+ * 主题：科技深色像素风
+ * 做法：先覆盖 :root 的调色板变量（大部分组件自动跟着变），
+ *       再把写死白色的卡片 / 输入框 / 弹层逐个改成暗面，
+ *       最后叠加网格底纹、扫描线、硬边框和霓虹光。
+ * 想微调：改开头的几个变量即可，不用碰下面几百行。
+ * ============================================================ */
+:root {
+  --bg: #070b10;              /* 页面底色 */
+  --surface: #0e1620;         /* 卡片 / 面板 */
+  --surface-2: #0a1119;       /* 更暗一层（输入框、表格） */
+  --primary: #35e08f;         /* 霓虹薄荷绿：主色 */
+  --primary-light: rgba(53, 224, 143, 0.12);
+  --primary-dim: rgba(53, 224, 143, 0.35);
+  --text: #d9e6ee;
+  --text-secondary: #93a7b5;
+  --text-muted: #5d7382;
+  --border: #1c2b38;
+  --border-strong: #2a4256;
+  --bg-soft: #0b131b;
+  --radius: 2px;              /* 像素风：几乎不要圆角 */
+  --shadow-sm: 0 0 0 1px #05080c, 2px 2px 0 #05080c;
+  --shadow-md: 0 0 0 1px #05080c, 4px 4px 0 #05080c;
+  --font-pixel: "Cascadia Mono", "JetBrains Mono", Consolas, "Courier New", monospace;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: var(--font-pixel);
+  /* 像素网格：极淡的经纬线，只在背景里透出来 */
+  background-image:
+    linear-gradient(rgba(53, 224, 143, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(53, 224, 143, 0.045) 1px, transparent 1px),
+    radial-gradient(900px 500px at 50% -10%, rgba(53, 224, 143, 0.10), transparent 70%);
+  background-size: 32px 32px, 32px 32px, 100% 100%;
+  background-attachment: fixed;
+}
+
+/* CRT 扫描线：整屏一层细横纹，非常淡，只加质感不挡内容 */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9000;
+  background: repeating-linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.022) 0px,
+    rgba(255, 255, 255, 0.022) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+}
+
+h1, h2, h3, .page-title, .section-head h2, .logo, .rank-title a, .region-head h3 {
+  font-family: var(--font-pixel);
+  letter-spacing: 0.02em;
+}
+
+.page-title { color: var(--text); }
+.page-title::before {
+  content: '> ';
+  color: var(--primary);
+  opacity: 0.85;
+}
+
+/* ---------- 顶栏 ---------- */
+.site-header {
+  background: rgba(7, 11, 16, 0.92);
+  border-bottom: 2px solid var(--border);
+  backdrop-filter: blur(6px);
+}
+
+.header-inner { border: 0; }
+
+.logo { color: var(--text); }
+.logo-mark {
+  border-radius: 0;
+  background: var(--primary);
+  color: #04140c;
+  box-shadow: 3px 3px 0 #05080c;
+}
+
+.nav-link {
+  border-radius: 0;
+  color: var(--text-secondary);
+  border: 2px solid transparent;
+}
+
+.nav-link:hover {
+  color: var(--primary);
+  background: var(--primary-light);
+  border-color: var(--primary-dim);
+}
+
+.nav-link.active {
+  color: #04140c;
+  background: var(--primary);
+  border-color: var(--primary);
+  box-shadow: 0 0 14px rgba(53, 224, 143, 0.45);
+}
+
+.user-chip {
+  border-radius: 0;
+  border: 2px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+}
+
+.user-chip:hover { border-color: var(--primary-dim); }
+.user-avatar { border-radius: 0; background: var(--primary); color: #04140c; }
+
+.user-dropdown {
+  border-radius: 0;
+  border: 2px solid var(--border-strong);
+  background: var(--surface);
+  box-shadow: 6px 6px 0 #05080c;
+}
+
+.dropdown-item { color: var(--text-secondary); border-radius: 0; }
+.dropdown-item:hover { background: var(--primary-light); color: var(--primary); }
+.dropdown-sep { background: var(--border); }
+.dropdown-name { color: var(--text); }
+
+/* ---------- 通用面板块 ---------- */
+.card,
+.region-item,
+.rank-item,
+.side-card,
+.type-side,
+.ai-form,
+.ai-output,
+.cat-chip,
+.attraction-item,
+.hl-box,
+.region-hl {
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: 0;
+  color: var(--text);
+  box-shadow: var(--shadow-sm);
+}
+
+.card:hover,
+.region-item:hover,
+.rank-item:hover,
+.cat-chip:hover {
+  border-color: var(--primary-dim);
+  box-shadow: var(--shadow-md), 0 0 18px rgba(53, 224, 143, 0.16);
+}
+
+/* 卡片上的文字本来就压在照片上，保持浅色 */
+.card-overlay { color: #eef6f2; }
+.card .tag { border-radius: 0; }
+
+/* ---------- 分区标题 / 链接 ---------- */
+.section-head a,
+.region-more,
+.page-link,
+.type-dests a:hover { color: var(--primary); }
+.section-sub { color: var(--text-muted); }
+
+/* ---------- 表单控件 ---------- */
+input,
+textarea,
+select,
+.filter-search,
+.ai-input {
+  background: var(--surface-2) !important;
+  color: var(--text) !important;
+  border: 2px solid var(--border) !important;
+  border-radius: 0 !important;
+  font-family: var(--font-pixel);
+}
+
+input::placeholder,
+textarea::placeholder { color: var(--text-muted); }
+
+input:focus,
+textarea:focus,
+select:focus,
+.filter-search:focus {
+  outline: none !important;
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 0 3px rgba(53, 224, 143, 0.15) !important;
+}
+
+/* ---------- 按钮 ---------- */
+.btn {
+  border-radius: 0;
+  border: 2px solid var(--border-strong);
+  font-family: var(--font-pixel);
+  letter-spacing: 0.04em;
+}
+
+.btn-primary {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #04140c;
+  box-shadow: 0 0 16px rgba(53, 224, 143, 0.35), 3px 3px 0 #05080c;
+}
+
+.btn-primary:hover {
+  background: #4cf0a2;
+  box-shadow: 0 0 22px rgba(53, 224, 143, 0.55), 3px 3px 0 #05080c;
+}
+
+.btn-outline {
+  background: transparent;
+  border-color: var(--border-strong);
+  color: var(--text-secondary);
+}
+
+.btn-outline:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: var(--primary-light);
+}
+
+/* ---------- 筛选 / 标签页 ---------- */
+.filter-tab,
+.rank-tab {
+  background: var(--surface-2);
+  border: 2px solid var(--border);
+  border-radius: 0;
+  color: var(--text-secondary);
+}
+
+.filter-tab:hover,
+.rank-tab:hover { border-color: var(--primary-dim); color: var(--primary); }
+
+.filter-tab.active,
+.rank-tab.active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #04140c;
+  box-shadow: 0 0 14px rgba(53, 224, 143, 0.4);
+}
+
+/* ---------- 详情页 ---------- */
+.detail-hero { border-radius: 0; border: 2px solid var(--border); }
+.detail-hero .en,
+.detail-hero .sub { color: rgba(255, 255, 255, 0.8); }
+
+.timeline::before { background: linear-gradient(180deg, var(--primary) 0%, transparent 100%); }
+.timeline-dot { box-shadow: 0 0 0 4px rgba(53, 224, 143, 0.14), 0 0 12px rgba(53, 224, 143, 0.6); }
+.timeline-head .day { color: var(--primary); }
+.timeline-title { color: var(--text); }
+
+.type-tag,
+.slot-label,
+.type-pill {
+  border-radius: 0;
+  background: var(--primary-light);
+  color: var(--primary);
+  border: 1px solid var(--primary-dim);
+}
+
+.timeline-slot + .timeline-slot { border-top-color: var(--border); }
+
+.hl-box,
+.region-hl { border-left: 3px solid var(--primary); }
+
+.hl-badge {
+  background: var(--primary);
+  color: #04140c;
+  border-radius: 0;
+}
+
+/* ---------- 排行页 ---------- */
+.rank-no { border-radius: 0; border: 2px solid var(--border); background: var(--surface-2); }
+.rank-no.no-1 { border-color: #f5c451; color: #f5c451; background: rgba(245, 196, 81, 0.1); }
+.rank-no.no-2 { border-color: #b8c4d0; color: #b8c4d0; background: rgba(184, 196, 208, 0.1); }
+.rank-no.no-3 { border-color: #d08a5a; color: #d08a5a; background: rgba(208, 138, 90, 0.1); }
+.rank-score { color: var(--primary); }
+
+/* ---------- 侧边类型栏 ---------- */
+.type-head { color: var(--text-secondary); border-radius: 0; }
+.type-head:hover { background: var(--primary-light); color: var(--primary); }
+.type-group.active .type-head {
+  background: var(--primary-light);
+  color: var(--primary);
+  box-shadow: inset 3px 0 0 var(--primary);
+}
+.type-num { color: var(--text-muted); }
+.type-toggle { border-radius: 0; color: var(--text-muted); }
+.type-dests { border-left-color: var(--border); }
+.type-dests a { color: var(--text-secondary); }
+
+/* ---------- 页脚 / 空态 ---------- */
+.site-footer {
+  background: transparent;
+  border-top: 2px solid var(--border);
+  color: var(--text-muted);
+}
+
+.empty { color: var(--text-muted); }
+.empty .icon { filter: saturate(0.8); }
+
+/* 滚动条也做成像素块 */
+::-webkit-scrollbar { width: 12px; height: 12px; }
+::-webkit-scrollbar-track { background: var(--surface-2); }
+::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border: 2px solid var(--surface-2);
+  border-radius: 0;
+}
+::-webkit-scrollbar-thumb:hover { background: var(--primary-dim); }
+
+::selection { background: var(--primary); color: #04140c; }
+/* ---------- 残留浅色修正（登录页 / 设置页 / 开关） ---------- */
+.auth-page { background: transparent; }
+
+.auth-card,
+.settings-card {
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: 0;
+  box-shadow: var(--shadow-md);
+  color: var(--text);
+}
+
+.auth-tab {
+  border-radius: 0;
+  color: var(--text-secondary);
+  border: 2px solid transparent;
+}
+
+.auth-tab.active {
+  background: var(--primary);
+  color: #04140c;
+  border-color: var(--primary);
+  box-shadow: 0 0 12px rgba(53, 224, 143, 0.35);
+}
+
+.auth-error {
+  background: rgba(255, 92, 92, 0.12);
+  border: 1px solid rgba(255, 92, 92, 0.4);
+  color: #ff9b9b;
+  border-radius: 0;
+}
+
+.auth-brand h1,
+.auth-brand p { color: var(--text); }
+
+/* 开关：关的时候是暗槽，开的时候是霓虹色 */
+.switch { background: #16222e; border: 1px solid var(--border); border-radius: 2px; }
+.switch span { background: #8fa3b0; border-radius: 1px; }
+.switch.on { background: var(--primary); border-color: var(--primary); }
+.switch.on span { background: #04140c; }
+
+/* 滑杆轨道 */
+.range { background: #16222e; }
+.range::-webkit-slider-thumb { background: var(--primary); border-radius: 0; box-shadow: 0 0 10px rgba(53, 224, 143, 0.5); }
+.range::-moz-range-thumb { background: var(--primary); border-radius: 0; border: 0; }
+
+.setting-row { border-top: 1px solid var(--border); }
+.setting-row .title { color: var(--text); }
+
+.dropdown-item.danger:hover { background: rgba(255, 92, 92, 0.12); color: #ff9b9b; }
+
+/* 输入框自动填充时别把背景刷成白的 */
+input:-webkit-autofill,
+input:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--text);
+  -webkit-box-shadow: 0 0 0 1000px var(--surface-2) inset;
+  caret-color: var(--text);
+}
