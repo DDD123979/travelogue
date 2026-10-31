@@ -3015,3 +3015,21 @@ input:-webkit-autofill:focus {
 
 .comment-form .ai-input { flex: 1; min-width: 0; }
 .comment-form .btn { flex: none; }
+/* 用户名旁边的小「修改」按钮 */
+.name-edit {
+  margin-left: 8px;
+  padding: 1px 8px;
+  border: 1px solid var(--border-strong);
+  border-radius: 0;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: calc(11px * var(--fs));
+  cursor: pointer;
+  vertical-align: middle;
+}
+
+.name-edit:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: var(--primary-light);
+}

@@ -103,6 +103,19 @@ public class AuthController {
         return java.util.Map.of("message", "密码已更新");
     }
 
+    /** 修改用户名：成功后作废旧 token，下发一个新的（token 里绑的是用户名） */
+    @PostMapping("/username")
+    public AuthResponse changeUsername(
+            @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorization,
+            @RequestBody UsernameRequest request) {
+        String oldName = requireLogin(authorization);
+        String newName = userService.changeUsername(oldName, request.getNewUsername(), request.getPassword());
+        tokenService.revoke(authorization);
+        String token = tokenService.issue(newName);
+        User user = userService.findByUsername(newName);
+        return new AuthResponse(newName, token, user == null ? "" : user.getAvatar());
+    }
+
     /** 忘记密码第一步：生成验证码 */
     @PostMapping("/forgot")
     public Map<String, String> forgot(@RequestBody ForgotRequest request) {

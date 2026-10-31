@@ -396,6 +396,23 @@ const api = {
     return res.json();
   },
 
+  /**
+   * 修改用户名：需要当前密码。后端会作废旧 token 并下发新的，
+   * 这里顺手把本地会话一起换掉，避免下次请求 401。
+   */
+  async changeUsername(newUsername, password) {
+    const data = await request('/api/auth/username', {
+      method: 'POST',
+      body: JSON.stringify({ newUsername, password }),
+    });
+    if (data.token) {
+      localStorage.setItem(SESSION_KEY, JSON.stringify({
+        username: data.username, token: data.token, avatar: data.avatar || '',
+      }));
+    }
+    return data;
+  },
+
   /** 忘记密码第一步：请求验证码（演示环境后端会直接把 code 返回） */
   forgotPassword(username) {
     return request('/api/auth/forgot', {

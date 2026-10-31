@@ -13,6 +13,11 @@ import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.util.Locale;
+import com.youji.travel.mapper.TravelPostMapper;
+import com.youji.travel.mapper.PostCommentMapper;
+import com.youji.travel.mapper.PostLikeMapper;
+import com.youji.travel.mapper.PostFavoriteMapper;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * 用户注册与登录。
@@ -37,13 +42,23 @@ public class UserService {
     private static final String FAIL_KEY_PREFIX = "youji:login:fail:";
 
     private final UserMapper userMapper;
+    private final TravelPostMapper postMapper;
+    private final PostCommentMapper commentMapper;
+    private final PostLikeMapper likeMapper;
+    private final PostFavoriteMapper favoriteMapper;
     private final StringRedisTemplate redis;
 
     /** 无状态、线程安全，直接持有即可；不必引 spring-boot-starter-security */
     private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-    public UserService(UserMapper userMapper, StringRedisTemplate redis) {
+    public UserService(UserMapper userMapper, StringRedisTemplate redis,
+                       TravelPostMapper postMapper, PostCommentMapper commentMapper,
+                       PostLikeMapper likeMapper, PostFavoriteMapper favoriteMapper) {
         this.userMapper = userMapper;
+        this.postMapper = postMapper;
+        this.commentMapper = commentMapper;
+        this.likeMapper = likeMapper;
+        this.favoriteMapper = favoriteMapper;
         this.redis = redis;
     }
 
@@ -152,6 +167,52 @@ public class UserService {
         user.setPasswordHash(passwordEncoder.encode(newPassword));
         userMapper.updateById(user);
         redis.delete(RESET_KEY + name);
+    }
+
+    /**
+     * 修改用户名：需要当前密码确认。
+     * 用户名是帖子、评论、点赞、收藏里的作者标识，所以要在同一张事务里级联更新，
+     * 否则改名后旧内容会变成「查无此人」。
+     */
+    @Transactional
+    public String changeUsername(String oldName, String newName, String password) {
+        User user = findByUsername(oldName);
+        if (user == null) {
+            throw ApiException.unauthorized("登录状态已失效，请重新登录");
+        }
+        if (password == null || !passwordEncoder.matches(password, user.getPasswordHash())) {
+            throw ApiException.badRequest("密码不正确");
+        }
+
+        String name = newName == null ? "" : newName.trim();
+        if (!name.matches("^[\\w\\u4e00-\\u9fa5]{3,20}$")) {
+            throw ApiException.badRequest("用户名 3-20 位，只能用中英文、数字和下划线");
+        }
+        if (name.equals(oldName)) {
+            throw ApiException.badRequest("新用户名和当前一样");
+        }
+        if (findByUsername(name) != null) {
+            throw ApiException.conflict("这个用户名已经被占用了");
+        }
+
+        user.setUsername(name);
+        userMapper.updateById(user);
+
+        // 级联：帖子 / 评论 / 点赞 / 收藏
+        postMapper.update(null, com.baomidou.mybatisplus.core.toolkit.Wrappers.<com.youji.travel.entity.TravelPost>lambdaUpdate()
+                .eq(com.youji.travel.entity.TravelPost::getUsername, oldName)
+                .set(com.youji.travel.entity.TravelPost::getUsername, name));
+        commentMapper.update(null, com.baomidou.mybatisplus.core.toolkit.Wrappers.<com.youji.travel.entity.PostComment>lambdaUpdate()
+                .eq(com.youji.travel.entity.PostComment::getUsername, oldName)
+                .set(com.youji.travel.entity.PostComment::getUsername, name));
+        likeMapper.update(null, com.baomidou.mybatisplus.core.toolkit.Wrappers.<com.youji.travel.entity.PostLike>lambdaUpdate()
+                .eq(com.youji.travel.entity.PostLike::getUsername, oldName)
+                .set(com.youji.travel.entity.PostLike::getUsername, name));
+        favoriteMapper.update(null, com.baomidou.mybatisplus.core.toolkit.Wrappers.<com.youji.travel.entity.PostFavorite>lambdaUpdate()
+                .eq(com.youji.travel.entity.PostFavorite::getUsername, oldName)
+                .set(com.youji.travel.entity.PostFavorite::getUsername, name));
+
+        return name;
     }
 
     /** 更新头像地址（文件由 UploadService 保存，这里只存地址） */
