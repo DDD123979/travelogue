@@ -79,6 +79,34 @@ const store = reactive({
   },
 });
 
+/* ---------- 图片查看器（全站共用，支持左右滑动） ---------- */
+// 任何页面点开帖子里的图都走这里：社区、我的主页共用一套状态和弹层
+const viewer = reactive({
+  open: false,
+  images: [],
+  index: 0,
+});
+
+function openViewer(images, index = 0) {
+  if (!images || !images.length) return;
+  viewer.images = images;
+  viewer.index = Math.max(0, Math.min(index, images.length - 1));
+  viewer.open = true;
+  document.body.style.overflow = 'hidden';   // 打开时锁住背景滚动
+}
+
+function closeViewer() {
+  viewer.open = false;
+  document.body.style.overflow = '';
+}
+
+function viewerStep(delta) {
+  if (!viewer.open) return;
+  const n = viewer.images.length;
+  // 循环切换：最后一张往后滑回到第一张
+  viewer.index = (viewer.index + delta + n) % n;
+}
+
 /* ---------- 极简 hash 路由 ---------- */
 // 格式：#/destinations/3?q=成都 → { path: '/destinations/3', query: { q: '成都' } }
 function parseHash() {

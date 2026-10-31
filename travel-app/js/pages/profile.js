@@ -65,7 +65,7 @@ const ProfilePage = {
       window.open(src, '_blank');
     }
 
-    return { store, posts, loading, error, stats, avatar, remove, openImage, thumbOf, onImgError };
+    return { store, posts, loading, error, stats, avatar, remove, openImage, thumbOf, onImgError, openViewer };
   },
   template: `
     <div class="page container">
@@ -112,8 +112,8 @@ const ProfilePage = {
             <p class="post-content">{{ p.content }}</p>
 
             <div class="post-gallery" v-if="p.images.length" :class="'n' + p.images.length">
-              <img v-for="src in p.images" :key="src" :src="thumbOf(src)" alt="旅行照片"
-                loading="lazy" decoding="async" @error="onImgError($event, src)" @click="openImage(src)" />
+              <img v-for="(src, i) in p.images" :key="src" :src="thumbOf(src)" alt="旅行照片"
+                loading="lazy" decoding="async" @error="onImgError($event, src)" @click="openViewer(p.images, i)" />
             </div>
 
             <footer class="post-foot">

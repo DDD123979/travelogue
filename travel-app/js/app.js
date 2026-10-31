@@ -143,6 +143,40 @@ const App = {
       if (notifyTimer) clearInterval(notifyTimer);
     });
 
+    /** 缩略图地址：abc.jpg -> abc_thumb.jpg */
+    function thumbOf(src) {
+      return String(src).replace(/(\.[a-zA-Z0-9]+)$/, '_thumb$1');
+    }
+
+    /* ---------- 图片查看器：滑动 / 键盘 ---------- */
+    let touchStartX = 0;
+    let touchStartY = 0;
+
+    function viewerTouchStart(e) {
+      const t = e.changedTouches[0];
+      touchStartX = t.clientX;
+      touchStartY = t.clientY;
+    }
+
+    function viewerTouchEnd(e) {
+      const t = e.changedTouches[0];
+      const dx = t.clientX - touchStartX;
+      const dy = t.clientY - touchStartY;
+      // 横向位移够大、且明显大于纵向，才当成翻页，避免和竖向滚动冲突
+      if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy)) {
+        viewerStep(dx > 0 ? -1 : 1);
+      }
+    }
+
+    function onViewerKey(e) {
+      if (!viewer.open) return;
+      if (e.key === 'Escape') closeViewer();
+      else if (e.key === 'ArrowLeft') viewerStep(-1);
+      else if (e.key === 'ArrowRight') viewerStep(1);
+    }
+    onMounted(() => window.addEventListener('keydown', onViewerKey));
+    onUnmounted(() => window.removeEventListener('keydown', onViewerKey));
+
     // 展示名：有昵称用昵称，没有退回登录名
     const displayName = computed(() => {
       const u = store.user;
@@ -164,6 +198,12 @@ const App = {
       displayName,
       notices,
       openNotice,
+        viewer,
+        closeViewer,
+        viewerStep,
+        viewerTouchStart,
+        viewerTouchEnd,
+        thumbOf,
       logout,
       store,
       favCount: computed(() => store.favorites.length),
@@ -243,6 +283,23 @@ const App = {
     <footer class="site-footer" v-if="view.name !== 'login'">
       游迹 · 发现你的下一场旅行
     </footer>
+
+    <!-- 图片查看器：点帖子里的图打开，可左右滑动 -->
+    <div class="viewer-mask" v-if="viewer.open" @click.self="closeViewer">
+      <button class="viewer-close" @click="closeViewer" aria-label="关闭">×</button>
+      <button class="viewer-nav prev" v-if="viewer.images.length > 1" @click.stop="viewerStep(-1)" aria-label="上一张">‹</button>
+      <div class="viewer-stage" @touchstart="viewerTouchStart" @touchend="viewerTouchEnd">
+        <img class="viewer-img" :src="viewer.images[viewer.index]" alt="旅行照片" />
+      </div>
+      <button class="viewer-nav next" v-if="viewer.images.length > 1" @click.stop="viewerStep(1)" aria-label="下一张">›</button>
+      <div class="viewer-count" v-if="viewer.images.length > 1">
+        {{ viewer.index + 1 }} / {{ viewer.images.length }}
+      </div>
+      <div class="viewer-dots" v-if="viewer.images.length > 1">
+        <span v-for="(img, i) in viewer.images" :key="i" :class="{ on: i === viewer.index }"
+          @click.stop="viewer.index = i"></span>
+      </div>
+    </div>
 
     <!-- 社区互动通知：右下角小弹窗 -->
     <div class="toast-stack" v-if="notices && notices.length">
