@@ -42,7 +42,7 @@ public class UserService {
     /** 无状态、线程安全，直接持有即可；不必引 spring-boot-starter-security */
     private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-    public UserService(UserMapper userMapper, StringRedisTemplate redis,) {
+    public UserService(UserMapper userMapper, StringRedisTemplate redis) {
         this.userMapper = userMapper;
         this.redis = redis;
     }
