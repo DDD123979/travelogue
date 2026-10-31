@@ -48,6 +48,19 @@ const ProfilePage = {
       }
     }
 
+
+    /** 缩略图地址：abc.jpg -> abc_thumb.jpg（上传时就生成了） */
+    function thumbOf(src) {
+      return String(src).replace(/(\.[a-zA-Z0-9]+)$/, '_thumb$1');
+    }
+
+    /** 缩略图不存在时退回原图，避免破图 */
+    function onImgError(e, full) {
+      if (e && e.target && e.target.src !== full) {
+        e.target.src = full;
+      }
+    }
+
     function openImage(src) {
       window.open(src, '_blank');
     }
@@ -99,8 +112,8 @@ const ProfilePage = {
             <p class="post-content">{{ p.content }}</p>
 
             <div class="post-gallery" v-if="p.images.length" :class="'n' + p.images.length">
-              <img v-for="src in p.images" :key="src" :src="src" alt="旅行照片"
-                loading="lazy" @click="openImage(src)" />
+              <img v-for="src in p.images" :key="src" :src="thumbOf(src)" alt="旅行照片"
+                loading="lazy" decoding="async" @error="onImgError($event, src)" @click="openImage(src)" />
             </div>
 
             <footer class="post-foot">
