@@ -3,6 +3,8 @@ package com.youji.travel.controller;
 import com.youji.travel.common.ApiException;
 import com.youji.travel.dto.AuthRequest;
 import com.youji.travel.dto.AuthResponse;
+import com.youji.travel.dto.ForgotRequest;
+import com.youji.travel.dto.ResetRequest;
 import com.youji.travel.dto.UserDTO;
 import com.youji.travel.entity.User;
 import com.youji.travel.service.TokenService;
