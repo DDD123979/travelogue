@@ -229,10 +229,8 @@ const SettingsPage = {
             <img v-if="store.user && store.user.avatar" class="user-avatar lg avatar-img" :src="store.user.avatar" alt="头像" />
             <span v-else class="user-avatar lg">{{ avatar }}</span>
             <div>
-              <div class="title">
-                {{ displayName }}
-                              </div>
-              NaN
+              <div class="title">{{ displayName }}</div>
+              <div class="desc">ID {{ store.user && store.user.userNo ? store.user.userNo : '--------' }} · @{{ store.user ? store.user.username : '-' }} · 收藏 {{ store.favorites.length }} 个</div>
             </div>
           </div>
           <button class="btn btn-outline btn-sm" @click="logout">退出登录</button>
