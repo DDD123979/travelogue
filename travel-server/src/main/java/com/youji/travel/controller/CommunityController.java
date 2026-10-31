@@ -3,6 +3,7 @@ package com.youji.travel.controller;
 import com.youji.travel.common.ApiException;
 import com.youji.travel.dto.CommentDTO;
 import com.youji.travel.dto.CommentRequest;
+import com.youji.travel.dto.NotifyDTO;
 import com.youji.travel.dto.PostDTO;
 import com.youji.travel.dto.PostRequest;
 import com.youji.travel.service.PostService;
