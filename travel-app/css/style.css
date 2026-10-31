@@ -2370,3 +2370,25 @@ input:-webkit-autofill:focus {
   .type-side .type-dests { gap: 5px; }
   .type-side .type-dests a { padding: 3px 8px; }
 }
+/* 城市胶囊：文字提亮，边框跟着文字颜色走（currentColor） */
+.type-side .type-dests a {
+  color: #d6e8f2;
+  border-color: currentColor;
+  /* 边框用文字的 55% 不透明度，避免整块太抢眼；不支持 color-mix 的浏览器退回实色 */
+  border-color: color-mix(in srgb, currentColor 55%, transparent);
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.type-side .type-dests a:hover {
+  color: var(--primary);
+  border-color: var(--primary);
+  background: rgba(53, 224, 143, 0.14);
+  box-shadow: 0 0 12px rgba(53, 224, 143, 0.4), 2px 2px 0 rgba(0, 0, 0, 0.55);
+}
+
+/* 侧栏其余文字也一并提亮一档 */
+.side-title { color: #93a9b8; }
+.type-side .type-head { color: #c9dde8; }
+.type-side .type-num { color: #7d93a2; }
+.type-group.active .type-head { color: var(--primary); }
+.type-group.active .type-num { color: var(--primary); }
