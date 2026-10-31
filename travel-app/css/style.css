@@ -1864,3 +1864,34 @@ textarea.ai-input {
 @media (max-width: 560px) {
   .rank-cover { display: none; }
 }
+/* ============================================================
+ * 排行页：目的地榜 / 景点榜 切换动画
+ * mode="out-in"：旧的先淡出、新的再淡入，避免两个榜单同时占位
+ * ============================================================ */
+.rank-swap-enter-active,
+.rank-swap-leave-active {
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.rank-swap-enter-from {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.rank-swap-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+/* 设置里关掉动画（.no-anim），或系统偏好减少动效时，直接切换 */
+.no-anim .rank-swap-enter-active,
+.no-anim .rank-swap-leave-active {
+  transition: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rank-swap-enter-active,
+  .rank-swap-leave-active {
+    transition: none;
+  }
+}

@@ -85,7 +85,8 @@ const RankingPage = {
 
       <template v-else>
         <!-- 目的地榜 -->
-        <ol class="rank-list" v-if="tab === 'city'">
+        <Transition name="rank-swap" mode="out-in">
+        <ol class="rank-list" v-if="tab === 'city'" key="city">
           <li class="rank-item" v-for="(d, i) in cities" :key="d.id">
             <span class="rank-no" :class="'no-' + (i + 1)">{{ i < 3 ? medals[i] : i + 1 }}</span>
             <a
@@ -109,7 +110,7 @@ const RankingPage = {
         </ol>
 
         <!-- 景点榜 -->
-        <ol class="rank-list" v-else>
+        <ol class="rank-list" v-else key="spot">
           <li class="rank-item" v-for="(s, i) in spots" :key="s.cityId + '-' + s.name">
             <span class="rank-no" :class="'no-' + (i + 1)">{{ i < 3 ? medals[i] : i + 1 }}</span>
             <div class="rank-body">
@@ -125,6 +126,7 @@ const RankingPage = {
             </div>
           </li>
         </ol>
+        </Transition>
       </template>
     </div>
   `,
