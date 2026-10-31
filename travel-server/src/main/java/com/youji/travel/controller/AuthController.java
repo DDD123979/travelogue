@@ -101,6 +101,25 @@ public class AuthController {
         return java.util.Map.of("message", "密码已更新");
     }
 
+    /** 忘记密码第一步：生成验证码 */
+    @PostMapping("/forgot")
+    public Map<String, String> forgot(@RequestBody ForgotRequest request) {
+        String code = userService.createResetCode(request.getUsername());
+        Map<String, String> result = new java.util.HashMap<>();
+        result.put("message", "如果该账号存在，验证码已生成，5 分钟内有效");
+        if (code != null) {
+            result.put("code", code);
+        }
+        return result;
+    }
+
+    /** 忘记密码第二步：用验证码重设密码 */
+    @PostMapping("/reset")
+    public Map<String, String> reset(@RequestBody ResetRequest request) {
+        userService.resetWithCode(request.getUsername(), request.getCode(), request.getNewPassword());
+        return Map.of("message", "密码已重设，请用新密码登录");
+    }
+
     /** 忘记原密码：凭登录态直接重设，并吊销当前 token（必须用新密码重新登录） */
     @PostMapping("/password/reset")
     public java.util.Map<String, String> resetPassword(

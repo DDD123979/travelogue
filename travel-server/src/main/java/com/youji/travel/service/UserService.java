@@ -7,6 +7,8 @@ import com.youji.travel.mapper.UserMapper;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
@@ -23,6 +25,8 @@ import java.util.Locale;
  */
 @Service
 public class UserService {
+
+    private static final Logger log = LoggerFactory.getLogger(UserService.class);
 
     /** 同一用户名连续失败到这个次数就锁定 */
     private static final int MAX_LOGIN_FAILS = 5;
@@ -107,6 +111,47 @@ public class UserService {
         if (count != null && count == 1L) {
             redis.expire(key, LOGIN_LOCK);
         }
+    }
+
+    /* ---------- 忘记密码：验证码流程 ---------- */
+
+    /** 验证码在 Redis 里只活 5 分钟，且用一次就删 */
+    private static final String RESET_KEY = "youji:reset:";
+    private static final Duration RESET_TTL = Duration.ofMinutes(5);
+    private static final java.security.SecureRandom RANDOM = new java.security.SecureRandom();
+
+    /**
+     * 生成 6 位验证码并写入 Redis；用户不存在时返回 null（调用方给同样的提示，避免暴露账号是否存在）。
+     * 真实项目这里应该发邮件 / 短信，本项目没有接消息服务，验证码会写进服务端日志。
+     */
+    public String createResetCode(String username) {
+        String name = username == null ? "" : username.trim();
+        if (name.isEmpty() || findByUsername(name) == null) {
+            return null;
+        }
+        String code = String.format("%06d", RANDOM.nextInt(1000000));
+        redis.opsForValue().set(RESET_KEY + name, code, RESET_TTL);
+        log.info("重置密码验证码：{} → {}（{} 分钟内有效）", name, code, RESET_TTL.toMinutes());
+        return code;
+    }
+
+    /** 校验验证码并重设密码；成功一次后验证码立即失效 */
+    public void resetWithCode(String username, String code, String newPassword) {
+        String name = username == null ? "" : username.trim();
+        String saved = name.isEmpty() ? null : redis.opsForValue().get(RESET_KEY + name);
+        if (saved == null || code == null || !saved.equals(code.trim())) {
+            throw ApiException.badRequest("验证码不正确或已过期");
+        }
+        User user = findByUsername(name);
+        if (user == null) {
+            throw ApiException.badRequest("验证码不正确或已过期");
+        }
+        if (newPassword == null || newPassword.length() < 6) {
+            throw ApiException.badRequest("新密码至少 6 位");
+        }
+        user.setPasswordHash(passwordEncoder.encode(newPassword));
+        userMapper.updateById(user);
+        redis.delete(RESET_KEY + name);
     }
 
     /** 更新头像地址（文件由 UploadService 保存，这里只存地址） */

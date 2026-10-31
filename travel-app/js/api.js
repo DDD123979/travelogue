@@ -396,6 +396,22 @@ const api = {
     return res.json();
   },
 
+  /** 忘记密码第一步：请求验证码（演示环境后端会直接把 code 返回） */
+  forgotPassword(username) {
+    return request('/api/auth/forgot', {
+      method: 'POST',
+      body: JSON.stringify({ username }),
+    });
+  },
+
+  /** 忘记密码第二步：用用户名 + 验证码 + 新密码重设 */
+  resetWithCode(username, code, newPassword) {
+    return request('/api/auth/reset', {
+      method: 'POST',
+      body: JSON.stringify({ username, code, newPassword }),
+    });
+  },
+
   /** 忘记原密码：凭登录态直接重设，成功后服务端会吊销 token，必须重新登录 */
   resetPassword(newPassword) {
     return request('/api/auth/password/reset', {

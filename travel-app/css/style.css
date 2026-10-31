@@ -2883,3 +2883,45 @@ input:-webkit-autofill:focus {
   .modal-foot { flex-wrap: wrap; }
   .modal-foot .btn { flex: 1; }
 }
+/* ============================================================
+ * 登录页「忘记密码」
+ * ============================================================ */
+.auth-forgot-link {
+  margin-top: 12px;
+  text-align: right;
+  font-size: calc(12px * var(--fs));
+}
+
+.auth-forgot-link a { color: var(--text-muted); }
+.auth-forgot-link a:hover { color: var(--primary); text-decoration: underline; }
+
+.auth-code-row {
+  display: flex;
+  gap: 8px;
+}
+
+.auth-code-row input { flex: 1; min-width: 0; }
+.auth-code-row .btn { flex: none; white-space: nowrap; }
+
+.auth-note {
+  margin: -4px 0 6px;
+  padding: 8px 10px;
+  font-size: calc(12px * var(--fs));
+  color: var(--primary);
+  background: var(--primary-light);
+  border: 1px dashed var(--primary-dim);
+}
+
+.auth-note b {
+  font-family: var(--font-pixel);
+  letter-spacing: 0.15em;
+  font-size: calc(14px * var(--fs));
+}
+
+.auth-ok {
+  padding: 8px 10px;
+  font-size: calc(12.5px * var(--fs));
+  color: var(--primary);
+  background: var(--primary-light);
+  border-left: 3px solid var(--primary);
+}
