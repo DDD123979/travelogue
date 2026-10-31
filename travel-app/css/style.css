@@ -3065,3 +3065,26 @@ input:-webkit-autofill:focus {
 .avatar-preview img {
   image-rendering: -webkit-optimize-contrast;
 }
+/* 删帖按钮：明确成一个红调的危险操作，别再用小灰字 */
+.post-del {
+  margin-left: auto;
+  padding: 5px 14px;
+  border: 2px solid rgba(255, 120, 120, 0.45);
+  border-radius: 0;
+  background: rgba(255, 120, 120, 0.08);
+  color: #ff9b9b;
+  font-size: calc(12.5px * var(--fs));
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+}
+
+.post-del:hover {
+  border-color: #ff6b6b;
+  background: rgba(255, 107, 107, 0.18);
+  color: #ffd0d0;
+}
+
+/* 页面级错误条 */
+.page .ai-error {
+  margin: 10px 0;
+}

@@ -318,12 +318,13 @@ const CommunityPage = {
         </div>
 
         <p class="post-hint">支持 jpg / png / webp，单张不超过 5MB，最多 {{ MAX_IMAGES }} 张</p>
-        <p class="ai-error" v-if="formError">{{ formError }}</p>
 
         <button class="btn btn-primary" :disabled="!canSubmit" @click="submit">
           {{ submitting ? '发布中…' : '发布分享' }}
         </button>
       </section>
+
+      <p class="ai-error" v-if="formError">{{ formError }}</p>
 
       <div class="filter-bar">
         <div class="filter-tabs">
@@ -372,7 +373,7 @@ const CommunityPage = {
               <button class="post-action" :class="{ on: panels[p.id] && panels[p.id].open }" @click="toggleComments(p)">
                 💬 {{ p.commentCount || 0 }}
               </button>
-              <button class="post-del" v-if="isMine(p)" @click="remove(p)">删除</button>
+              <button class="post-del" v-if="isMine(p)" @click="remove(p)" title="删除这条分享">🗑 删除</button>
             </footer>
 
             <section class="post-comments" v-if="panels[p.id] && panels[p.id].open">
