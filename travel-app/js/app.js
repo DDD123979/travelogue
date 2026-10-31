@@ -82,7 +82,7 @@ const App = {
     <header class="site-header" v-if="view.name !== 'login'">
       <div class="header-inner">
         <a class="logo" href="#/">
-          <img class="logo-img" src="img/logo.jpg" alt="游迹" />
+          <img class="logo-img" src="img/logo.svg" alt="游迹" />
           <span class="logo-text">游迹</span>
         </a>
         <nav class="main-nav">
