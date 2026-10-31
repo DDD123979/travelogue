@@ -29,10 +29,12 @@ public class AuthController {
 
     private final UserService userService;
     private final TokenService tokenService;
+    private final UploadService uploadService;
 
-    public AuthController(UserService userService, TokenService tokenService) {
+    public AuthController(UserService userService, TokenService tokenService, UploadService uploadService) {
         this.userService = userService;
         this.tokenService = tokenService;
+        this.uploadService = uploadService;
     }
 
     /**
@@ -42,14 +44,14 @@ public class AuthController {
     @PostMapping("/register")
     public AuthResponse register(@RequestBody AuthRequest request) {
         User user = userService.register(request.getUsername(), request.getPassword());
-        return new AuthResponse(user.getUsername(), tokenService.issue(user.getUsername()));
+        return new AuthResponse(user.getUsername(), tokenService.issue(user.getUsername()), user.getAvatar());
     }
 
     /** 登录，失败返回 401 + {"message": "用户名或密码错误"} */
     @PostMapping("/login")
     public AuthResponse login(@RequestBody AuthRequest request) {
         User user = userService.login(request.getUsername(), request.getPassword());
-        return new AuthResponse(user.getUsername(), tokenService.issue(user.getUsername()));
+        return new AuthResponse(user.getUsername(), tokenService.issue(user.getUsername()), user.getAvatar());
     }
 
     /** 退出登录：删掉 Redis 里的 token，立即失效 */
@@ -68,6 +70,38 @@ public class AuthController {
         if (username == null) {
             throw ApiException.unauthorized("登录状态已失效，请重新登录");
         }
-        return new UserDTO(username);
+        User user = userService.findByUsername(username);
+        if (user == null) {
+            throw ApiException.unauthorized("登录状态已失效，请重新登录");
+        }
+        return new UserDTO(user.getUsername(), user.getAvatar());
+    }
+
+    /** 上传并更新头像，返回 { avatar } */
+    @PostMapping("/avatar")
+    public java.util.Map<String, String> avatar(
+            @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorization,
+            @RequestParam("file") MultipartFile file) {
+        String username = requireLogin(authorization);
+        String url = userService.updateAvatar(username, uploadService.save(file));
+        return java.util.Map.of("avatar", url);
+    }
+
+    /** 修改密码 */
+    @PostMapping("/password")
+    public java.util.Map<String, String> password(
+            @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorization,
+            @RequestBody PasswordRequest request) {
+        String username = requireLogin(authorization);
+        userService.changePassword(username, request.getOldPassword(), request.getNewPassword());
+        return java.util.Map.of("message", "密码已更新");
+    }
+
+    private String requireLogin(String authorization) {
+        String username = tokenService.resolveUsername(authorization);
+        if (username == null) {
+            throw ApiException.unauthorized("登录状态已失效，请重新登录");
+        }
+        return username;
     }
 }

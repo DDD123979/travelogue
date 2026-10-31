@@ -230,7 +230,7 @@ const api = {
     });
     // 后端注册成功会一并下发 token，存起来，刷新页面不用重新登录
     if (data.token) {
-      localStorage.setItem(SESSION_KEY, JSON.stringify({ username: data.username, token: data.token }));
+      localStorage.setItem(SESSION_KEY, JSON.stringify({ username: data.username, token: data.token, avatar: data.avatar || '' }));
     }
     return data;
   },
@@ -255,7 +255,7 @@ const api = {
     });
     // 约定后端返回 { username, token }；token 存起来供后续请求携带
     if (data.token) {
-      localStorage.setItem(SESSION_KEY, JSON.stringify({ username: data.username, token: data.token }));
+      localStorage.setItem(SESSION_KEY, JSON.stringify({ username: data.username, token: data.token, avatar: data.avatar || '' }));
     }
     return data;
   },
@@ -366,6 +366,42 @@ const api = {
     }
 
     return full;
+  },
+
+
+  /* ---------- 个人资料 ---------- */
+
+  /** 上传并更新头像，返回 { avatar } */
+  async updateAvatar(file) {
+    if (USE_MOCK) throw new Error('修改头像需要连接后端');
+    const form = new FormData();
+    form.append('file', file);
+    const res = await fetch(API_BASE + '/api/auth/avatar', {
+      method: 'POST',
+      headers: authHeaders(),
+      body: form,
+    });
+    if (res.status === 401) {
+      handleUnauthorized();
+      throw new Error('登录状态已失效，请重新登录');
+    }
+    if (!res.ok) {
+      let message = '头像上传失败';
+      try {
+        const body = await res.json();
+        if (body && body.message) message = body.message;
+      } catch (e) { /* 忽略非 JSON */ }
+      throw new Error(message);
+    }
+    return res.json();
+  },
+
+  /** 修改密码：成功后旧 token 仍然有效，不需要重新登录 */
+  changePassword(oldPassword, newPassword) {
+    return request('/api/auth/password', {
+      method: 'POST',
+      body: JSON.stringify({ oldPassword, newPassword }),
+    });
   },
 
   /* ---------- 社区：旅行分享 ---------- */

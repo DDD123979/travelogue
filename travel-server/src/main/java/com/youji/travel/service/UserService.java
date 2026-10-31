@@ -109,6 +109,36 @@ public class UserService {
         }
     }
 
+    /** 更新头像地址（文件由 UploadService 保存，这里只存地址） */
+    public String updateAvatar(String username, String avatar) {
+        User user = findByUsername(username);
+        if (user == null) {
+            throw ApiException.unauthorized("登录状态已失效，请重新登录");
+        }
+        user.setAvatar(avatar);
+        userMapper.updateById(user);
+        return avatar;
+    }
+
+    /** 修改密码：先验旧密码，再写新哈希 */
+    public void changePassword(String username, String oldPassword, String newPassword) {
+        User user = findByUsername(username);
+        if (user == null) {
+            throw ApiException.unauthorized("登录状态已失效，请重新登录");
+        }
+        if (oldPassword == null || !passwordEncoder.matches(oldPassword, user.getPasswordHash())) {
+            throw ApiException.badRequest("原密码不正确");
+        }
+        if (newPassword == null || newPassword.length() < 6) {
+            throw ApiException.badRequest("新密码至少 6 位");
+        }
+        if (newPassword.equals(oldPassword)) {
+            throw ApiException.badRequest("新密码不能和原密码相同");
+        }
+        user.setPasswordHash(passwordEncoder.encode(newPassword));
+        userMapper.updateById(user);
+    }
+
     public User findByUsername(String username) {
         if (username == null || username.isEmpty()) {
             return null;

@@ -9,4 +9,7 @@ import lombok.Data;
 public class UserDTO {
 
     private String username;
+
+    /** 头像地址，可为空串 */
+    private String avatar;
 }

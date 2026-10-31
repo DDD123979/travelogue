@@ -53,6 +53,51 @@ const SettingsPage = {
       guardRoute();
     }
 
+    /* ---------- 头像 ---------- */
+    const uploadingAvatar = ref(false);
+
+    async function onAvatar(e) {
+      const file = (e.target.files || [])[0];
+      e.target.value = '';                 // 允许重复选同一张
+      if (!file) return;
+      uploadingAvatar.value = true;
+      try {
+        const res = await api.updateAvatar(file);
+        store.user = { ...store.user, avatar: res.avatar };
+        const session = JSON.parse(localStorage.getItem(SESSION_KEY) || '{}');
+        session.avatar = res.avatar;
+        localStorage.setItem(SESSION_KEY, JSON.stringify(session));
+        flash('头像已更新');
+      } catch (err) {
+        flash(err.message);
+      } finally {
+        uploadingAvatar.value = false;
+      }
+    }
+
+    /* ---------- 改密码 ---------- */
+    const oldPw = ref('');
+    const newPw = ref('');
+    const newPw2 = ref('');
+    const savingPw = ref(false);
+
+    async function submitPw() {
+      if (savingPw.value) return;
+      if (!oldPw.value) return flash('请输入原密码');
+      if (newPw.value.length < 6) return flash('新密码至少 6 位');
+      if (newPw.value !== newPw2.value) return flash('两次输入的新密码不一致');
+      savingPw.value = true;
+      try {
+        await api.changePassword(oldPw.value, newPw.value);
+        oldPw.value = newPw.value = newPw2.value = '';
+        flash('密码已更新');
+      } catch (err) {
+        flash(err.message);
+      } finally {
+        savingPw.value = false;
+      }
+    }
+
     const avatar = computed(() =>
       store.user ? store.user.username.slice(0, 1).toUpperCase() : '?'
     );
@@ -71,6 +116,13 @@ const SettingsPage = {
       clearAll,
       logout,
       avatar,
+      uploadingAvatar,
+      onAvatar,
+      oldPw,
+      newPw,
+      newPw2,
+      savingPw,
+      submitPw,
     };
   },
   template: `
@@ -87,6 +139,35 @@ const SettingsPage = {
             </div>
           </div>
           <button class="btn btn-outline btn-sm" @click="logout">退出登录</button>
+        </div>
+      </section>
+
+      <section class="settings-card">
+        <h2>头像</h2>
+        <div class="setting-row avatar-row">
+          <div class="avatar-preview">
+            <img v-if="store.user && store.user.avatar" :src="store.user.avatar" alt="我的头像" />
+            <span v-else class="user-avatar lg">{{ avatar }}</span>
+          </div>
+          <div class="avatar-actions">
+            <label class="btn btn-outline btn-sm">
+              {{ uploadingAvatar ? '上传中…' : '更换头像' }}
+              <input type="file" accept="image/jpeg,image/png,image/webp" hidden @change="onAvatar" />
+            </label>
+            <div class="desc">支持 jpg / png / webp，建议用正方形，单张不超过 5MB</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="settings-card">
+        <h2>修改密码</h2>
+        <div class="setting-row pw-row">
+          <input class="ai-input" type="password" v-model="oldPw" placeholder="原密码" autocomplete="current-password" />
+          <input class="ai-input" type="password" v-model="newPw" placeholder="新密码（至少 6 位）" autocomplete="new-password" />
+          <input class="ai-input" type="password" v-model="newPw2" placeholder="再输一次新密码" autocomplete="new-password" />
+          <button class="btn btn-primary btn-sm" :disabled="savingPw" @click="submitPw">
+            {{ savingPw ? '保存中…' : '保存新密码' }}
+          </button>
         </div>
       </section>
 

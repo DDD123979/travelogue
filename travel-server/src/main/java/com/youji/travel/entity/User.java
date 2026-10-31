@@ -25,5 +25,8 @@ public class User {
     /** BCrypt 哈希，不存明文 */
     private String passwordHash;
 
+    /** 头像图片地址（/uploads/xxx.jpg），空串表示还没设置 */
+    private String avatar;
+
     private LocalDateTime createdAt;
 }

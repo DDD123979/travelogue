@@ -16,4 +16,7 @@ public class AuthResponse {
     private String username;
 
     private String token;
+
+    /** 头像地址，前端直接拿去渲染，省一次请求 */
+    private String avatar;
 }

@@ -105,14 +105,16 @@ const App = {
               aria-haspopup="menu"
               :aria-expanded="menuOpen"
             >
-              <span class="user-avatar">{{ avatar }}</span>
+              <img v-if="store.user && store.user.avatar" class="user-avatar avatar-img" :src="store.user.avatar" alt="头像" />
+              <span v-else class="user-avatar">{{ avatar }}</span>
               <span class="user-name">{{ store.user.username }}</span>
               <span class="caret">▾</span>
             </button>
 
             <div class="user-dropdown" v-if="menuOpen" @click.stop>
               <div class="dropdown-head">
-                <span class="user-avatar lg">{{ avatar }}</span>
+                <img v-if="store.user && store.user.avatar" class="user-avatar lg avatar-img" :src="store.user.avatar" alt="头像" />
+                  <span v-else class="user-avatar lg">{{ avatar }}</span>
                 <div>
                   <div class="dropdown-name">{{ store.user.username }}</div>
                   <div class="dropdown-sub">已登录 · 收藏 {{ favCount }} 个</div>
