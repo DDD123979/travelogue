@@ -28,10 +28,10 @@ const HomePage = {
       } finally {
         loading.value = false;
       }
-      // 首页一打开：选中并展开「全部」，先把 20 个城市都铺出来
+      // 首页一打开：选中「全部」（右侧铺满所有城市），但侧栏默认收起城市名，保持紧凑
       if (!activeType.value && groups.value.length) {
         activeType.value = '全部';
-        expanded.value['全部'] = true;
+        expanded.value['全部'] = false;
       }
     });
 
