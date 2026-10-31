@@ -161,6 +161,9 @@ const App = {
       toggleMenu,
       closeMenu,
       avatar,
+      displayName,
+      notices,
+      openNotice,
       logout,
       store,
       favCount: computed(() => store.favorites.length),
@@ -242,7 +245,7 @@ const App = {
     </footer>
 
     <!-- 社区互动通知：右下角小弹窗 -->
-    <div class="toast-stack" v-if="notices.length">
+    <div class="toast-stack" v-if="notices && notices.length">
       <div class="toast" v-for="n in notices" :key="n.id" @click="openNotice">
         <span class="toast-kind" :class="'k-' + n.kind">
           {{ n.kind === 'like' ? '❤️' : (n.kind === 'favorite' ? '⭐' : '💬') }}

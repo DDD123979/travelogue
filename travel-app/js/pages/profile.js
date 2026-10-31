@@ -65,7 +65,7 @@ const ProfilePage = {
       window.open(src, '_blank');
     }
 
-    return { store, posts, loading, error, stats, avatar, remove, openImage };
+    return { store, posts, loading, error, stats, avatar, remove, openImage, thumbOf, onImgError };
   },
   template: `
     <div class="page container">

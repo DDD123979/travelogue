@@ -282,6 +282,7 @@ const CommunityPage = {
       like,
       favorite,
       toggleFavOnly,
+      reload,
       panelOf,
       toggleComments,
       addComment,
