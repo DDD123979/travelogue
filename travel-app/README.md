@@ -17,7 +17,7 @@ travel-app/
 │   ├── lib/
 │   │   └── markdown.js     # AI 输出的 Markdown 转 HTML（先转义，防 XSS）
 │   ├── pages/              # 一个页面一个文件
-│   │   ├── home.js  list.js  detail.js  booking.js  orders.js
+│   │   ├── home.js  list.js  detail.js  favorites.js
 │   │   └── favorites.js  settings.js  login.js  ai.js
 │   └── app.js              # 根组件（导航 + 路由出口）与挂载
 └── lib/
@@ -124,7 +124,7 @@ travel-app/
 
 - **未登录**：无论打开哪个地址（含首次打开、刷新、直接输入深链），一律重定向到 `#/login`，不会先闪出首页。
 - **已登录**：正常访问各页面；误入 `#/login` 会被送回首页 `#/`。
-- 守卫是**白名单**式：只放行 `login`，其余一律要求登录。所以新增页面（如 `#/booking`、`#/orders`）不用改守卫代码，自动就是需要登录的。
+- 守卫是**白名单**式：只放行 `login`，其余一律要求登录。所以新增页面（如 `#/favorites`）不用改守卫代码，自动就是需要登录的。
 - 守卫重定向使用 `location.replace`，不产生可回退的历史记录，点浏览器「后退」不会退回登录页。
 - 登录状态存在 localStorage 的 `youji_session`，关闭浏览器后再次打开仍然保持登录；点右上角用户中心里的「退出登录」后立即回到登录页。
 
@@ -225,7 +225,6 @@ Content-Type: application/json
 
 
 > **可订日期是同样的三处同步**：区间为「今天 ~ 今天 + 2 个月」，实现在
-> `BookingService.MAX_MONTHS_AHEAD`（后端，权威）、`js/api.js` 的 `maxCheckInDate()`（mock 校验）、
 > Java 的 `plusMonths` 则夹到月末（→ 02-28），每年的 12/29~12/31 都会对不上。
 > `addMonths()` 里那段手写的日期夹取就是为这个存在的，别改成 setMonth。
 
