@@ -13,8 +13,15 @@
 const IS_HTTP = location.protocol === 'http:' || location.protocol === 'https:';
 
 const USE_MOCK = !IS_HTTP;   // 只有 file:// 打开时才走示例数据
-// 页面本身就是后端托管的（localhost:8080）→ 用同源地址；否则指向后端默认端口
-const API_BASE = !IS_HTTP ? '' : (location.port === '8080' ? '' : 'http://localhost:8080');
+
+/* 后端地址怎么定：
+ *   - 页面由后端自己托管（线上 80/443 或 http://localhost:8080）→ 空串，走同源
+ *   - 页面由独立静态服务器托管（python -m http.server 5173 之类）→ 指向本机 8080
+ * 注意别只看「端口是不是 8080」：线上是 80 端口，那样会退化成
+ * http://localhost:8080，访客浏览器跑去请求他自己的电脑，整站接口全挂。
+ */
+const DEV_STATIC_PORTS = ['3000', '4173', '5173', '5500', '8000', '8081'];
+const API_BASE = !IS_HTTP ? '' : (DEV_STATIC_PORTS.includes(location.port) ? 'http://localhost:8080' : '');
 
 /* ---------- localStorage 的 key ----------
    这三个 key 原本声明在文件下方的「Mock 用户存储」段里，现在上移到这里：
