@@ -1241,9 +1241,6 @@ textarea.ai-input {
   .logo-mark { width: 28px; height: 28px; }
   .main-nav { gap: 2px; }
   .main-nav .nav-link { padding: 7px 10px; font-size: calc(14px * var(--fs)); }
-  /* 收藏数这一截约 30px，是压垮这段宽度的最后一根稻草。
-     收藏页入口在导航和下拉菜单里都还在，不影响功能。 */
-  .fav-count { display: none; }
 }
 
 @media (max-width: 560px) {

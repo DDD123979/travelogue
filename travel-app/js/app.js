@@ -1392,9 +1392,8 @@ const App = {
           <a class="nav-link" href="#/destinations" :class="{ active: navActive === 'destinations' }">目的地</a>
           <a class="nav-link" href="#/ai" :class="{ active: navActive === 'ai' }">AI 规划</a>
           <a class="nav-link" href="#/booking" :class="{ active: navActive === 'booking' }">预订</a>
-          <!-- 收藏数单独包一层：窄屏放不下这一截，靠 .fav-count 在 560px 断点隐藏 -->
-          <a class="nav-link" href="#/favorites" :class="{ active: navActive === 'favorites' }">收藏<span
-              class="fav-count" v-if="favCount"> ({{ favCount }})</span></a>
+
+          <!-- 收藏不再占导航位：右上角用户菜单里已经有「我的收藏」，收藏数量也在菜单头部显示 -->
 
           <!-- 用户中心：头像 + 用户名即入口，退出登录收进下拉里 -->
           <div class="user-menu" v-if="store.user">
