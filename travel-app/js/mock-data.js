@@ -35,9 +35,9 @@ const MOCK_DESTINATIONS = [
     tags: ['火锅', '大熊猫', '慢生活'],
     description: '一座把“慢”刻进日常的城市——在人民公园喝一盏盖碗茶，去巷子里涮一顿热辣火锅，再到熊猫基地看滚滚打滚。成都的松弛感，值得专程前往。',
     attractions: [
-      { name: '大熊猫繁育研究基地', type: '自然生态', time: '半天', desc: '近距离观察国宝大熊猫，建议早上前往，熊猫更活跃。' },
-      { name: '宽窄巷子', type: '街区市集', time: '2-3 小时', desc: '清代古街巷，体验老成都的茶馆文化与市井生活。' },
-      { name: '都江堰 · 青城山', type: '人文古迹', time: '一天', desc: '两千余年历史的水利工程与世界文化遗产名山。' },
+      { name: '大熊猫繁育研究基地', type: '自然生态', time: '半天', desc: '看熊猫最省心的一站，成年熊猫、幼崽和产房各有展区。熊猫上午最活跃，建议八点前后入园，避开中午集体午睡的时间。' },
+      { name: '宽窄巷子', type: '街区市集', time: '2-3 小时', desc: '由宽巷子、窄巷子、井巷子三条清代街巷组成，青砖灰瓦里塞满茶馆、采耳和小吃。适合傍晚来，坐进院子喝碗盖碗茶看人来人往。' },
+      { name: '都江堰 · 青城山', type: '人文古迹', time: '一天', desc: '一座用了两千多年仍在灌溉成都平原的水利工程，加上道教名山青城山。两地相隔不远，一天刚好：上午看鱼嘴分水，下午上山走一段。' },
     ],
   },
   {
@@ -55,9 +55,9 @@ const MOCK_DESTINATIONS = [
     tags: ['西湖', '茶山', '江南'],
     description: '从西湖十景到龙井茶山，杭州把江南的婉约揉进了日常。春天的苏堤春晓、秋天的满陇桂雨，随便挑个周末都值得去住两天。',
     attractions: [
-      { name: '西湖风景名胜区', type: '自然生态', time: '半天', desc: '环湖骑行或漫步苏堤白堤，经典十景一路串联。' },
-      { name: '灵隐寺 · 飞来峰', type: '人文古迹', time: '半天', desc: '千年古刹与五代石窟造像，清晨人少更清净。' },
-      { name: '龙井村', type: '自然生态', time: '2-3 小时', desc: '茶山步道漫步，春季可体验采茶与炒茶。' },
+      { name: '西湖风景名胜区', type: '自然生态', time: '半天', desc: '十景散在湖的四周，走路逛不完。推荐从断桥出发沿白堤到孤山，再坐船去三潭印月；清晨和雨天人最少，也最像画。' },
+      { name: '灵隐寺 · 飞来峰', type: '人文古迹', time: '半天', desc: '东晋古刹加五代石窟造像，飞来峰的石刻就在进寺路上，很多人只顾上香错过了。早上七点开门，人少清净，香火气也淡一些。' },
+      { name: '龙井村', type: '自然生态', time: '2-3 小时', desc: '西湖边上的茶山村落，春天满山采茶人。可以沿茶园步道走一圈，在农家喝一杯当季龙井，看炒茶师傅用手掌翻锅。' },
     ],
   },
   {
@@ -75,9 +75,9 @@ const MOCK_DESTINATIONS = [
     tags: ['古都', '兵马俑', '美食'],
     description: '十三朝古都，一步一历史。在城墙上骑行看落日，去兵马俑穿越回秦代，晚上以回民街的一碗泡馍收尾——古都的厚重与烟火气并存。',
     attractions: [
-      { name: '秦始皇兵马俑博物馆', type: '人文古迹', time: '半天', desc: '世界第八大奇迹，建议提前预约讲解。' },
-      { name: '西安城墙', type: '人文古迹', time: '2 小时', desc: '保存最完整的古代城垣，傍晚骑行体验最佳。' },
-      { name: '大唐不夜城', type: '观景夜景', time: '夜间', desc: '灯火璀璨的唐风街区，感受盛唐夜色。' },
+      { name: '秦始皇兵马俑博物馆', type: '人文古迹', time: '半天', desc: '三个坑看下来至少三小时，一号坑最震撼但人最多。建议先看三号坑和二号坑再回一号坑，动线顺、人少。需实名预约。' },
+      { name: '西安城墙', type: '人文古迹', time: '2 小时', desc: '明代城墙完整一圈约 13.7 公里，租辆自行车骑完要两小时。傍晚从永宁门上墙，能一路骑到日落亮灯。' },
+      { name: '大唐不夜城', type: '观景夜景', time: '夜间', desc: '一条仿唐风格的步行街，白天普通、夜里完全变样：灯光、街头表演、汉服人群。建议天黑后再来，从大雁塔北广场往南走。' },
     ],
   },
   {
@@ -95,9 +95,9 @@ const MOCK_DESTINATIONS = [
     tags: ['海岛', '潜水', '度假'],
     description: '中国最南端的热带海滨。亚龙湾的白沙滩、蜈支洲岛的潜水、后海村的日落冲浪——冬天避寒、夏天玩水，度假感直接拉满。',
     attractions: [
-      { name: '亚龙湾', type: '自然生态', time: '半天', desc: '“天下第一湾”，沙白水清，适合亲子与休闲。' },
-      { name: '蜈支洲岛', type: '自然生态', time: '一天', desc: '水质极佳的潜水胜地，水上项目丰富。' },
-      { name: '后海村', type: '自然生态', time: '半天', desc: '冲浪爱好者聚集地，日落时分尤其治愈。' },
+      { name: '亚龙湾', type: '自然生态', time: '半天', desc: '三亚沙质最细的一段海湾，水清、坡缓，适合下海。酒店多集中在湾内，公共沙滩入口有限，建议早点去占位置。' },
+      { name: '蜈支洲岛', type: '自然生态', time: '一天', desc: '需要坐船上岛，浮潜和海上项目集中在这里。上岛要趁早，十点后码头排队很长；岛上餐饮偏贵，可以自带水和零食。' },
+      { name: '后海村', type: '自然生态', time: '半天', desc: '冲浪爱好者的聚集地，浪小、适合新手，村里到处是板店和咖啡馆。傍晚坐在沙滩看冲浪的人，比景区自在。' },
     ],
   },
   {
@@ -115,9 +115,9 @@ const MOCK_DESTINATIONS = [
     tags: ['洱海', '古城', '风花雪月'],
     description: '苍山洱海间的小城故事。租一辆电动车环洱海，在喜洲看稻田与白族院落，傍晚坐在古城墙下听风——大理适合所有想停下来的人。',
     attractions: [
-      { name: '洱海生态廊道', type: '自然生态', time: '半天', desc: '骑行或自驾环海，随手一拍都是屏保。' },
-      { name: '喜洲古镇', type: '人文古迹', time: '2-3 小时', desc: '白族民居与稻田风光，破酥粑粑值得一尝。' },
-      { name: '苍山', type: '自然生态', time: '半天', desc: '乘感通索道登山，俯瞰洱海全景。' },
+      { name: '洱海生态廊道', type: '自然生态', time: '半天', desc: '沿洱海修的骑行步道，全程几十公里，最热门的是才村到喜洲一段。租电动车或自行车，随时停下来拍照，日落时最好看。' },
+      { name: '喜洲古镇', type: '人文古迹', time: '2-3 小时', desc: '白族民居保存得最完整的地方，严家大院可以看三坊一照壁的格局。镇外的稻田随季节变色，配着老墙很好拍。' },
+      { name: '苍山', type: '自然生态', time: '半天', desc: '十九峰横在洱海西侧，索道有三条，感通索道最省力。山上温差大，夏天也要带件外套；云雾天看不到洱海全景。' },
     ],
   },
   {
@@ -135,9 +135,9 @@ const MOCK_DESTINATIONS = [
     tags: ['故宫', '长城', '胡同'],
     description: '红墙金瓦与胡同烟火同框。清晨看一次天安门升旗，下午钻进胡同里喝茶，傍晚登景山俯瞰故宫全景——经典与生活感可以兼得。',
     attractions: [
-      { name: '故宫博物院', type: '人文古迹', time: '半天', desc: '明清两代皇宫，需提前 7 天实名预约。' },
-      { name: '八达岭长城', type: '人文古迹', time: '半天', desc: '“不到长城非好汉”，建议早出发避开人流。' },
-      { name: '什刹海 · 胡同', type: '街区市集', time: '2-3 小时', desc: '鼓楼一带串胡同，感受老北京的日常。' },
+      { name: '故宫博物院', type: '人文古迹', time: '半天', desc: '明清两代皇宫，中轴线走马观花也要三小时。热门时段人极多，建议午门进、神武门出，先看东西六宫再回中轴。需提前七天实名预约。' },
+      { name: '八达岭长城', type: '人文古迹', time: '半天', desc: '最经典也最方便的一段，索道和滑车都能上。想避开人流就往北八楼方向走，早上八点前到，城墙上看不到几个人。' },
+      { name: '什刹海 · 胡同', type: '街区市集', time: '2-3 小时', desc: '前海后海连成一片，岸边是酒吧和胡同院落。可以坐三轮车逛胡同，也可以自己钻进去看门墩和影壁，傍晚最热闹。' },
     ],
   },
   {
@@ -155,9 +155,9 @@ const MOCK_DESTINATIONS = [
     tags: ['海滨', '文艺', 'CityWalk'],
     description: '一座适合 City Walk 的海上花园。鼓浪屿的老别墅、环岛路的骑行海风、沙坡尾的文艺小店——节奏慢、风景好，怎么逛都舒服。',
     attractions: [
-      { name: '鼓浪屿', type: '人文古迹', time: '一天', desc: '万国建筑博览与琴岛巷弄，轮渡前往。' },
-      { name: '环岛路', type: '自然生态', time: '2-3 小时', desc: '沿海骑行绿道，一边是海一边是城。' },
-      { name: '沙坡尾', type: '街区市集', time: '2 小时', desc: '老渔港改造的文艺街区，咖啡与市集。' },
+      { name: '鼓浪屿', type: '人文古迹', time: '一天', desc: '岛上不通汽车，全靠步行。老别墅、钢琴博物馆和海边小路是重点，别只走龙头路商业街。船票要提前买，节假日一票难求。' },
+      { name: '环岛路', type: '自然生态', time: '2-3 小时', desc: '沿海公路，骑车或跑步都合适，从白城沙滩到会展中心一段风景最好。清晨和傍晚人少，中午晒得厉害。' },
+      { name: '沙坡尾', type: '街区市集', time: '2 小时', desc: '老渔港改造的街区，避风坞里停着小船，周边是咖啡馆和设计小店。适合慢慢逛，傍晚在岸边看日落。' },
     ],
   },
   {
@@ -175,9 +175,9 @@ const MOCK_DESTINATIONS = [
     tags: ['雪山', '古城', '民宿'],
     description: '玉龙雪山下的柔软时光。白天上雪山看冰川，傍晚在四方街晒太阳，夜里听一场纳西古乐——也可以哪儿都不去，就在客栈院子里发呆。',
     attractions: [
-      { name: '玉龙雪山', type: '自然生态', time: '一天', desc: '乘大索道登4506米冰川公园，记得提前订票。' },
-      { name: '丽江古城', type: '人文古迹', time: '半天', desc: '世界文化遗产，小桥流水与纳西院落。' },
-      { name: '束河古镇', type: '人文古迹', time: '半天', desc: '比大研古镇更安静，适合喝茶发呆。' },
+      { name: '玉龙雪山', type: '自然生态', time: '一天', desc: '海拔 4500 米以上的冰川公园，索道直达。上山前别剧烈运动，氧气瓶在山下买更便宜；下午云雾多，尽量上午上。' },
+      { name: '丽江古城', type: '人文古迹', time: '半天', desc: '纳西族的老城，水系穿街过巷。白天游客多，清晨七八点的石板路没人，才是它本来的样子。住宿建议选古城边缘，安静。' },
+      { name: '束河古镇', type: '人文古迹', time: '半天', desc: '比丽江古城小一半，也安静一半。青龙桥、四方街和溪边的院子值得慢走，商业化程度低一些，适合住一晚。' },
     ],
   },
   {
@@ -195,9 +195,9 @@ const MOCK_DESTINATIONS = [
     tags: ['早茶', '美食', '夜游珠江'],
     description: '“食在广州”名不虚传：早茶一盅两件、街头烧腊与糖水，从西关老骑楼一路吃到珠江新城。美食之外，还有沙面的欧式街巷与夜游珠江。',
     attractions: [
-      { name: '沙面岛', type: '人文古迹', time: '2 小时', desc: '珠江畔的欧式建筑群，适合漫步拍照。' },
-      { name: '广州塔', type: '观景夜景', time: '2-3 小时', desc: '登塔俯瞰珠江夜景，城市地标。' },
-      { name: '陈家祠', type: '人文古迹', time: '1-2 小时', desc: '岭南建筑艺术的巅峰，砖雕灰塑精美。' },
+      { name: '沙面岛', type: '人文古迹', time: '2 小时', desc: '珠江边的沙洲，保留着一百多栋欧式建筑，现在多是咖啡馆和领事馆旧址。适合散步拍照，一小时能走完。' },
+      { name: '广州塔', type: '观景夜景', time: '2-3 小时', desc: '俗称小蛮腰，登塔看珠江两岸。摩天轮和观景台分开售票，日落后一小时上塔，能看到白天转夜景的整个过程。' },
+      { name: '陈家祠', type: '人文古迹', time: '1-2 小时', desc: '清末陈氏宗族的合族祠，木雕、砖雕、陶塑密集到夸张，是岭南建筑工艺的集大成。一小时能看完，适合雨天。' },
     ],
   },
   {
@@ -215,9 +215,9 @@ const MOCK_DESTINATIONS = [
     tags: ['黄鹤楼', '樱花', '热干面'],
     description: '长江与汉水交汇处的“九省通衢”。登黄鹤楼看大江东去，三月去武大赴一场樱花雨，早上以一碗热干面开场、夜宵用小龙虾收尾——江湖气与烟火气都很足的江城。',
     attractions: [
-      { name: '黄鹤楼', type: '人文古迹', time: '2 小时', desc: '江南三大名楼之首，登楼可俯瞰长江大桥与武汉三镇。' },
-      { name: '武汉大学 · 东湖', type: '自然生态', time: '半天', desc: '三月樱花季最美，平日的珞珈山与东湖绿道也值得慢走。' },
-      { name: '户部巷 · 江汉路', type: '街区市集', time: '2-3 小时', desc: '早点一条街与百年老建筑，热干面、豆皮、鸭脖一路吃过去。' },
+      { name: '黄鹤楼', type: '人文古迹', time: '2 小时', desc: '江南三大名楼之一，现楼是 1985 年重建的。登顶能看长江大桥和武汉三镇，傍晚光线最好；楼内展览一般，重点在视野。' },
+      { name: '武汉大学 · 东湖', type: '自然生态', time: '半天', desc: '武大老斋舍和樱花道在春天最出名，平时也值得走。东湖绿道可以骑车绕湖，一圈下来半天就没了。' },
+      { name: '户部巷 · 江汉路', type: '街区市集', time: '2-3 小时', desc: '两条街连着逛：户部巷吃热干面、豆皮，江汉路看近代建筑。早上来吃早点最地道，晚上来是另一副样子。' },
     ],
   },
   {
@@ -235,9 +235,9 @@ const MOCK_DESTINATIONS = [
     tags: ['湘菜', '橘子洲', '夜生活'],
     description: '把辣和夜生活都拉到顶的城市。白天登岳麓山、去橘子洲头看湘江北去，晚上钻进坡子街一路吃到深夜——长沙的快乐来得很直接。',
     attractions: [
-      { name: '橘子洲头', type: '自然生态', time: '2 小时', desc: '湘江中的狭长洲岛，看青年艺术雕塑与两岸江景。' },
-      { name: '岳麓山 · 岳麓书院', type: '人文古迹', time: '半天', desc: '千年学府与山林步道，秋天爱晚亭一带红叶最好看。' },
-      { name: '坡子街 · 太平老街', type: '街区市集', time: '2-3 小时', desc: '小吃与夜市集中地，臭豆腐、糖油粑粑一路尝过去。' },
+      { name: '橘子洲头', type: '自然生态', time: '2 小时', desc: '湘江中间的沙洲，尽头是青年毛泽东雕像。建议坐地铁到洲头，沿江走一圈，周末晚上有焰火。' },
+      { name: '岳麓山 · 岳麓书院', type: '人文古迹', time: '半天', desc: '书院是中国古代四大书院之一，讲堂、御书楼都还在。上山可以坐索道，下来走爱晚亭一线，秋天枫叶最好。' },
+      { name: '坡子街 · 太平老街', type: '街区市集', time: '2-3 小时', desc: '长沙小吃最密集的一片，臭豆腐、糖油粑粑、口味虾都在附近。晚上八点后最热闹，也最挤。' },
     ],
   },
   {
@@ -255,9 +255,9 @@ const MOCK_DESTINATIONS = [
     tags: ['六朝古都', '梧桐', '秦淮河'],
     description: '六朝古都，也是被梧桐树包住的城市。中山陵的长阶、明孝陵的神道、入夜后秦淮河上的桨声灯影——南京的厚重里带着一点温柔。',
     attractions: [
-      { name: '夫子庙 · 秦淮河', type: '街区市集', time: '2-3 小时', desc: '夜游画舫看两岸灯火，江南贡院与乌衣巷都在附近。' },
-      { name: '中山陵 · 明孝陵', type: '人文古迹', time: '半天', desc: '钟山风景区一线串联，秋天的石象路色彩最好。' },
-      { name: '南京博物院', type: '人文古迹', time: '2-3 小时', desc: '国内三大博物馆之一，需提前预约。' },
+      { name: '夫子庙 · 秦淮河', type: '街区市集', time: '2-3 小时', desc: '夫子庙、贡院和秦淮河连在一起，夜里画舫灯船最有氛围。商业味重，想安静就早上来，看本地人在河边晨练。' },
+      { name: '中山陵 · 明孝陵', type: '人文古迹', time: '半天', desc: '中山陵免费但需预约，392 级台阶爬上去能俯瞰南京。明孝陵的石象路秋天最好，两处之间可以坐摆渡车。' },
+      { name: '南京博物院', type: '人文古迹', time: '2-3 小时', desc: '馆藏从史前到民国，民国馆整条街复原得很有意思。免费不免票，提前在公众号预约，至少留三小时。' },
     ],
   },
   {
@@ -275,9 +275,9 @@ const MOCK_DESTINATIONS = [
     tags: ['外滩', '梧桐区', 'CityWalk'],
     description: '一边是外滩的万国建筑与陆家嘴的天际线，一边是武康路、安福路的梧桐街区。上海适合用 CityWalk 的方式慢慢逛，咖啡馆和小马路永远逛不完。',
     attractions: [
-      { name: '外滩 · 陆家嘴', type: '观景夜景', time: '半天', desc: '黄浦江两岸对望，亮灯后江景最好看，可乘轮渡往返。' },
-      { name: '武康路 · 安福路', type: '街区市集', time: '2-3 小时', desc: '梧桐树下的老洋房与咖啡馆，适合散步拍照。' },
-      { name: '豫园 · 城隍庙', type: '人文古迹', time: '2 小时', desc: '明代园林与老城厢小吃，人多建议早去。' },
+      { name: '外滩 · 陆家嘴', type: '观景夜景', time: '半天', desc: '黄浦江两侧对望：西岸万国建筑，东岸摩天楼。傍晚坐轮渡过江最划算，两块钱看两岸亮灯。' },
+      { name: '武康路 · 安福路', type: '街区市集', time: '2-3 小时', desc: '梧桐树下的老洋房街区，咖啡馆、买手店和网红建筑密集。适合下午慢慢走，周末人多到需要排队。' },
+      { name: '豫园 · 城隍庙', type: '人文古迹', time: '2 小时', desc: '明代园林加庙市，豫园本身要门票，外面一圈小吃街免费但很挤。想看园林就早上开园时进，避开人流。' },
     ],
   },
   {
@@ -295,80 +295,9 @@ const MOCK_DESTINATIONS = [
     tags: ['天际线', '海滨', '科技感'],
     description: '四十多年长成的一座年轻都市，高楼与海岸线挤在同一帧画面里。白天逛华侨城创意园，傍晚去深圳湾看对岸香港的灯火，夜里再上平安金融中心俯瞰全城。',
     attractions: [
-      { name: '深圳湾公园', type: '自然生态', time: '2 小时', desc: '沿海骑行与观鸟，傍晚可看对岸香港的灯火。' },
-      { name: '平安金融中心 · 市民中心', type: '观景夜景', time: '2-3 小时', desc: '福田中轴线的高楼群，云际观光层可俯瞰全城。' },
-      { name: '大鹏所城 · 西涌', type: '人文古迹', time: '一天', desc: '古城与海滩一线，是深圳少见的慢节奏去处。' },
+      { name: '深圳湾公园', type: '自然生态', time: '2 小时', desc: '红树林海岸线，沿海骑行道一直通到蛇口。冬天有候鸟，傍晚能看对岸香港的灯火，适合跑步和放空。' },
+      { name: '平安金融中心 · 市民中心', type: '观景夜景', time: '2-3 小时', desc: '福田中轴线的高楼群，平安金融中心云际观光层可俯瞰全城。日落前上去，能看到城市从白天切到夜晚。' },
+      { name: '大鹏所城 · 西涌', type: '人文古迹', time: '一天', desc: '明代海防古城加深圳最长的沙滩，一天刚好。古城里巷子安静，西涌适合下水，交通靠自驾或包车。' },
     ],
   },
-];
-
-/* ---------- 本地示例数据：酒店 ---------- */
-/*
- * 【维护约定】这份数组和 travel-server/sql/data.sql 里
- * `INSERT INTO hotel` 那 42 行必须逐字一致，改一边就要同步改另一边。
- * data.sql 文件头原先写着「由 gen-data-sql.js 生成」，但那个脚本已经不在仓库里了，
- * 现在是纯粹的手工双向同步。
- *
- * 字段名与后端 HotelDTO 完全对齐（注意简介叫 desc，不是 hotelDesc ——
- * 后端实体字段是 hotelDesc 以躲开 MySQL 的 desc 保留字，DTO 再改回 desc 给前端）。
- *
- * 价格是【每间每晚】，不是每人。人数对总价的影响体现在房间数上（每间住 2 人）。
- */
-const MOCK_HOTELS = [
-  // 1. 成都
-  { id: 1,  destinationId: 1,  name: '春熙路 · 设计民宿',   star: 4, rating: 4.7, pricePerNight: 420,  district: '春熙路',   desc: '老楼改造的小院，出门就是太古里，晚上很安静。' },
-  { id: 2,  destinationId: 1,  name: '宽窄巷子 · 川西客栈', star: 3, rating: 4.5, pricePerNight: 280,  district: '宽窄巷子', desc: '青砖木梁的川西院子，早上能吃到现做的抄手。' },
-  { id: 3,  destinationId: 1,  name: '天府广场 · 云端酒店', star: 5, rating: 4.8, pricePerNight: 760,  district: '天府广场', desc: '高层落地窗正对城市中轴，行政酒廊含早餐。' },
-  // 2. 杭州
-  { id: 4,  destinationId: 2,  name: '西湖 · 湖景度假酒店', star: 5, rating: 4.9, pricePerNight: 980,  district: '西湖景区', desc: '推窗就是湖面，清晨沿苏堤散步五分钟可达。' },
-  { id: 5,  destinationId: 2,  name: '龙井 · 茶山民宿',     star: 4, rating: 4.7, pricePerNight: 560,  district: '龙井村',   desc: '茶园环绕的独栋小楼，老板娘会泡自家新茶。' },
-  { id: 6,  destinationId: 2,  name: '武林广场 · 商务酒店', star: 4, rating: 4.5, pricePerNight: 480,  district: '武林广场', desc: '地铁 1 号线直达，去西湖只要两站路。' },
-  // 3. 西安
-  { id: 7,  destinationId: 3,  name: '钟楼 · 城墙景观酒店', star: 5, rating: 4.8, pricePerNight: 720,  district: '钟楼',     desc: '房间正对城墙，夜里亮灯之后从窗边看很震撼。' },
-  { id: 8,  destinationId: 3,  name: '回民街 · 关中客栈',   star: 3, rating: 4.4, pricePerNight: 300,  district: '回民街',   desc: '出门就是小吃街，老板会告诉你哪家泡馍地道。' },
-  { id: 9,  destinationId: 3,  name: '大雁塔 · 唐风酒店',   star: 4, rating: 4.6, pricePerNight: 460,  district: '大雁塔',   desc: '仿唐建筑，晚上步行去不夜城只要十分钟。' },
-  // 4. 三亚
-  { id: 10, destinationId: 4,  name: '亚龙湾 · 海景度假村', star: 5, rating: 4.9, pricePerNight: 1200, district: '亚龙湾',   desc: '带私家沙滩，房间阳台正对南海。' },
-  { id: 11, destinationId: 4,  name: '大东海 · 亲子酒店',   star: 4, rating: 4.6, pricePerNight: 680,  district: '大东海',   desc: '儿童泳池和托管服务齐全，适合带小孩来。' },
-  { id: 12, destinationId: 4,  name: '后海村 · 冲浪民宿',   star: 3, rating: 4.7, pricePerNight: 380,  district: '后海村',   desc: '冲浪板免费借，天台能看到日落。' },
-  // 5. 大理
-  { id: 13, destinationId: 5,  name: '洱海 · 海景客栈',     star: 4, rating: 4.8, pricePerNight: 560,  district: '才村码头',    desc: '房间正对洱海，早上有海鸥停在阳台栏杆上。' },
-  { id: 14, destinationId: 5,  name: '大理古城 · 白族院落', star: 4, rating: 4.6, pricePerNight: 420,  district: '古城人民路',  desc: '三坊一照壁的白族院子，院里有棵老桂花树。' },
-  { id: 15, destinationId: 5,  name: '双廊 · 日出民宿',     star: 3, rating: 4.5, pricePerNight: 320,  district: '双廊古镇',    desc: '落地窗朝正东，躺在床上就能看日出。' },
-  // 6. 北京
-  { id: 16, destinationId: 6,  name: '王府井 · 老城酒店',   star: 5, rating: 4.7, pricePerNight: 980,  district: '王府井',   desc: '步行到故宫东华门十五分钟。' },
-  { id: 17, destinationId: 6,  name: '什刹海 · 胡同四合院', star: 4, rating: 4.8, pricePerNight: 620,  district: '什刹海',   desc: '四合院改的，晚上能听见胡同里的自行车铃声。' },
-  { id: 18, destinationId: 6,  name: '国贸 · 高层商务酒店', star: 4, rating: 4.5, pricePerNight: 580,  district: '国贸',     desc: '地铁 1 号线与 10 号线换乘站旁边。' },
-  // 7. 厦门
-  { id: 19, destinationId: 7,  name: '鼓浪屿 · 老别墅酒店', star: 5, rating: 4.8, pricePerNight: 860,  district: '鼓浪屿',   desc: '民国老别墅改造，院子里有棵百年榕树。' },
-  { id: 20, destinationId: 7,  name: '环岛路 · 海景民宿',   star: 4, rating: 4.6, pricePerNight: 520,  district: '环岛路',   desc: '出门就是沙滩，可以借自行车骑环岛路。' },
-  { id: 21, destinationId: 7,  name: '中山路 · 骑楼客栈',   star: 3, rating: 4.4, pricePerNight: 340,  district: '中山路',   desc: '骑楼老建筑，楼下就是开了几十年的沙茶面。' },
-  // 8. 丽江
-  { id: 22, destinationId: 8,  name: '大研古城 · 纳西院落', star: 4, rating: 4.7, pricePerNight: 460,  district: '大研古城', desc: '纳西风格三合院，不挨着酒吧街，晚上很安静。' },
-  { id: 23, destinationId: 8,  name: '束河 · 溪边客栈',     star: 3, rating: 4.6, pricePerNight: 300,  district: '束河古镇', desc: '院里有溪水流过，比大研清净得多。' },
-  { id: 24, destinationId: 8,  name: '玉龙雪山 · 观景酒店', star: 5, rating: 4.8, pricePerNight: 780,  district: '白沙古镇', desc: '天气好的时候在房间里就能看到雪山主峰。' },
-  // 9. 广州
-  { id: 25, destinationId: 9,  name: '珠江新城 · 云端酒店',   star: 5, rating: 4.7, pricePerNight: 780, district: '珠江新城', desc: '高层能俯瞰珠江夜景和小蛮腰。' },
-  { id: 26, destinationId: 9,  name: '上下九 · 西关骑楼客栈', star: 4, rating: 4.5, pricePerNight: 420, district: '上下九',   desc: '骑楼老宅改造，出门就是小吃一条街。' },
-  { id: 27, destinationId: 9,  name: '沙面 · 江畔精品酒店',   star: 4, rating: 4.6, pricePerNight: 520, district: '沙面',     desc: '欧陆风情的老租界区，安静，也很好拍。' },
-  // 10. 武汉
-  { id: 28, destinationId: 10, name: '江汉路 · 江景酒店',   star: 5, rating: 4.6, pricePerNight: 680,  district: '江汉路', desc: '正对长江，晚上能看两岸的灯光秀。' },
-  { id: 29, destinationId: 10, name: '户部巷 · 老城客栈',   star: 3, rating: 4.4, pricePerNight: 280,  district: '户部巷', desc: '步行到黄鹤楼十分钟，楼下是热干面老店。' },
-  { id: 30, destinationId: 10, name: '东湖 · 湖畔度假酒店', star: 4, rating: 4.7, pricePerNight: 520,  district: '东湖',   desc: '临湖而建，早上可以沿着湖跑一圈。' },
-  // 11. 长沙
-  { id: 31, destinationId: 11, name: '五一广场 · 设计酒店', star: 5, rating: 4.7, pricePerNight: 620,  district: '五一广场', desc: '地铁 1、2 号线换乘站旁边，去哪都方便。' },
-  { id: 32, destinationId: 11, name: '太平街 · 老巷民宿',   star: 3, rating: 4.5, pricePerNight: 300,  district: '太平街',   desc: '老街深处的院子，晚上出门就是小吃摊。' },
-  { id: 33, destinationId: 11, name: '橘子洲 · 江景酒店',   star: 4, rating: 4.6, pricePerNight: 460,  district: '橘子洲',   desc: '房间能看到湘江和橘子洲头。' },
-  // 12. 南京
-  { id: 34, destinationId: 12, name: '夫子庙 · 秦淮河景酒店', star: 5, rating: 4.7, pricePerNight: 680, district: '夫子庙', desc: '推窗就是秦淮河，晚上能看画舫来往。' },
-  { id: 35, destinationId: 12, name: '老门东 · 明清院落客栈', star: 4, rating: 4.6, pricePerNight: 440, district: '老门东', desc: '明清风格院落，青砖小瓦，出门就是老街。' },
-  { id: 36, destinationId: 12, name: '新街口 · 商务酒店',     star: 4, rating: 4.4, pricePerNight: 400, district: '新街口', desc: '地铁 1、2 号线换乘，逛街吃饭都方便。' },
-  // 13. 上海
-  { id: 37, destinationId: 13, name: '外滩 · 江景酒店',     star: 5, rating: 4.9, pricePerNight: 1100, district: '外滩',     desc: '正对陆家嘴三件套，这一片窗景是上海最贵的。' },
-  { id: 38, destinationId: 13, name: '武康路 · 老洋房民宿', star: 4, rating: 4.8, pricePerNight: 720,  district: '武康路',   desc: '梧桐区老洋房改造，楼下就是武康大楼。' },
-  { id: 39, destinationId: 13, name: '人民广场 · 商务酒店', star: 4, rating: 4.5, pricePerNight: 600,  district: '人民广场', desc: '地铁 1、2、8 号线三线换乘，去机场直达。' },
-  // 14. 深圳
-  { id: 40, destinationId: 14, name: '深圳湾 · 海景公寓酒店', star: 5, rating: 4.7, pricePerNight: 860, district: '深圳湾',   desc: '高层正对深圳湾，天气好能看到对岸的香港。' },
-  { id: 41, destinationId: 14, name: '华侨城 · 创意园酒店',   star: 4, rating: 4.6, pricePerNight: 560, district: '华侨城',   desc: '挨着创意园和美术馆，住的多是年轻人。' },
-  { id: 42, destinationId: 14, name: '大鹏所城 · 海边民宿',   star: 3, rating: 4.5, pricePerNight: 380, district: '大鹏新区', desc: '古城里的院子，步行到西涌沙滩二十分钟。' },
 ];

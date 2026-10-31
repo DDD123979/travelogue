@@ -15,8 +15,6 @@ CREATE DATABASE IF NOT EXISTS travel_db
 USE travel_db;
 
 -- 有外键依赖，先删从表
-DROP TABLE IF EXISTS booking_order;
-DROP TABLE IF EXISTS hotel;
 DROP TABLE IF EXISTS destination_attraction;
 DROP TABLE IF EXISTS destination_tag;
 DROP TABLE IF EXISTS destination;
@@ -103,19 +101,6 @@ CREATE TABLE destination_attraction (
 --   没有 image 列：酒店在页面上是文字行不是照片卡，省掉 42 张外链图片的逐条验证成本
 --     （见 api.js 里关于 Bing CDN 的那段注释）。以后要加封面，补列 + 在 HotelDTO 里多塞字段即可。
 -- ---------------------------------------------------------
-CREATE TABLE hotel (
-  id              BIGINT       NOT NULL AUTO_INCREMENT COMMENT '主键',
-  destination_id  BIGINT       NOT NULL                COMMENT '所属目的地，逻辑关联 destination.id（全项目不用外键）',
-  name            VARCHAR(60)  NOT NULL                COMMENT '酒店名。用描述性名称而非真实品牌名：本表价格是演示数据，安到真实酒店头上不合适',
-  star            TINYINT      NOT NULL DEFAULT 3      COMMENT '星级 1-5，前端渲染成 ★',
-  price_per_night INT          NOT NULL DEFAULT 0      COMMENT '每间每晚价格（元）',
-  district        VARCHAR(30)  NOT NULL DEFAULT ''     COMMENT '所在片区，如 春熙路 / 西湖景区',
-  rating          DECIMAL(2,1) NOT NULL DEFAULT 0.0    COMMENT '评分，用 DECIMAL 不用 float（float 会序列化成 4.800000190734863）',
-  hotel_desc      VARCHAR(200) NOT NULL DEFAULT ''     COMMENT '一句话简介',
-  sort_order      INT          NOT NULL DEFAULT 0      COMMENT '同一目的地内的展示顺序',
-  PRIMARY KEY (id),
-  KEY idx_destination (destination_id, sort_order)
-) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '酒店';
 
 -- ---------------------------------------------------------
 -- 预订订单
@@ -135,23 +120,3 @@ CREATE TABLE hotel (
 --
 --   金额一律 INT（整元）：没有精度问题，和 destination.price_from 的口径也一致。
 -- ---------------------------------------------------------
-CREATE TABLE booking_order (
-  id               BIGINT      NOT NULL AUTO_INCREMENT COMMENT '主键',
-  order_no         VARCHAR(24) NOT NULL                COMMENT '订单号，形如 YJ20260915482910，展示用',
-  username         VARCHAR(50) NOT NULL                COMMENT '下单用户名，逻辑关联 t_user.username',
-  destination_id   BIGINT      NOT NULL                COMMENT '目的地 ID',
-  destination_name VARCHAR(50) NOT NULL                COMMENT '目的地名称快照',
-  hotel_id         BIGINT      NOT NULL                COMMENT '酒店 ID',
-  hotel_name       VARCHAR(60) NOT NULL                COMMENT '酒店名称快照',
-  check_in         DATE        NOT NULL                COMMENT '入住日期',
-  days             INT         NOT NULL                COMMENT '入住晚数',
-  people           INT         NOT NULL                COMMENT '入住人数',
-  rooms            INT         NOT NULL                COMMENT '房间数 = ceil(人数 / 2)，每间住 2 人；下单时算好存下来，以后改规则不影响历史订单',
-  unit_price       INT         NOT NULL                COMMENT '下单时的每间每晚单价快照（元）',
-  total_amount     INT         NOT NULL                COMMENT '总价（元）= unit_price × rooms × days',
-  status           VARCHAR(10) NOT NULL DEFAULT '已预订' COMMENT '订单状态：已预订 / 已取消',
-  created_at       DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '下单时间',
-  PRIMARY KEY (id),
-  UNIQUE KEY uk_order_no (order_no),
-  KEY idx_username (username, created_at)
-) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '预订订单';

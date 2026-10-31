@@ -146,9 +146,3 @@ const AiPage = {
   `,
 };
 
-/* ---------- 预订页 ---------- */
-// 复用 AI 规划页的两栏骨架（.ai-layout / .ai-form / .ai-label / .ai-input），
-// 视觉上和 AI 页是同一套东西，不用为它新写样式。
-// 日期相关的 localDate() / addMonths() / maxCheckInDate() 来自 api.js
-// （两个文件都是普通 <script>，共享全局作用域），放在那边是因为下单校验也要用它们，
-// 一份实现两处共用才不会漂移。

@@ -30,12 +30,6 @@ const DetailPage = {
     function planWithAi() {
       go('/ai?dest=' + props.id);
     }
-
-    // 同理，跳到预订页并带上当前目的地（BookingPage 里读 query.dest 预选城市）
-    function bookNow() {
-      go('/booking?dest=' + props.id);
-    }
-
     // 用景点数据拼一个逐日行程：每天排一个景点，正好对上"建议游玩 3-4 天"的节奏。
     // 没有景点数据时返回空数组，模板里整块不渲染。
     const itinerary = computed(() => {
@@ -43,7 +37,7 @@ const DetailPage = {
       return list.slice(0, 3).map((a, i) => ({ no: i + 1, item: a }));
     });
 
-    return { item, loading, error, bg, store, planWithAi, bookNow, itinerary };
+    return { item, loading, error, bg, store, planWithAi, itinerary };
   },
   template: `
     <div class="page container">
@@ -93,12 +87,7 @@ const DetailPage = {
           </div>
 
           <aside class="side-card">
-            <div class="label">行程参考价</div>
-            <div class="price-line">
-              <b>¥{{ item.priceFrom }}</b>
-              <span style="font-size: 13px; color: var(--text-muted);">/ 人起</span>
-            </div>
-            <div class="divider"></div>
+
             <div class="label">类别</div>
             <div class="value">{{ item.category }}</div>
             <div class="label">位置</div>
@@ -107,8 +96,7 @@ const DetailPage = {
             <div class="value">{{ item.days }}</div>
             <div class="label">最佳季节</div>
             <div class="value">{{ item.bestSeason }}</div>
-            <button class="btn btn-outline" @click="planWithAi">✨ AI 生成行程</button>
-            <button class="btn btn-primary" @click="bookNow">立即预订</button>
+            <button class="btn btn-primary" @click="planWithAi">✨ 用 AI 生成行程</button>
           </aside>
         </div>
       </template>

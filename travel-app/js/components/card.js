@@ -48,7 +48,7 @@ const DestinationCard = {
           <span class="tag" v-for="t in item.tags" :key="t">{{ t }}</span>
         </div>
         <div class="price-row">
-          <span class="price"><b>¥{{ item.priceFrom }}</b>起 / {{ item.days }}</span>
+          <span class="price">建议游玩 <b>{{ item.days }}</b></span>
           <a class="tag tag-link" :href="'#/destinations/' + item.id">查看详情 →</a>
         </div>
       </div>

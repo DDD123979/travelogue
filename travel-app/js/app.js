@@ -18,8 +18,6 @@ const App = {
       if (segments[0] === 'ai') return { name: 'ai' };
       // dest 带着 query 一起走，理由和上面 detail 带 id 一样：
       // 根模板的 :key 要用它，而模板里能读到的只有 view（setup 没返回 route）
-      if (segments[0] === 'booking') return { name: 'booking', dest: route.value.query.dest || '' };
-      if (segments[0] === 'orders') return { name: 'orders' };
       if (segments[0] === 'favorites') return { name: 'favorites' };
       if (segments[0] === 'settings') return { name: 'settings' };
       return { name: 'notfound' };
@@ -31,7 +29,6 @@ const App = {
       if (segments[0] === 'favorites') return 'favorites';
       if (segments[0] === 'destinations') return 'destinations';
       if (segments[0] === 'ai') return 'ai';
-      if (segments[0] === 'booking') return 'booking';
       return '';
     });
 
@@ -78,7 +75,7 @@ const App = {
       favCount: computed(() => store.favorites.length),
     };
   },
-  components: { HomePage, ListPage, DetailPage, FavoritesPage, SettingsPage, LoginPage, AiPage, BookingPage, OrdersPage },
+  components: { HomePage, ListPage, DetailPage, FavoritesPage, SettingsPage, LoginPage, AiPage },
   template: `
     <header class="site-header" v-if="view.name !== 'login'">
       <div class="header-inner">
@@ -89,7 +86,6 @@ const App = {
           <a class="nav-link" href="#/" :class="{ active: navActive === 'home' }">首页</a>
           <a class="nav-link" href="#/destinations" :class="{ active: navActive === 'destinations' }">目的地</a>
           <a class="nav-link" href="#/ai" :class="{ active: navActive === 'ai' }">AI 规划</a>
-          <a class="nav-link" href="#/booking" :class="{ active: navActive === 'booking' }">预订</a>
 
           <!-- 收藏不再占导航位：右上角用户菜单里已经有「我的收藏」，收藏数量也在菜单头部显示 -->
 
@@ -115,7 +111,6 @@ const App = {
                   <div class="dropdown-sub">已登录 · 收藏 {{ favCount }} 个</div>
                 </div>
               </div>
-              <a class="dropdown-item" href="#/orders">我的订单</a>
               <a class="dropdown-item" href="#/favorites">我的收藏</a>
               <a class="dropdown-item" href="#/settings">设置</a>
               <div class="dropdown-sep"></div>
@@ -132,12 +127,6 @@ const App = {
       <ListPage v-else-if="view.name === 'list'" />
       <DetailPage v-else-if="view.name === 'detail'" :id="view.id" :key="view.id" />
       <AiPage v-else-if="view.name === 'ai'" />
-      <!-- :key 让它从 #/booking?dest=1 切到 #/booking?dest=2 时重新挂载，
-           setup() 才会重读 query —— 和上面 DetailPage 的 :key="view.id" 同一个道理。
-           注意只能用 view.dest，不能写 route.query.dest：setup 没有返回 route，
-           模板里读到的是 undefined，一求值就整棵树渲染失败白屏。 -->
-      <BookingPage v-else-if="view.name === 'booking'" :key="view.dest" />
-      <OrdersPage v-else-if="view.name === 'orders'" />
       <FavoritesPage v-else-if="view.name === 'favorites'" />
       <SettingsPage v-else-if="view.name === 'settings'" />
       <LoginPage v-else-if="view.name === 'login'" />

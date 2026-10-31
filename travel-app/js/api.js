@@ -30,7 +30,6 @@ const API_BASE = !IS_HTTP ? '' : (DEV_STATIC_PORTS.includes(location.port) ? 'ht
      但「先定义后使用」读起来更省心。下方原位置不要再声明一遍。） */
 const USERS_KEY = 'youji_users';        // 已注册用户列表（仅 mock 模式使用）
 const SESSION_KEY = 'youji_session';    // 当前登录用户 { username, token? }
-const ORDERS_KEY = 'youji_orders';      // 已下的订单（仅 mock 模式使用）
 
 /** 读当前会话。读不到或者存进去的不是合法 JSON 都返回 null */
 function getSession() {
@@ -130,12 +129,6 @@ function localDate(offsetDays = 0) {
   return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
 }
 
-/** "yyyy-MM-dd HH:mm"，和后端 BookingDTO.createdAt 的格式保持一致 */
-function localDateTime() {
-  const d = new Date();
-  const p = (n) => String(n).padStart(2, '0');
-  return `${localDate()} ${p(d.getHours())}:${p(d.getMinutes())}`;
-}
 
 /** 某年某月有多少天。m 是 0-11：new Date(y, m + 1, 0) 就是「下个月的第 0 天」= 本月最后一天 */
 function daysInMonth(y, m) {
@@ -164,7 +157,7 @@ function addMonths(date, months) {
   return `${ty}-${p(tm + 1)}-${p(day)}`;
 }
 
-/** 可预订的最晚入住日期 = 今天起滚动两个月，和后端 BookingService.MAX_MONTHS_AHEAD 同一口径。
+/** 可规划的最晚出发日期 = 今天起滚动两个月（AI 页用它限制日期选择）。
     【必须现算】不要把它缓存成模块级常量：它的下界（localDate()）是提交时现取的，
     上界一旦冻在页面打开那一刻，就会变成「后端允许、file:// 拒绝」这种最难受的偏差。 */
 function maxCheckInDate() {
@@ -190,32 +183,6 @@ async function mockRequest(path, options = {}) {
     return MOCK_DESTINATIONS;
   }
 
-  // 酒店：/api/hotels 全部，/api/hotels?destinationId=1 只看某个城市
-  if ((m = path.match(/^\/api\/hotels(?:\?destinationId=(\d+))?$/))) {
-    const id = m[1] ? Number(m[1]) : null;
-    // 返回浅拷贝：页面上的排序或改动不会污染模块级的示例数据本身
-    return MOCK_HOTELS.filter((h) => id === null || h.destinationId === id)
-      .map((h) => ({ ...h }));
-  }
-
-  /* 订单：真后端在这里会校验 Authorization 头，
-     mock 模式用 localStorage 里的会话顶替 —— 这也是 file:// 下唯一能有的「登录态」。 */
-  if (path === '/api/bookings' && method === 'POST') {
-    const session = getSession();
-    if (!session || !session.username) throw new Error('登录状态已失效，请重新登录');
-    return createMockBooking(session.username, body);
-  }
-  if (path === '/api/bookings') {
-    const session = getSession();
-    if (!session || !session.username) throw new Error('登录状态已失效，请重新登录');
-    return loadOrders().filter((o) => o.username === session.username);
-  }
-  if ((m = path.match(/^\/api\/bookings\/(\d+)\/cancel$/)) && method === 'POST') {
-    const session = getSession();
-    if (!session || !session.username) throw new Error('登录状态已失效，请重新登录');
-    return cancelMockBooking(session.username, Number(m[1]));
-  }
-
   throw new Error(`接口不存在：${path}`);
 }
 
@@ -226,90 +193,6 @@ function loadUsers() {
 }
 function saveUsers(users) {
   localStorage.setItem(USERS_KEY, JSON.stringify(users));
-}
-
-/* ---------- Mock 订单存储（localStorage 模拟后端订单表） ---------- */
-
-function loadOrders() {
-  try {
-    return JSON.parse(localStorage.getItem(ORDERS_KEY) || '[]');
-  } catch {
-    return [];
-  }
-}
-function saveOrders(list) {
-  localStorage.setItem(ORDERS_KEY, JSON.stringify(list));
-}
-
-/**
- * 下单的 mock 实现。
- *
- * 【重要】金额必须和后端 BookingService 算出的一模一样，
- * 否则同一个操作在 file:// 和连后端时会给出两个价格，演示时很难解释。
- * 所以下面几条规则要和后端逐条对应：
- *   1. 单价取数据源里的，不信任调用方传来的价格
- *   2. 房间数 = ceil(人数 / 2)，每间住 2 人，恒 ≥ 1
- *   3. 总价 = 单价 × 房间数 × 天数
- *   4. 校验范围也照搬（天数 1-15、人数 1-20、入住日期须在今天起两个月内）
- */
-function createMockBooking(username, payload) {
-  const hotel = MOCK_HOTELS.find((h) => h.id === Number(payload.hotelId));
-  if (!hotel) throw new Error('酒店不存在：' + payload.hotelId);
-  if (hotel.destinationId !== Number(payload.destinationId)) {
-    throw new Error('该酒店不属于所选目的地');
-  }
-
-  const days = Number(payload.days);
-  if (!days || days < 1 || days > 15) throw new Error('入住天数需在 1-15 之间');
-  const people = Number(payload.people);
-  if (!people || people < 1 || people > 20) throw new Error('入住人数需在 1-20 之间');
-
-  const checkIn = String(payload.checkIn || '').trim();
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(checkIn)) throw new Error('请选择入住日期');
-  if (checkIn < localDate()) throw new Error('入住日期不能早于今天');
-  // 上界。现算，不缓存 —— 理由见 maxCheckInDate() 的注释
-  const maxDate = maxCheckInDate();
-  if (checkIn > maxDate) throw new Error('入住日期最远只能预订到 ' + maxDate + '（两个月内）');
-
-  const rooms = Math.ceil(people / 2);
-  const totalAmount = hotel.pricePerNight * rooms * days;
-
-  const order = {
-    id: Date.now(),   // 后端是自增主键，这里用时间戳凑一个够用的唯一值
-    orderNo: 'YJ' + localDate().replace(/-/g, '') +
-             String(Math.floor(Math.random() * 1000000)).padStart(6, '0'),
-    destinationId: hotel.destinationId,
-    // 后端会去查目的地表拿名字，mock 这边从目的地示例数据里取
-    destinationName: (MOCK_DESTINATIONS.find((d) => d.id === hotel.destinationId) || {}).name || '',
-    hotelId: hotel.id,
-    hotelName: hotel.name,
-    checkIn,
-    days,
-    people,
-    rooms,
-    unitPrice: hotel.pricePerNight,
-    totalAmount,
-    status: '已预订',
-    createdAt: localDateTime(),
-    username,
-  };
-
-  // 最新的排最前，和后端 listByUsername 的 orderByDesc 一致
-  const list = loadOrders();
-  list.unshift(order);
-  saveOrders(list);
-  return order;
-}
-
-function cancelMockBooking(username, id) {
-  const list = loadOrders();
-  const order = list.find((o) => o.id === id);
-  // 和后端一样：别人的订单按「不存在」处理，不泄露它确实存在
-  if (!order || order.username !== username) throw new Error('订单不存在：' + id);
-  if (order.status === '已取消') throw new Error('该订单已取消，无需重复操作');
-  order.status = '已取消';
-  saveOrders(list);
-  return order;
 }
 
 /* ---------- 对外暴露的接口（页面只调用这些函数） ---------- */
@@ -389,48 +272,7 @@ const api = {
 
   /* ---------- 预订 ---------- */
 
-  /**
-   * 酒店列表
-   * @param {number|null} destinationId 不传 / 传 null 就是全部酒店
-   * @returns {Promise<Array>} 字段见 HotelDTO：{ id, destinationId, name, star,
-   *                           pricePerNight, district, rating, desc }
-   */
-  getHotels(destinationId) {
-    const query = destinationId ? `?destinationId=${destinationId}` : '';
-    return USE_MOCK
-      ? mockRequest(`/api/hotels${query}`)
-      : request(`/api/hotels${query}`);
-  },
 
-  /**
-   * 创建预订
-   *
-   * 【不要传总价】总价由后端用数据库里的单价算，请求体里放价格等于让用户自己定价。
-   * 预订页上显示的那个总价只是给人看的预估。
-   *
-   * @param {{destinationId:number, hotelId:number, checkIn:string,
-   *          days:number, people:number}} payload
-   * @returns {Promise<Object>} 落库后的订单（含 orderNo / totalAmount / createdAt）
-   */
-  createBooking(payload) {
-    const options = { method: 'POST', body: JSON.stringify(payload) };
-    return USE_MOCK
-      ? mockRequest('/api/bookings', options)
-      : request('/api/bookings', options);
-  },
-
-  /** 我的订单（按下单时间倒序，只返回当前用户的） */
-  getMyBookings() {
-    return USE_MOCK ? mockRequest('/api/bookings') : request('/api/bookings');
-  },
-
-  /** 取消订单。返回更新后的订单（status 变成「已取消」） */
-  cancelBooking(id) {
-    const options = { method: 'POST' };
-    return USE_MOCK
-      ? mockRequest(`/api/bookings/${id}/cancel`, options)
-      : request(`/api/bookings/${id}/cancel`, options);
-  },
 
   /**
    * AI 行程规划（流式）
