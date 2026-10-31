@@ -1377,7 +1377,7 @@ textarea.ai-input {
   line-height: 1.75;
 }
 /* ============================================================
- * 首页：经典分类入口
+ * 首页：分区标题（标题 + 一行说明）
  * ============================================================ */
 .section-sub {
   margin-top: 6px;
@@ -1389,47 +1389,7 @@ textarea.ai-input {
 /* 带副标题的 section-head 用底对齐，标题和链接才在同一条线上 */
 .section-head.with-sub { align-items: flex-end; }
 
-.cat-row {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(168px, 1fr));
-  gap: 12px;
-}
 
-.cat-chip {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  padding: 16px 18px 14px;
-  background: #fff;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  color: var(--text);
-  transition: transform 0.18s, box-shadow 0.18s, border-color 0.18s;
-}
-
-.cat-chip:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
-  border-color: var(--primary);
-}
-
-.cat-emoji { font-size: 20px; line-height: 1.3; }
-
-.cat-name {
-  font-size: calc(15px * var(--fs));
-  font-weight: 600;
-}
-
-.cat-hook {
-  font-size: calc(12px * var(--fs));
-  color: var(--text-muted);
-}
-
-.cat-count {
-  margin-top: 8px;
-  font-size: calc(12px * var(--fs));
-  color: var(--primary);
-}
 /* 详情页：行程里的景点类型标签 */
 .type-tag {
   font-size: calc(11px * var(--fs));
@@ -1543,4 +1503,38 @@ textarea.ai-input {
   .browse { grid-template-columns: 1fr; gap: 18px; }
   .type-side { position: static; }
   .type-dests { display: flex; flex-wrap: wrap; gap: 4px 0; border-left: 0; padding-left: 0; }
+}
+
+/* 类型行：名字按钮 + 收缩箭头（箭头只管展开/收起，不影响右侧选中项） */
+.type-row {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.type-row .type-head {
+  flex: 1;
+  width: auto;
+  min-width: 0;
+}
+
+.type-toggle {
+  flex: none;
+  width: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 1;
+  cursor: pointer;
+  transition: transform 0.18s, background 0.16s, color 0.16s;
+}
+
+.type-toggle:hover { background: var(--bg-soft); color: var(--text); }
+
+.type-toggle.open {
+  transform: rotate(180deg);
+  color: var(--primary);
 }

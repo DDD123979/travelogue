@@ -3,17 +3,6 @@
  * （由原单文件 app.js 拆分，加载顺序见 index.html）
  * ========================================================= */
 
-/* 六大玩法分类的「人话」版说明：分类名太干，配一句勾人的话才像旅游站。
-   键必须和 data.sql / mock-data.js 里的 category 完全一致，写错就退化成默认图标。 */
-const CATEGORY_META = {
-  美食休闲: { emoji: '🍜', hook: '为一口吃的出发' },
-  江南水乡: { emoji: '⛵', hook: '小桥流水，慢慢逛' },
-  历史古迹: { emoji: '🏛️', hook: '把课本里的地方走一遍' },
-  海岛度假: { emoji: '🏝️', hook: '躺平看海，什么都不做' },
-  自然风光: { emoji: '⛰️', hook: '山野湖海，走进去才懂' },
-  都市风情: { emoji: '🌃', hook: '夜景、街区与烟火气' },
-};
-
 /* 景点类型的固定展示顺序：类型只有 4 个，固定顺序比按数量排更好认 */
 const TYPE_ORDER = ['自然生态', '人文古迹', '街区市集', '观景夜景'];
 
@@ -24,8 +13,12 @@ const HomePage = {
     const list = ref([]);
     const loading = ref(true);
 
-    // 左侧侧边栏当前选中的类型；数据加载完默认选第一个
+    // 左侧当前选中的类型（决定右侧显示哪些目的地）
     const activeType = ref('');
+
+    // 每个类型自己的展开状态：{ '自然生态': true, ... }
+    // 与 activeType 分开，才能做到「收缩名字但不取消选中」
+    const expanded = ref({});
 
     onMounted(async () => {
       try {
@@ -35,9 +28,11 @@ const HomePage = {
       } finally {
         loading.value = false;
       }
-      // 默认展开第一个类型（自然生态），让首页一打开就有内容可看
+      // 首页一打开：选中并展开第一个类型（自然生态）
       if (!activeType.value && attractionTypes.value.length) {
-        activeType.value = attractionTypes.value[0].name;
+        const first = attractionTypes.value[0].name;
+        activeType.value = first;
+        expanded.value[first] = true;
       }
     });
 
@@ -50,25 +45,6 @@ const HomePage = {
     const heroBg = computed(() => {
       const hero = list.value.find((d) => d.image) || list.value[0];
       return hero && hero.image ? { backgroundImage: `url("${hero.image}")` } : {};
-    });
-
-    // 分类卡片：数量和顺序都由数据算出来，以后加目的地不用改这里。
-    const categories = computed(() => {
-      const count = new Map();
-      for (const d of list.value) {
-        count.set(d.category, (count.get(d.category) || 0) + 1);
-      }
-      return [...count.entries()]
-        .map(([name, n]) => {
-          const meta = CATEGORY_META[name] || {};
-          return {
-            name,
-            count: n,
-            emoji: meta.emoji || '📍',
-            hook: meta.hook || '去看看',
-          };
-        })
-        .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name, 'zh'));
     });
 
     // 景点类型（侧边栏）：每个类型下挂着"包含该类型景点的目的地"
@@ -99,16 +75,29 @@ const HomePage = {
       return hit ? hit.destinations : [];
     });
 
+    // 点类型名：选中它，并顺手展开（收缩状态由右边的箭头单独控制）
+    function selectType(name) {
+      activeType.value = name;
+      expanded.value[name] = true;
+    }
+
+    // 点箭头：只展开 / 收起名字列表，不改变右侧选中项
+    function toggleExpand(name) {
+      expanded.value[name] = !expanded.value[name];
+    }
+
     return {
       keyword,
       list,
       loading,
       search,
       heroBg,
-      categories,
       attractionTypes,
       activeType,
       activeDestinations,
+      expanded,
+      selectType,
+      toggleExpand,
     };
   },
   template: `
@@ -128,47 +117,36 @@ const HomePage = {
         </div>
       </section>
 
-      <!-- 经典分类：按「想怎么玩」挑城市 -->
+      <!-- 按景点类型逛：左侧类型导航（可逐个展开/收缩），右侧跟着切换目的地 -->
       <section class="section container">
-        <div class="section-head with-sub">
-          <div>
-            <h2>经典分类</h2>
-            <p class="section-sub">按玩法挑方向，比按名字一个个翻更快</p>
-          </div>
-        </div>
-
         <div class="loading" v-if="loading"><span></span><br />加载中…</div>
-        <div class="cat-row" v-else>
-          <a
-            class="cat-chip"
-            v-for="c in categories"
-            :key="c.name"
-            :href="'#/destinations?cat=' + encodeURIComponent(c.name)"
-          >
-            <span class="cat-emoji">{{ c.emoji }}</span>
-            <span class="cat-name">{{ c.name }}</span>
-            <span class="cat-hook">{{ c.hook }}</span>
-            <span class="cat-count">{{ c.count }} 个目的地 →</span>
-          </a>
-        </div>
-      </section>
 
-      <!-- 按景点类型逛：左侧类型导航，右侧跟着切换目的地 -->
-      <section class="section container">
-        <div class="browse" v-if="!loading && attractionTypes.length">
+        <div class="browse" v-else-if="attractionTypes.length">
           <aside class="type-side">
             <h3 class="side-title">按景点类型逛</h3>
+
             <div
               class="type-group"
-              v-for="(t, i) in attractionTypes"
+              v-for="t in attractionTypes"
               :key="t.name"
               :class="{ active: t.name === activeType }"
             >
-              <button class="type-head" type="button" @click="activeType = t.name">
-                <span class="type-name">{{ t.name }}</span>
-                <span class="type-num">{{ t.destinations.length }}</span>
-              </button>
-              <ul class="type-dests" v-show="t.name === activeType">
+              <div class="type-row">
+                <button class="type-head" type="button" @click="selectType(t.name)">
+                  <span class="type-name">{{ t.name }}</span>
+                  <span class="type-num">{{ t.destinations.length }}</span>
+                </button>
+                <button
+                  class="type-toggle"
+                  type="button"
+                  :class="{ open: expanded[t.name] }"
+                  :aria-expanded="!!expanded[t.name]"
+                  :title="expanded[t.name] ? '收起目的地' : '展开目的地'"
+                  @click.stop="toggleExpand(t.name)"
+                >▾</button>
+              </div>
+
+              <ul class="type-dests" v-show="expanded[t.name]">
                 <li v-for="d in t.destinations" :key="d.id">
                   <a :href="'#/destinations/' + d.id">{{ d.name }}</a>
                 </li>
@@ -179,8 +157,8 @@ const HomePage = {
           <div class="type-main">
             <div class="section-head with-sub">
               <div>
-                <h2>{{ activeType }}</h2>
-                <p class="section-sub">
+                <h2>{{ activeType || '目的地' }}</h2>
+                <p class="section-sub" v-if="activeDestinations.length">
                   共 {{ activeDestinations.length }} 个目的地，都能逛到「{{ activeType }}」类的景点
                 </p>
               </div>
