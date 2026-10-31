@@ -378,10 +378,6 @@ public class PostService {
         return u.getNickname();
     }
 
-    private String avatarOf(String username) {
-        Map<String, String> map = avatarsOf(List.of(username));
-        return map.getOrDefault(username, "");
-    }
 
     private List<String> parseImages(String raw) {
         if (raw == null || raw.isEmpty()) {
