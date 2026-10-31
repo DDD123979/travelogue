@@ -64,10 +64,10 @@
 │
 ├── logs/                       运行日志（不入库）
 ├── generate.js                 生成《需求文档》docx 的脚本
-├── 启动游迹.bat                一键启动：Redis → 后端 → 打开浏览器
-├── 停止游迹.bat                一键停止：按端口结束后端、按进程名结束 Redis
 └── 旅游软件需求文档.docx        需求规格说明
 ```
+
+> 根目录的 `启动游迹.vbs` / 停止脚本只在作者本机保留，不纳入仓库——线上用 systemd，见 [部署说明](deploy/README.md)。
 
 ---
 
@@ -106,26 +106,26 @@ setx AMAP_API_KEY "你的高德key"        # 真实交通耗时（需 Web 服务
 
 ### 3. 启动
 
-**方式一：一键启动（推荐）**
-
-双击根目录的 `启动游迹.bat`。脚本会依次启动 Redis 与后端（已在运行则跳过），就绪后自动打开 <http://localhost:8080>。停止服务双击 `停止游迹.bat`。
-
-日志在 `logs/redis.log` 与 `logs/server.log`。
-
-**方式二：分开启动（想看实时日志时）**
+**方式一：Maven 直接跑（推荐）**
 
 ```bash
-# 终端 1：Redis（把免安装包放到 travel-server/redis/ 后可用此脚本，也可用本机已装的 redis-server）
+# 终端 1：Redis（本机已装 redis-server 的话直接用系统服务即可）
 travel-server\redis\start-redis.bat
 
-# 终端 2：后端（同时托管前端页面）
+# 终端 2：后端，同时托管前端页面
 cd travel-server
 mvn spring-boot:run
-# 或者打包后运行
-mvn -DskipTests package && java -jar target\travel-server-1.0.0.jar
 ```
 
-看到 `Started TravelApplication` 后访问 <http://localhost:8080>。
+**方式二：打包成 jar 再跑**
+
+```bash
+cd travel-server
+mvn -DskipTests package
+java -jar target\travel-server-1.0.0.jar
+```
+
+看到 `Started TravelApplication` 后访问 <http://localhost:8080>，停止按 `Ctrl+C`。
 
 > 后端把前端也托管了（`spring.web.resources.static-locations`），所以只有一个 8080 端口，不存在跨域问题。
 
@@ -175,7 +175,14 @@ mvn -DskipTests package && java -jar target\travel-server-1.0.0.jar
 确认三件事：Redis 起了没、后端 8080 是否在监听、页面是不是用 `http://localhost:8080` 而不是 `file://` 打开的。
 
 **8080 端口被占用**
-先双击 `停止游迹.bat`（它按端口精确结束进程，不会误杀其他 Java 程序）；仍被占用就改 `application.yml` 里的 `server.port`。
+找到占用的进程并结束（只杀监听 8080 的那个，不会误伤其他 Java 程序）：
+
+```powershell
+Get-NetTCPConnection -LocalPort 8080 -State Listen |
+  ForEach-Object { Stop-Process -Id $_.OwningProcess -Force }
+```
+
+仍被占用就改 `application.yml` 里的 `server.port`。
 
 **AI 生成报错**
 访问 <http://localhost:8080/api/ai/status> 自查：Key 是否配好、模型名是否还能用（模型名会过期）。

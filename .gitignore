@@ -29,6 +29,11 @@ application-local.yml
 # 部署用的 SSH 私钥（绝不能进仓库）
 .deploy/
 
+# 本机一键启停脚本：只在本机用，线上走 systemd
+/启动游迹.bat
+/启动游迹.vbs
+/停止游迹.bat
+
 # ========== 编辑器 / 操作系统 ==========
 .vscode/
 .idea/

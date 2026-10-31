@@ -247,7 +247,7 @@ POST /api/bookings/{id}/cancel       → 200 订单（status 变「已取消」�
 | **`http://localhost:8080`**（推荐） | 后端 `travel-server` 托管的页面，同源调接口，数据来自 MySQL |
 | `http://localhost:5173` 之类 | 调后端 `http://localhost:8080`，走跨域 |
 
-推荐第一种里的 `http://localhost:8080`：项目根目录双击 `启动游迹.bat` 就会自动起好后端并打开它。
+推荐第二种 `http://localhost:8080`：在 `travel-server` 目录下 `mvn spring-boot:run`，后端会顺带托管本目录的页面。
 
 想强制走某一端，改 `js/api.js` 顶部两行常量即可：`USE_MOCK` 与 `API_BASE`。
 
@@ -272,7 +272,7 @@ POST /api/bookings/{id}/cancel       → 200 订单（status 变「已取消」�
 直接双击 `index.html` 即可（走本地示例数据）。想连后端就用后端的地址：
 
 ```bash
-# 先启动后端（项目根目录双击 启动游迹.bat，或跑 travel-server）
+# 先启动后端：cd travel-server && mvn spring-boot:run
 # 然后浏览器打开 http://localhost:8080
 ```
 
