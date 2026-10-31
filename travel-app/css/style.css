@@ -2774,93 +2774,112 @@ input:-webkit-autofill:focus {
 
 .pw-row .ai-input { flex: 1 1 180px; min-width: 0; }
 .pw-row .btn { flex: none; }
+
 /* ============================================================
- * 设置页「密码」：修改 / 忘记密码 合并成一个胶囊
- * 圆角 999px 和全站的方块形成对比，是这一块刻意的"胶囊"形态
+ * 通用弹窗（修改密码等）
  * ============================================================ */
-.pw-capsule {
+.modal-mask {
+  position: fixed;
+  inset: 0;
+  z-index: 9500;
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 5px 5px 5px 16px;
-  background: var(--surface-2);
-  border: 2px solid var(--border);
-  border-radius: 999px;
-  transition: border-color 0.18s, box-shadow 0.18s;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(3, 6, 9, 0.72);
+  backdrop-filter: blur(3px);
+  animation: modal-mask-in 0.16s ease;
 }
 
-.pw-capsule:focus-within {
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(53, 224, 143, 0.14);
+@keyframes modal-mask-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
-/* 覆盖全站 input 的 !important 规则：胶囊里的输入框要"无框" */
-.pw-input {
-  flex: 1 1 120px;
-  min-width: 0;
-  padding: 8px 4px !important;
-  background: transparent !important;
-  border: 0 !important;
-  box-shadow: none !important;
-  color: var(--text) !important;
-  font-size: calc(13px * var(--fs));
+.modal {
+  width: 100%;
+  max-width: 420px;
+  background: var(--surface);
+  border: 2px solid var(--border-strong);
+  box-shadow: 8px 8px 0 #05080c, 0 0 40px rgba(53, 224, 143, 0.12);
+  animation: modal-in 0.18s ease;
 }
 
-.pw-input:focus {
-  border: 0 !important;
-  box-shadow: none !important;
+@keyframes modal-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: none; }
 }
 
-.pw-submit {
-  flex: none;
-  padding: 9px 22px;
-  border: 2px solid var(--primary);
-  border-radius: 999px;
-  background: var(--primary);
-  color: #04140c;
-  font-family: var(--font-pixel);
-  font-size: calc(13px * var(--fs));
+.modal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  border-bottom: 2px solid var(--border);
+  font-size: calc(15px * var(--fs));
   font-weight: 600;
+}
+
+.modal-close {
+  border: 0;
+  background: none;
+  color: var(--text-muted);
+  font-size: 22px;
+  line-height: 1;
   cursor: pointer;
-  transition: background 0.15s, box-shadow 0.15s, opacity 0.15s;
 }
 
-.pw-submit:hover:not(:disabled) {
-  background: #4cf0a2;
-  box-shadow: 0 0 16px rgba(53, 224, 143, 0.45);
+.modal-close:hover { color: var(--text); }
+
+.modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 16px 18px;
 }
 
-.pw-submit:disabled { opacity: 0.55; cursor: default; }
+.modal-label {
+  margin-top: 8px;
+  font-size: calc(12px * var(--fs));
+  color: var(--text-muted);
+}
 
-/* 忘了密码时：胶囊换成红色描边，提示这是"救援"路径 */
-.pw-capsule.is-reset { border-color: #b3564f; }
+.modal-label:first-child { margin-top: 0; }
 
-.pw-foot {
+.modal-note {
+  padding: 6px 0;
+  font-size: calc(12px * var(--fs));
+  color: var(--text-secondary);
+}
+
+.modal-tip {
+  margin-top: 10px;
+  font-size: calc(11.5px * var(--fs));
+  line-height: 1.6;
+  color: #ffb4a8;
+}
+
+.modal-foot {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-top: 10px;
-  padding-left: 6px;
+  gap: 10px;
+  padding: 0 18px 16px;
 }
 
-.pw-link {
+.modal-link {
   border: 0;
   background: none;
   padding: 0;
   color: var(--primary);
   font-size: calc(12px * var(--fs));
-  cursor: pointer;
   text-decoration: underline;
+  cursor: pointer;
 }
 
-.pw-foot .desc { font-size: calc(11.5px * var(--fs)); color: var(--text-muted); }
+.modal-spacer { flex: 1; }
 
-@media (max-width: 720px) {
-  .pw-capsule {
-    flex-wrap: wrap;
-    border-radius: 18px;
-    padding: 8px;
-  }
-  .pw-input { flex: 1 1 100%; padding: 6px 8px !important; }
-  .pw-submit { width: 100%; }
+@media (max-width: 520px) {
+  .modal { max-width: none; }
+  .modal-foot { flex-wrap: wrap; }
+  .modal-foot .btn { flex: 1; }
 }

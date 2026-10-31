@@ -8,7 +8,7 @@
  * 页面组件只通过 api 层取数，后续可平滑对接后端
  * ========================================================= */
 
-const { createApp, ref, reactive, computed, onMounted, watch } = Vue;
+const { createApp, ref, reactive, computed, onMounted, onUnmounted, watch } = Vue;
 
 /* ---------- 收藏 / 偏好设置状态（localStorage 持久化） ---------- */
 const FAV_KEY = 'youji_favorites';

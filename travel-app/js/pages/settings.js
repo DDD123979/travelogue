@@ -82,6 +82,26 @@ const SettingsPage = {
     const savingPw = ref(false);
     // change = 知道原密码；reset = 忘了原密码，凭登录态直接重设
     const pwMode = ref('change');
+    const pwOpen = ref(false);
+
+    function openPw() {
+      pwMode.value = 'change';
+      oldPw.value = newPw.value = newPw2.value = '';
+      pwOpen.value = true;
+    }
+
+    // ESC 关闭弹窗；组件卸载时记得摘掉监听
+    function onEsc(e) {
+      if (e.key === 'Escape' && pwOpen.value) closePw();
+    }
+    onMounted(() => window.addEventListener('keydown', onEsc));
+    onUnmounted(() => window.removeEventListener('keydown', onEsc));
+
+    function closePw() {
+      pwOpen.value = false;
+      oldPw.value = newPw.value = newPw2.value = '';
+      pwMode.value = 'change';
+    }
 
     function togglePwMode() {
       pwMode.value = pwMode.value === 'change' ? 'reset' : 'change';
@@ -116,8 +136,8 @@ const SettingsPage = {
       savingPw.value = true;
       try {
         await api.changePassword(oldPw.value, newPw.value);
-        oldPw.value = newPw.value = newPw2.value = '';
         flash('密码已更新');
+        closePw();
       } catch (err) {
         flash(err.message);
       } finally {
@@ -151,6 +171,9 @@ const SettingsPage = {
       savingPw,
       submitPw,
       pwMode,
+      pwOpen,
+      openPw,
+      closePw,
       togglePwMode,
       submitReset,
     };
@@ -191,25 +214,12 @@ const SettingsPage = {
 
       <section class="settings-card">
         <h2>密码</h2>
-        <div class="pw-capsule" :class="{ 'is-reset': pwMode === 'reset' }">
-          <input
-            v-if="pwMode === 'change'"
-            class="pw-input"
-            type="password"
-            v-model="oldPw"
-            placeholder="原密码"
-            autocomplete="current-password"
-          />
-          <input class="pw-input" type="password" v-model="newPw" placeholder="新密码（至少 6 位）" autocomplete="new-password" />
-          <input class="pw-input" type="password" v-model="newPw2" placeholder="确认新密码" autocomplete="new-password" />
-          <button class="pw-submit" :disabled="savingPw" @click="pwMode === 'change' ? submitPw() : submitReset()">
-            {{ savingPw ? '处理中…' : (pwMode === 'change' ? '保存' : '重设') }}
-          </button>
-        </div>
-        <div class="pw-foot">
-          <button class="pw-link" v-if="pwMode === 'change'" @click="togglePwMode">忘记原密码？</button>
-          <button class="pw-link" v-else @click="togglePwMode">← 返回修改密码</button>
-          <span class="desc" v-if="pwMode === 'reset'">重设成功后会退出登录，请用新密码重新登录</span>
+        <div class="setting-row">
+          <div>
+            <div class="title">登录密码</div>
+            <div class="desc">定期更换更安全；忘记原密码时也可以在弹窗里重设</div>
+          </div>
+          <button class="btn btn-outline btn-sm" @click="openPw">修改密码</button>
         </div>
       </section>
 
@@ -292,6 +302,48 @@ const SettingsPage = {
       <transition name="fade">
         <div class="toast" v-if="toast">{{ toast }}</div>
       </transition>
+
+      <!-- 修改密码弹窗 -->
+      <div class="modal-mask" v-if="pwOpen" @click.self="closePw">
+        <div class="modal">
+          <div class="modal-head">
+            <span>{{ pwMode === 'change' ? '修改密码' : '重设密码' }}</span>
+            <button class="modal-close" @click="closePw" aria-label="关闭">×</button>
+          </div>
+
+          <div class="modal-body">
+            <label class="modal-label">原密码</label>
+            <input
+              v-if="pwMode === 'change'"
+              class="ai-input"
+              type="password"
+              v-model="oldPw"
+              placeholder="当前使用的密码"
+              autocomplete="current-password"
+            />
+            <p class="modal-note" v-else>已登录状态，不需要原密码</p>
+
+            <label class="modal-label">新密码</label>
+            <input class="ai-input" type="password" v-model="newPw" placeholder="至少 6 位" autocomplete="new-password" />
+
+            <label class="modal-label">确认新密码</label>
+            <input class="ai-input" type="password" v-model="newPw2" placeholder="再输一次" autocomplete="new-password" />
+
+            <p class="modal-tip" v-if="pwMode === 'reset'">重设成功后会自动退出登录，请用新密码重新登录</p>
+          </div>
+
+          <div class="modal-foot">
+            <button class="modal-link" v-if="pwMode === 'change'" @click="togglePwMode">忘记原密码？</button>
+            <button class="modal-link" v-else @click="togglePwMode">← 返回修改密码</button>
+            <span class="modal-spacer"></span>
+            <button class="btn btn-outline btn-sm" @click="closePw">取消</button>
+            <button class="btn btn-primary btn-sm" :disabled="savingPw"
+              @click="pwMode === 'change' ? submitPw() : submitReset()">
+              {{ savingPw ? '处理中…' : '确定' }}
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   `,
 };
