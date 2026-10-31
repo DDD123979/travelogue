@@ -191,6 +191,7 @@ Key 的服务平台选成了"Web端(JS API)"，必须重新申请"**Web服务**"
 
 - [前端说明](travel-app/README.md)：页面路由、接口约定、样式与适配规则
 - [后端说明](travel-server/README.md)：接口清单、Redis 用法、AI 与高德实现细节
+- [部署说明](deploy/README.md)：阿里云轻量服务器上线流程（systemd + Nginx + HTTPS）
 - [需求规格说明](旅游软件需求文档.docx)：功能与非功能需求
 
 ---

@@ -1,0 +1,21 @@
+[Unit]
+Description=Youji travel server (Spring Boot)
+Documentation=https://github.com/DDD123979/travelogue
+After=network.target mysql.service redis-server.service
+
+[Service]
+User=youji
+WorkingDirectory=/opt/youji/travel-server
+EnvironmentFile=/opt/youji/.env
+
+# 2G 内存的机器必须限堆，否则 MySQL + JVM 会互相挤爆
+ExecStart=/usr/bin/java -Xms256m -Xmx512m -jar target/travel-server-1.0.0.jar
+
+# Spring Boot 收到 SIGTERM 会优雅退出，退出码 143 属于正常停止，别当成失败
+SuccessExitStatus=143
+
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
