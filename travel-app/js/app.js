@@ -145,4 +145,27 @@ const App = {
 
 // 挂载前先跑一次守卫：决定首次打开进入的是登录页还是首页
 guardRoute();
-createApp(App).mount('#app');
+/* Vue 会自己捕获渲染错误（不会冒泡到 window.onerror），
+   所以这里挂一个 errorHandler 把真实报错写到页面底部，白屏时能一眼看到原因。 */
+function reportVueError(err, info) {
+  const msg = (err && (err.stack || err.message)) || String(err);
+  console.error('[vue]', msg, info);
+  let box = document.getElementById('boot-error');
+  if (!box) {
+    box = document.createElement('div');
+    box.id = 'boot-error';
+    box.style.cssText = 'position:fixed;left:0;right:0;bottom:0;z-index:99999;' +
+      'background:#b91c1c;color:#fff;padding:12px 16px;font:12px/1.6 Consolas,monospace;' +
+      'white-space:pre-wrap;max-height:45vh;overflow:auto';
+    document.body.appendChild(box);
+  }
+  box.textContent += '[vue:' + info + '] ' + msg + '\n';
+}
+
+const app = createApp(App);
+app.config.errorHandler = reportVueError;
+try {
+  app.mount('#app');
+} catch (e) {
+  reportVueError(e, 'mount');
+}
