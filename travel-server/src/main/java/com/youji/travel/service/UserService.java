@@ -13,11 +13,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.util.Locale;
-import com.youji.travel.mapper.TravelPostMapper;
-import com.youji.travel.mapper.PostCommentMapper;
-import com.youji.travel.mapper.PostLikeMapper;
-import com.youji.travel.mapper.PostFavoriteMapper;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * 用户注册与登录。
@@ -42,23 +37,13 @@ public class UserService {
     private static final String FAIL_KEY_PREFIX = "youji:login:fail:";
 
     private final UserMapper userMapper;
-    private final TravelPostMapper postMapper;
-    private final PostCommentMapper commentMapper;
-    private final PostLikeMapper likeMapper;
-    private final PostFavoriteMapper favoriteMapper;
     private final StringRedisTemplate redis;
 
     /** 无状态、线程安全，直接持有即可；不必引 spring-boot-starter-security */
     private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-    public UserService(UserMapper userMapper, StringRedisTemplate redis,
-                       TravelPostMapper postMapper, PostCommentMapper commentMapper,
-                       PostLikeMapper likeMapper, PostFavoriteMapper favoriteMapper) {
+    public UserService(UserMapper userMapper, StringRedisTemplate redis,) {
         this.userMapper = userMapper;
-        this.postMapper = postMapper;
-        this.commentMapper = commentMapper;
-        this.likeMapper = likeMapper;
-        this.favoriteMapper = favoriteMapper;
         this.redis = redis;
     }
 
@@ -81,6 +66,8 @@ public class UserService {
 
         User user = new User();
         user.setUsername(name);
+
+        user.setUserNo(generateUserNo());
         user.setPasswordHash(passwordEncoder.encode(password));
         user.setNickname(username);
         userMapper.insert(user);
@@ -171,49 +158,19 @@ public class UserService {
     }
 
     /**
-     * 修改用户名：需要当前密码确认。
-     * 用户名是帖子、评论、点赞、收藏里的作者标识，所以要在同一张事务里级联更新，
-     * 否则改名后旧内容会变成「查无此人」。
+     * 生成 8 位账号 ID（10000000 - 99999999）。
+     * 和老用户撞号就重试，最多 20 次；正常规模下几乎一次命中。
      */
-    @Transactional
-    public String changeUsername(String oldName, String newName, String password) {
-        User user = findByUsername(oldName);
-        if (user == null) {
-            throw ApiException.unauthorized("登录状态已失效，请重新登录");
+    private String generateUserNo() {
+        for (int i = 0; i < 20; i++) {
+            String no = String.valueOf(10000000 + java.util.concurrent.ThreadLocalRandom.current().nextInt(90000000));
+            Long count = userMapper.selectCount(
+                    com.baomidou.mybatisplus.core.toolkit.Wrappers.<User>lambdaQuery().eq(User::getUserNo, no));
+            if (count == null || count == 0) {
+                return no;
+            }
         }
-        if (password == null || !passwordEncoder.matches(password, user.getPasswordHash())) {
-            throw ApiException.badRequest("密码不正确");
-        }
-
-        String name = newName == null ? "" : newName.trim();
-        if (!name.matches("^[\\w\\u4e00-\\u9fa5]{3,20}$")) {
-            throw ApiException.badRequest("用户名 3-20 位，只能用中英文、数字和下划线");
-        }
-        if (name.equals(oldName)) {
-            throw ApiException.badRequest("新用户名和当前一样");
-        }
-        if (findByUsername(name) != null) {
-            throw ApiException.conflict("这个用户名已经被占用了");
-        }
-
-        user.setUsername(name);
-        userMapper.updateById(user);
-
-        // 级联：帖子 / 评论 / 点赞 / 收藏
-        postMapper.update(null, com.baomidou.mybatisplus.core.toolkit.Wrappers.<com.youji.travel.entity.TravelPost>lambdaUpdate()
-                .eq(com.youji.travel.entity.TravelPost::getUsername, oldName)
-                .set(com.youji.travel.entity.TravelPost::getUsername, name));
-        commentMapper.update(null, com.baomidou.mybatisplus.core.toolkit.Wrappers.<com.youji.travel.entity.PostComment>lambdaUpdate()
-                .eq(com.youji.travel.entity.PostComment::getUsername, oldName)
-                .set(com.youji.travel.entity.PostComment::getUsername, name));
-        likeMapper.update(null, com.baomidou.mybatisplus.core.toolkit.Wrappers.<com.youji.travel.entity.PostLike>lambdaUpdate()
-                .eq(com.youji.travel.entity.PostLike::getUsername, oldName)
-                .set(com.youji.travel.entity.PostLike::getUsername, name));
-        favoriteMapper.update(null, com.baomidou.mybatisplus.core.toolkit.Wrappers.<com.youji.travel.entity.PostFavorite>lambdaUpdate()
-                .eq(com.youji.travel.entity.PostFavorite::getUsername, oldName)
-                .set(com.youji.travel.entity.PostFavorite::getUsername, name));
-
-        return name;
+        throw new IllegalStateException("账号 ID 生成失败，请重试");
     }
 
     /** 改昵称：只影响展示，不动登录名，所以不需要再次验证密码 */

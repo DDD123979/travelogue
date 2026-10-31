@@ -25,6 +25,9 @@ public class User {
     /** BCrypt 哈希，不存明文 */
     private String passwordHash;
 
+    /** 账号 ID：注册时生成，8 位数字，终身不变（对外展示用） */
+    private String userNo;
+
     /** 昵称：对外展示用，改它不影响登录 */
     private String nickname;
 

@@ -114,43 +114,6 @@ const SettingsPage = {
       }
     }
 
-    /* ---------- 改用户名 ---------- */
-    const nameOpen = ref(false);
-    const newName = ref('');
-    const namePw = ref('');
-    const savingName = ref(false);
-
-    function openName() {
-      newName.value = '';
-      namePw.value = '';
-      nameOpen.value = true;
-    }
-
-    function closeName() {
-      nameOpen.value = false;
-      newName.value = '';
-      namePw.value = '';
-    }
-
-    async function submitName() {
-      if (savingName.value) return;
-      const name = newName.value.trim();
-      if (name.length < 3 || name.length > 20) return flash('用户名 3-20 位');
-      if (!namePw.value) return flash('请输入当前密码');
-      savingName.value = true;
-      try {
-        const res = await api.changeUsername(name, namePw.value);
-        // token 换新了，session 已由 api 层写回；这里同步界面状态
-        store.user = { username: res.username, avatar: res.avatar || '' };
-        flash('用户名已更新');
-        closeName();
-      } catch (err) {
-        flash(err.message);
-      } finally {
-        savingName.value = false;
-      }
-    }
-
     /* ---------- 改密码 ---------- */
     const oldPw = ref('');
     const newPw = ref('');
@@ -170,7 +133,6 @@ const SettingsPage = {
     function onEsc(e) {
       if (e.key !== 'Escape') return;
       if (pwOpen.value) closePw();
-      if (nameOpen.value) closeName();
     }
     onMounted(() => window.addEventListener('keydown', onEsc));
     onUnmounted(() => window.removeEventListener('keydown', onEsc));
@@ -249,7 +211,6 @@ const SettingsPage = {
       savingPw,
       submitPw,
       displayName, nickOpen, newNick, savingNick, openNick, closeNick, submitNick,
-      nameOpen, newName, namePw, savingName, openName, closeName, submitName,
       pwMode,
       pwOpen,
       openPw,
@@ -270,8 +231,7 @@ const SettingsPage = {
             <div>
               <div class="title">
                 {{ displayName }}
-                <button class="name-edit" v-if="store.user" @click="openName">修改</button>
-              </div>
+                              </div>
               NaN
             </div>
           </div>
@@ -415,30 +375,6 @@ const SettingsPage = {
             <button class="btn btn-outline btn-sm" @click="closeNick">取消</button>
             <button class="btn btn-primary btn-sm" :disabled="savingNick" @click="submitNick">
               {{ savingNick ? '保存中…' : '确定' }}
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- 修改用户名弹窗 -->
-      <div class="modal-mask" v-if="nameOpen" @click.self="closeName">
-        <div class="modal">
-          <div class="modal-head">
-            <span>修改用户名</span>
-            <button class="modal-close" @click="closeName" aria-label="关闭">×</button>
-          </div>
-          <div class="modal-body">
-            <label class="modal-label">新用户名</label>
-            <input class="ai-input" v-model="newName" placeholder="3-20 位，中英文 / 数字 / 下划线" maxlength="20" />
-            <label class="modal-label">当前密码</label>
-            <input class="ai-input" type="password" v-model="namePw" placeholder="确认是你本人" autocomplete="current-password" />
-            <p class="modal-tip">改名后，你发过的分享和评论都会一起改成新名字</p>
-          </div>
-          <div class="modal-foot">
-            <span class="modal-spacer"></span>
-            <button class="btn btn-outline btn-sm" @click="closeName">取消</button>
-            <button class="btn btn-primary btn-sm" :disabled="savingName" @click="submitName">
-              {{ savingName ? '保存中…' : '确定' }}
             </button>
           </div>
         </div>

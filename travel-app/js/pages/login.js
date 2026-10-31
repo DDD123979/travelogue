@@ -94,7 +94,7 @@ const LoginPage = {
           mode.value === 'register'
             ? await api.register(name, password.value)
             : await api.login(name, password.value);
-        store.user = { username: user.username, nickname: user.nickname, avatar: user.avatar };
+        store.user = { username: user.username, nickname: user.nickname, avatar: user.avatar, userNo: user.userNo };
         // 登录成功后进入首页，并顶掉历史里的登录页
         go('/', { replace: true });
       } catch (e) {

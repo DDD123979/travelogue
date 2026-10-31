@@ -10,6 +10,9 @@ public class UserDTO {
 
     private String username;
 
+    /** 账号 ID：8 位数字，不可修改 */
+    private String userNo;
+
     /** 昵称（展示名） */
     private String nickname;
 

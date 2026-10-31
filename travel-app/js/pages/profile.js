@@ -68,7 +68,7 @@ const ProfilePage = {
             {{ store.user ? (store.user.nickname || store.user.username) : '未登录' }}
             <a class="profile-edit" href="#/settings">编辑资料</a>
           </div>
-          <div class="profile-sub">在游迹记录你去过的地方</div>
+          <div class="profile-sub">ID {{ store.user && store.user.userNo ? store.user.userNo : '--------' }} · @{{ store.user ? store.user.username : '-' }}</div>
         </div>
       </section>
 

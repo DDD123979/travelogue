@@ -18,6 +18,9 @@ public class AuthResponse {
     private String token;
 
     /** 昵称（展示名），为空时前端退回 username */
+    /** 账号 ID：8 位数字，不可修改 */
+    private String userNo;
+
     private String nickname;
 
     /** 头像地址，前端直接拿去渲染，省一次请求 */

@@ -6,7 +6,6 @@ import com.youji.travel.dto.AuthResponse;
 import com.youji.travel.dto.ForgotRequest;
 import com.youji.travel.dto.ResetRequest;
 import com.youji.travel.dto.UserDTO;
-import com.youji.travel.dto.UsernameRequest;
 import com.youji.travel.entity.User;
 import com.youji.travel.service.TokenService;
 import com.youji.travel.service.UserService;
@@ -52,14 +51,14 @@ public class AuthController {
     @PostMapping("/register")
     public AuthResponse register(@RequestBody AuthRequest request) {
         User user = userService.register(request.getUsername(), request.getPassword());
-        return new AuthResponse(user.getUsername(), tokenService.issue(user.getUsername()), nick(user), user.getAvatar());
+        return new AuthResponse(user.getUsername(), tokenService.issue(user.getUsername()), user.getUserNo(), nick(user), user.getAvatar());
     }
 
     /** 登录，失败返回 401 + {"message": "用户名或密码错误"} */
     @PostMapping("/login")
     public AuthResponse login(@RequestBody AuthRequest request) {
         User user = userService.login(request.getUsername(), request.getPassword());
-        return new AuthResponse(user.getUsername(), tokenService.issue(user.getUsername()), nick(user), user.getAvatar());
+        return new AuthResponse(user.getUsername(), tokenService.issue(user.getUsername()), user.getUserNo(), nick(user), user.getAvatar());
     }
 
     /** 退出登录：删掉 Redis 里的 token，立即失效 */
@@ -82,7 +81,7 @@ public class AuthController {
         if (user == null) {
             throw ApiException.unauthorized("登录状态已失效，请重新登录");
         }
-        return new UserDTO(user.getUsername(), nick(user), user.getAvatar());
+        return new UserDTO(user.getUsername(), user.getUserNo(), nick(user), user.getAvatar());
     }
 
     /** 上传并更新头像，返回 { avatar } */
@@ -113,19 +112,6 @@ public class AuthController {
         String username = requireLogin(authorization);
         String nickname = userService.changeNickname(username, request.getNickname());
         return Map.of("nickname", nickname);
-    }
-
-    /** 修改用户名：成功后作废旧 token，下发一个新的（token 里绑的是用户名） */
-    @PostMapping("/username")
-    public AuthResponse changeUsername(
-            @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorization,
-            @RequestBody UsernameRequest request) {
-        String oldName = requireLogin(authorization);
-        String newName = userService.changeUsername(oldName, request.getNewUsername(), request.getPassword());
-        tokenService.revoke(authorization);
-        String token = tokenService.issue(newName);
-        User user = userService.findByUsername(newName);
-        return new AuthResponse(newName, token, user == null ? newName : nick(user), user == null ? "" : user.getAvatar());
     }
 
     /** 忘记密码第一步：生成验证码 */

@@ -3203,3 +3203,7 @@ input:-webkit-autofill:focus {
   .profile-stats { grid-template-columns: 1fr 1fr; }
   .profile-avatar { width: 60px; height: 60px; }
 }
+/* 账号 ID：等宽字体，一眼能和用户名区分开 */
+.profile-sub, .setting-row .desc {
+  letter-spacing: 0.02em;
+}
