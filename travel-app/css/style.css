@@ -103,18 +103,40 @@ input { font-family: inherit; }
 .nav-link.active { color: var(--primary); background: var(--primary-light); font-weight: 500; }
 
 /* ---------- 首页 Hero ---------- */
-.hero { padding: 72px 0 48px; text-align: center; }
+/* 首屏：目的地实拍大图 + 暗色遮罩（图片由 home.js 按第一个有封面的目的地动态设置） */
+.hero {
+  position: relative;
+  padding: 96px 0 76px;
+  text-align: center;
+  background-color: #2b2622;      /* 图片没加载/加载失败时的底色 */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  overflow: hidden;
+}
+
+/* 遮罩：保证白字在任何照片上都读得清，底部略深一点，和下面的内容衔接 */
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(26, 22, 18, 0.45) 0%, rgba(26, 22, 18, 0.78) 100%);
+}
+
+.hero-inner { position: relative; z-index: 1; }
 
 .hero h1 {
   font-size: calc(40px * var(--fs));
   font-weight: 700;
   letter-spacing: 1px;
   margin-bottom: 12px;
+  color: #fff;
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.35);
 }
 
-.hero h1 em { font-style: normal; color: var(--primary); }
+.hero h1 em { font-style: normal; color: #ffd8a3; }
 
-.hero p { color: var(--text-secondary); font-size: calc(17px * var(--fs)); margin-bottom: 32px; }
+.hero p { color: rgba(255, 255, 255, 0.86); font-size: calc(17px * var(--fs)); margin-bottom: 32px; }
 
 .search-box {
   max-width: 520px;
@@ -1284,3 +1306,73 @@ textarea.ai-input {
      不加     → 表单 740、页面可滚 343px     → 按钮 481~527，正常可见
    而且 .ai-form 是 .ai-layout 的网格项，格子的高度就等于它自己的高度，
    根本吸不住，压根没有「吸顶元素比视口高」这回事。 */
+
+/* ============================================================
+ * 详情页：参考行程时间轴
+ * 每个景点一天，左侧竖线 + 圆点，比单纯的列表更像"行程"
+ * ============================================================ */
+.timeline {
+  position: relative;
+  margin: 6px 0 10px 6px;
+  padding-left: 22px;
+}
+
+/* 竖线：从第一个圆点往下渐隐到透明 */
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 8px;
+  bottom: 10px;
+  width: 2px;
+  background: linear-gradient(180deg, var(--primary) 0%, rgba(14, 124, 102, 0.12) 100%);
+}
+
+.timeline-item {
+  position: relative;
+  padding-bottom: 22px;
+}
+
+.timeline-item:last-child { padding-bottom: 0; }
+
+.timeline-dot {
+  position: absolute;
+  left: -22px;
+  top: 5px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--primary);
+  box-shadow: 0 0 0 4px rgba(14, 124, 102, 0.14);
+}
+
+.timeline-head {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 2px;
+}
+
+.timeline-head .day {
+  font-size: calc(13px * var(--fs));
+  font-weight: 600;
+  color: var(--primary);
+  letter-spacing: 0.5px;
+}
+
+.timeline-head .time {
+  font-size: calc(12px * var(--fs));
+  color: var(--text-muted);
+}
+
+.timeline-title {
+  font-size: calc(16px * var(--fs));
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.timeline-item p {
+  font-size: calc(14px * var(--fs));
+  color: var(--text-secondary);
+  line-height: 1.75;
+}

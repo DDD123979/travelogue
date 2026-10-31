@@ -36,7 +36,14 @@ const DetailPage = {
       go('/booking?dest=' + props.id);
     }
 
-    return { item, loading, error, bg, store, planWithAi, bookNow };
+    // 用景点数据拼一个逐日行程：每天排一个景点，正好对上"建议游玩 3-4 天"的节奏。
+    // 没有景点数据时返回空数组，模板里整块不渲染。
+    const itinerary = computed(() => {
+      const list = (item.value && item.value.attractions) || [];
+      return list.slice(0, 3).map((a, i) => ({ no: i + 1, item: a }));
+    });
+
+    return { item, loading, error, bg, store, planWithAi, bookNow, itinerary };
   },
   template: `
     <div class="page container">
@@ -67,14 +74,21 @@ const DetailPage = {
             <h2>目的地介绍</h2>
             <p style="color: var(--text-secondary); font-size: 15px;">{{ item.description }}</p>
 
-            <h2>推荐景点</h2>
-            <div class="attraction-item" v-for="a in item.attractions" :key="a.name">
-              <div class="head">
-                <span class="name">{{ a.name }}</span>
-                <span class="time">{{ a.time }}</span>
+            <!-- 景点数据在库里每个目的地都有 3 条，正好排成 3 天；万一是空的就整块不显示 -->
+            <template v-if="itinerary.length">
+              <h2>参考行程</h2>
+              <div class="timeline">
+                <div class="timeline-item" v-for="day in itinerary" :key="day.no">
+                  <span class="timeline-dot"></span>
+                  <div class="timeline-head">
+                    <span class="day">第 {{ day.no }} 天</span>
+                    <span class="time">{{ day.item.time }}</span>
+                  </div>
+                  <div class="timeline-title">{{ day.item.name }}</div>
+                  <p>{{ day.item.desc }}</p>
+                </div>
               </div>
-              <p>{{ a.desc }}</p>
-            </div>
+            </template>
           </div>
 
           <aside class="side-card">
