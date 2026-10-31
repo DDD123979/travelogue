@@ -81,7 +81,7 @@ SELECT COUNT(*) FROM travel_db.booking_order;           -- 新库应为 0
 | GET | `/api/destinations/{id}` | 单个目的地 | 200 对象 | 404 `{message}` |
 | GET | `/api/hotels` | 酒店列表，可带 `?destinationId=`（不带就返回全部 42 家） | 200 数组 | — |
 | POST | `/api/auth/register` | 注册，body `{username,password}` | 200 `{username,token}` | 400 / 409 |
-| POST | `/api/auth/login` | 登录，body `{username,password}` | 200 `{username,token}` | 401 |
+| POST | `/api/auth/login` | 登录，body `{username,password}`。同一用户名连续失败 **5 次锁定 15 分钟**（计数存 Redis），登录成功即清零 | 200 `{username,token}` | 401 / **429** |
 | POST | `/api/auth/logout` | 退出，头 `Authorization: Bearer <token>` | 200 `{message}` | — |
 | GET | `/api/auth/me` | 当前登录用户（演示 Redis 登录态用） | 200 `{username}` | 401 |
 | POST | `/api/bookings` | 下单，头 `Authorization`，body `{destinationId,hotelId,checkIn,days,people}`。`checkIn` 须在 **今天起两个月内**（`MAX_MONTHS_AHEAD`） | 200 订单 | 400 / 401 / 404 |
