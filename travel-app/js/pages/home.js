@@ -42,9 +42,17 @@ const HomePage = {
 
     // 首屏大图：取第一个带封面图的目的地。列表是异步来的，加载完会自动换上，
     // 加载前/失败时靠 .hero 的底色兜着，不会出现白屏。
+    // 背景优先用风景类目的地的照片（大图铺满时，熊猫特写这种"主角型"照片并不好看）；
+    // 找不到就用第一个有封面的。图片交给 CSS 的 ::before 做虚化，所以这里只传一个变量。
+    const HERO_CANDIDATES = ['大理', '三亚', '丽江', '杭州', '厦门'];
     const heroBg = computed(() => {
-      const hero = list.value.find((d) => d.image) || list.value[0];
-      return hero && hero.image ? { backgroundImage: `url("${hero.image}")` } : {};
+      const withImage = list.value.filter((d) => d.image);
+      if (!withImage.length) return {};
+      const preferred = HERO_CANDIDATES
+        .map((name) => withImage.find((d) => d.name === name))
+        .find(Boolean);
+      const hero = preferred || withImage[0];
+      return { '--hero-img': `url("${hero.image}")` };
     });
 
     // 景点类型（侧边栏）：每个类型下挂着"包含该类型景点的目的地"

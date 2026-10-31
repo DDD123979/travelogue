@@ -103,24 +103,40 @@ input { font-family: inherit; }
 .nav-link.active { color: var(--primary); background: var(--primary-light); font-weight: 500; }
 
 /* ---------- 首页 Hero ---------- */
-/* 首屏：目的地实拍大图 + 暗色遮罩（图片由 home.js 按第一个有封面的目的地动态设置） */
+/* 首屏：目的地实拍图 + 虚化 + 暗色渐变
+   照片只当"氛围底"，不做主角：blur 之后细节糊掉，只留下色彩和光影，
+   这样不管是熊猫特写还是城市夜景，铺满整屏都不会显脏。
+   图片地址由 home.js 以 --hero-img 变量传入。 */
 .hero {
   position: relative;
-  padding: 96px 0 76px;
+  padding: 104px 0 84px;
   text-align: center;
-  background-color: #2b2622;      /* 图片没加载/加载失败时的底色 */
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
+  background-color: #1f2a28;      /* 图片没加载/加载失败时的底色 */
   overflow: hidden;
+  isolation: isolate;
 }
 
-/* 遮罩：保证白字在任何照片上都读得清，底部略深一点，和下面的内容衔接 */
+/* 虚化层：往外多撑一点，避免模糊边缘露出白边 */
 .hero::before {
   content: '';
   position: absolute;
+  inset: -24px;
+  background-image: var(--hero-img, none);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  filter: blur(9px) saturate(0.9) brightness(0.68);
+  transform: scale(1.05);
+  z-index: -2;
+}
+
+/* 渐变遮罩：上浅下深，保证白字可读，同时和下面的内容衔接 */
+.hero::after {
+  content: '';
+  position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(26, 22, 18, 0.45) 0%, rgba(26, 22, 18, 0.78) 100%);
+  background: linear-gradient(180deg, rgba(18, 26, 24, 0.55) 0%, rgba(18, 26, 24, 0.86) 100%);
+  z-index: -1;
 }
 
 .hero-inner { position: relative; z-index: 1; }
