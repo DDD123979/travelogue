@@ -2325,3 +2325,48 @@ input:-webkit-autofill:focus {
 .side-title {
   padding-top: 6px;
 }
+/* ============================================================
+ * 侧栏城市名：从「一行一个字」改成像素胶囊标签
+ * 原来只是普通文字链接，混在深色背景里不明显；现在加边框、
+ * 等宽字体和 hover 发光，既是视觉元素也更容易点中。
+ * ============================================================ */
+.type-side .type-dests {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 8px 0 12px;
+  padding: 0;
+  border-left: 0;
+  list-style: none;
+}
+
+.type-side .type-dests li { flex: none; margin: 0; }
+
+.type-side .type-dests a {
+  display: inline-block;
+  padding: 3px 9px;
+  border: 2px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text-secondary);
+  font-family: var(--font-pixel);
+  font-size: calc(12.5px * var(--fs));
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  line-height: 1.55;
+  box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.55);
+  transition: border-color 0.15s, color 0.15s, background 0.15s, box-shadow 0.15s, transform 0.15s;
+}
+
+.type-side .type-dests a:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: var(--primary-light);
+  box-shadow: 0 0 12px rgba(53, 224, 143, 0.35), 2px 2px 0 rgba(0, 0, 0, 0.55);
+  transform: translateY(-1px);
+}
+
+/* 手机宽度下也保持成排的胶囊，不要退回整行文字 */
+@media (max-width: 900px) {
+  .type-side .type-dests { gap: 5px; }
+  .type-side .type-dests a { padding: 3px 8px; }
+}
