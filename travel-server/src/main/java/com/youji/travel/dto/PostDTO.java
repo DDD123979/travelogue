@@ -14,6 +14,9 @@ public class PostDTO {
 
     private String username;
 
+    /** 作者头像地址，可为空串（没设置过就显示用户名首字） */
+    private String avatar;
+
     private Long destinationId;
 
     /** 目的地名，列表页直接展示，省得前端再查一次 */

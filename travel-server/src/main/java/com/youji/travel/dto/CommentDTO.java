@@ -12,6 +12,9 @@ public class CommentDTO {
 
     private String username;
 
+    /** 作者头像地址，可为空串（没设置过就显示用户名首字） */
+    private String avatar;
+
     private String content;
 
     /** yyyy-MM-dd HH:mm */

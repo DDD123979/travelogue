@@ -3033,3 +3033,18 @@ input:-webkit-autofill:focus {
   color: var(--primary);
   background: var(--primary-light);
 }
+/* 社区里的作者头像：有图就显示图，没图仍用首字方块 */
+.post-avatar-img {
+  object-fit: cover;
+  padding: 0;
+  border: 2px solid var(--border);
+}
+
+.comment-avatar {
+  width: 18px;
+  height: 18px;
+  object-fit: cover;
+  border: 1px solid var(--border);
+  flex: none;
+  align-self: center;
+}

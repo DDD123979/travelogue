@@ -15,6 +15,8 @@ import com.youji.travel.mapper.PostCommentMapper;
 import com.youji.travel.mapper.PostFavoriteMapper;
 import com.youji.travel.mapper.PostLikeMapper;
 import com.youji.travel.mapper.TravelPostMapper;
+import com.youji.travel.mapper.UserMapper;
+import com.youji.travel.entity.User;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -47,17 +49,20 @@ public class PostService {
     private final PostLikeMapper likeMapper;
     private final PostFavoriteMapper favoriteMapper;
     private final PostCommentMapper commentMapper;
+    private final UserMapper userMapper;
 
     public PostService(TravelPostMapper postMapper,
                        DestinationMapper destinationMapper,
                        PostLikeMapper likeMapper,
                        PostFavoriteMapper favoriteMapper,
-                       PostCommentMapper commentMapper) {
+                       PostCommentMapper commentMapper,
+                       UserMapper userMapper) {
         this.postMapper = postMapper;
         this.destinationMapper = destinationMapper;
         this.likeMapper = likeMapper;
         this.favoriteMapper = favoriteMapper;
         this.commentMapper = commentMapper;
+        this.userMapper = userMapper;
     }
 
     /* ---------- 列表 ---------- */
@@ -101,10 +106,13 @@ public class PostService {
         Map<Long, Long> commentCounts = commentCounts(postIds);
         Set<Long> myLikes = myLikes(postIds, username);
         Set<Long> myFavs = myFavorites(postIds, username);
+        Map<String, String> avatars = avatarsOf(
+                posts.stream().map(TravelPost::getUsername).distinct().toList());
 
         return posts.stream()
-                .map(p -> toDto(p, destNames.get(p.getDestinationId()), myLikes.contains(p.getId()),
-                        myFavs.contains(p.getId()), commentCounts.getOrDefault(p.getId(), 0L)))
+                .map(p -> toDto(p, destNames.get(p.getDestinationId()), avatars.get(p.getUsername()),
+                        myLikes.contains(p.getId()), myFavs.contains(p.getId()),
+                        commentCounts.getOrDefault(p.getId(), 0L)))
                 .toList();
     }
 
@@ -139,7 +147,7 @@ public class PostService {
         postMapper.insert(post);
 
         String destName = destinationMapper.selectById(post.getDestinationId()).getName();
-        return toDto(post, destName, false, false, 0);
+        return toDto(post, destName, avatarOf(username), false, false, 0);
     }
 
     /* ---------- 点赞 ---------- */
@@ -206,11 +214,13 @@ public class PostService {
 
     public List<CommentDTO> comments(Long postId) {
         requirePost(postId);
-        return commentMapper.selectList(Wrappers.<PostComment>lambdaQuery()
-                        .eq(PostComment::getPostId, postId)
-                        .orderByAsc(PostComment::getCreatedAt))
-                .stream()
-                .map(this::toCommentDto)
+        List<PostComment> rows = commentMapper.selectList(Wrappers.<PostComment>lambdaQuery()
+                .eq(PostComment::getPostId, postId)
+                .orderByAsc(PostComment::getCreatedAt));
+        Map<String, String> avatars = avatarsOf(
+                rows.stream().map(PostComment::getUsername).distinct().toList());
+        return rows.stream()
+                .map(c -> toCommentDto(c, avatars.get(c.getUsername())))
                 .toList();
     }
 
@@ -229,7 +239,7 @@ public class PostService {
         comment.setContent(text);
         comment.setCreatedAt(LocalDateTime.now());
         commentMapper.insert(comment);
-        return toCommentDto(comment);
+        return toCommentDto(comment, avatarOf(username));
     }
 
     public void deleteComment(Long commentId, String username) {
@@ -300,11 +310,12 @@ public class PostService {
                 .stream().map(PostFavorite::getPostId).toList());
     }
 
-    private PostDTO toDto(TravelPost p, String destinationName,
+    private PostDTO toDto(TravelPost p, String destinationName, String avatar,
                           boolean liked, boolean favorited, long commentCount) {
         PostDTO dto = new PostDTO();
         dto.setId(p.getId());
         dto.setUsername(p.getUsername());
+        dto.setAvatar(avatar == null ? "" : avatar);
         dto.setDestinationId(p.getDestinationId());
         dto.setDestinationName(destinationName == null ? "" : destinationName);
         dto.setContent(p.getContent());
@@ -317,14 +328,31 @@ public class PostService {
         return dto;
     }
 
-    private CommentDTO toCommentDto(PostComment c) {
+    private CommentDTO toCommentDto(PostComment c, String avatar) {
         CommentDTO dto = new CommentDTO();
         dto.setId(c.getId());
         dto.setPostId(c.getPostId());
         dto.setUsername(c.getUsername());
+        dto.setAvatar(avatar == null ? "" : avatar);
         dto.setContent(c.getContent());
         dto.setCreatedAt(c.getCreatedAt() == null ? "" : c.getCreatedAt().format(TIME));
         return dto;
+    }
+
+    /** 一次查出这批用户名的头像，返回 username -> avatar */
+    private Map<String, String> avatarsOf(List<String> usernames) {
+        if (usernames.isEmpty()) {
+            return Map.of();
+        }
+        return userMapper.selectList(Wrappers.<User>lambdaQuery().in(User::getUsername, usernames))
+                .stream()
+                .collect(Collectors.toMap(User::getUsername,
+                        u -> u.getAvatar() == null ? "" : u.getAvatar(), (a, b) -> a));
+    }
+
+    private String avatarOf(String username) {
+        Map<String, String> map = avatarsOf(List.of(username));
+        return map.getOrDefault(username, "");
     }
 
     private List<String> parseImages(String raw) {
