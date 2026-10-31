@@ -2313,3 +2313,15 @@ input:-webkit-autofill:focus {
   -webkit-box-shadow: 0 0 0 1000px var(--surface-2) inset;
   caret-color: var(--text);
 }
+/* 「全部」独立成一块，和下面的「景点类型」用虚线和标题拉开 */
+.all-group {
+  padding-bottom: 10px;
+  margin-bottom: 4px;
+  border-bottom: 1px dashed var(--border);
+}
+
+.all-group .type-head { font-weight: 600; }
+
+.side-title {
+  padding-top: 6px;
+}

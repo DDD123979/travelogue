@@ -153,11 +153,34 @@ const HomePage = {
 
         <div class="browse" v-else-if="attractionTypes.length">
           <aside class="type-side">
-            <h3 class="side-title">全部 · 景点类型</h3>
+            <!-- 「全部」单独一项，和下面的景点类型分开 -->
+            <div class="type-group all-group" :class="{ active: activeType === '全部' }">
+              <div class="type-row">
+                <button class="type-head" type="button" @click="selectType('全部')">
+                  <span class="type-name">全部</span>
+                  <span class="type-num">{{ groups[0].destinations.length }}</span>
+                </button>
+                <button
+                  class="type-toggle"
+                  type="button"
+                  :class="{ open: expanded['全部'] }"
+                  :aria-expanded="!!expanded['全部']"
+                  :title="expanded['全部'] ? '收起城市' : '展开城市'"
+                  @click.stop="toggleExpand('全部')"
+                >▾</button>
+              </div>
+              <ul class="type-dests" v-show="expanded['全部']">
+                <li v-for="d in groups[0].destinations" :key="d.id">
+                  <a :href="'#/destinations/' + d.id">{{ d.name }}</a>
+                </li>
+              </ul>
+            </div>
+
+            <h3 class="side-title">景点类型</h3>
 
             <div
               class="type-group"
-              v-for="t in groups"
+              v-for="t in attractionTypes"
               :key="t.name"
               :class="{ active: t.name === activeType }"
             >
