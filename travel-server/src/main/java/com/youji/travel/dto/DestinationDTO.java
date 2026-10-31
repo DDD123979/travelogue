@@ -34,6 +34,10 @@ public class DestinationDTO {
 
     private BigDecimal rating;
 
+
+    /** 热度分 0-100（排行页用） */
+
+    private Integer hotScore;
     private Integer priceFrom;
 
     private String days;

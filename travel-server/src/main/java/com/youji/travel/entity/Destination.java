@@ -53,5 +53,12 @@ public class Destination {
 
 
     private String highlightDesc;
+
+
+
+    /** 热度分 0-100，排行页按它排序 */
+
+
+    private Integer hotScore;
     private Integer sortOrder;
 }

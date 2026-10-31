@@ -100,6 +100,7 @@ public class DestinationService {
         dto.setCategory(d.getCategory());
         dto.setLocation(d.getLocation());
         dto.setRating(d.getRating());
+        dto.setHotScore(d.getHotScore());
         dto.setPriceFrom(d.getPriceFrom());
         dto.setDays(d.getDays());
         dto.setBestSeason(d.getBestSeason());

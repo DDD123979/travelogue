@@ -54,6 +54,7 @@ CREATE TABLE destination (
   description    VARCHAR(500) NOT NULL DEFAULT ''     COMMENT '目的地介绍',
   highlight_name VARCHAR(80)  NOT NULL DEFAULT '' COMMENT '最特色景点名',
   highlight_desc VARCHAR(600) NOT NULL DEFAULT '' COMMENT '该景点的详细介绍',
+  hot_score      INT          NOT NULL DEFAULT 60 COMMENT '热度分（0-100，编辑综合公开榜单给出）',
   sort_order     INT          NOT NULL DEFAULT 0      COMMENT '展示顺序',
   PRIMARY KEY (id),
   KEY idx_sort (sort_order)

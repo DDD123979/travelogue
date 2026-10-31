@@ -63,7 +63,10 @@ const ListPage = {
   },
   template: `
     <div class="page container">
-      <h1 class="page-title">目的地</h1>
+      <div class="page-head">
+        <h1 class="page-title">目的地</h1>
+        <a class="page-link" href="#/ranking">🏆 热度排行 →</a>
+      </div>
       <div class="filter-bar">
         <div class="filter-tabs">
           <button

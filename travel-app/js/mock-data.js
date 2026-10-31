@@ -22,6 +22,7 @@
 const MOCK_DESTINATIONS = [
   {
     id: 1,
+    hotScore: 96,
     name: '成都',
     enName: 'CHENGDU',
     category: '美食休闲',
@@ -46,6 +47,7 @@ const MOCK_DESTINATIONS = [
   },
   {
     id: 2,
+    hotScore: 94,
     name: '杭州',
     enName: 'HANGZHOU',
     category: '江南水乡',
@@ -70,6 +72,7 @@ const MOCK_DESTINATIONS = [
   },
   {
     id: 3,
+    hotScore: 95,
     name: '西安',
     enName: 'XIAN',
     category: '历史古迹',
@@ -94,6 +97,7 @@ const MOCK_DESTINATIONS = [
   },
   {
     id: 4,
+    hotScore: 90,
     name: '三亚',
     enName: 'SANYA',
     category: '海岛度假',
@@ -118,6 +122,7 @@ const MOCK_DESTINATIONS = [
   },
   {
     id: 5,
+    hotScore: 82,
     name: '大理',
     enName: 'DALI',
     category: '自然风光',
@@ -142,6 +147,7 @@ const MOCK_DESTINATIONS = [
   },
   {
     id: 6,
+    hotScore: 98,
     name: '北京',
     enName: 'BEIJING',
     category: '历史古迹',
@@ -166,6 +172,7 @@ const MOCK_DESTINATIONS = [
   },
   {
     id: 7,
+    hotScore: 88,
     name: '厦门',
     enName: 'XIAMEN',
     category: '海岛度假',
@@ -190,6 +197,7 @@ const MOCK_DESTINATIONS = [
   },
   {
     id: 8,
+    hotScore: 83,
     name: '丽江',
     enName: 'LIJIANG',
     category: '自然风光',
@@ -214,6 +222,7 @@ const MOCK_DESTINATIONS = [
   },
   {
     id: 9,
+    hotScore: 78,
     name: '广州',
     enName: 'GUANGZHOU',
     category: '美食休闲',
@@ -238,6 +247,7 @@ const MOCK_DESTINATIONS = [
   },
   {
     id: 10,
+    hotScore: 80,
     name: '武汉',
     enName: 'WUHAN',
     category: '历史古迹',
@@ -262,6 +272,7 @@ const MOCK_DESTINATIONS = [
   },
   {
     id: 11,
+    hotScore: 79,
     name: '长沙',
     enName: 'CHANGSHA',
     category: '美食休闲',
@@ -286,6 +297,7 @@ const MOCK_DESTINATIONS = [
   },
   {
     id: 12,
+    hotScore: 81,
     name: '南京',
     enName: 'NANJING',
     category: '历史古迹',
@@ -310,6 +322,7 @@ const MOCK_DESTINATIONS = [
   },
   {
     id: 13,
+    hotScore: 92,
     name: '上海',
     enName: 'SHANGHAI',
     category: '都市风情',
@@ -334,6 +347,7 @@ const MOCK_DESTINATIONS = [
   },
   {
     id: 14,
+    hotScore: 76,
     name: '深圳',
     enName: 'SHENZHEN',
     category: '都市风情',
@@ -358,6 +372,7 @@ const MOCK_DESTINATIONS = [
   },
   {
     id: 15,
+    hotScore: 93,
     name: '重庆',
     enName: 'CHONGQING',
     category: '美食休闲',
@@ -382,6 +397,7 @@ const MOCK_DESTINATIONS = [
   },
   {
     id: 16,
+    hotScore: 86,
     name: '桂林',
     enName: 'GUILIN',
     category: '自然风光',
@@ -406,6 +422,7 @@ const MOCK_DESTINATIONS = [
   },
   {
     id: 17,
+    hotScore: 85,
     name: '苏州',
     enName: 'SUZHOU',
     category: '江南水乡',
@@ -430,6 +447,7 @@ const MOCK_DESTINATIONS = [
   },
   {
     id: 18,
+    hotScore: 84,
     name: '青岛',
     enName: 'QINGDAO',
     category: '海岛度假',
@@ -454,6 +472,7 @@ const MOCK_DESTINATIONS = [
   },
   {
     id: 19,
+    hotScore: 87,
     name: '张家界',
     enName: 'ZHANGJIAJIE',
     category: '自然风光',
@@ -478,6 +497,7 @@ const MOCK_DESTINATIONS = [
   },
   {
     id: 20,
+    hotScore: 89,
     name: '敦煌',
     enName: 'DUNHUANG',
     category: '历史古迹',
