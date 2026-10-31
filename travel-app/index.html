@@ -15,7 +15,22 @@
   <script src="js/mock-data.js"></script>
   <!-- 数据接口层：对接后端时只需修改此文件 -->
   <script src="js/api.js"></script>
-  <!-- 应用入口：组件与路由 -->
+
+  <!-- 以下按依赖顺序加载（没有打包工具，顺序就是依赖关系）：
+       state 定义 store / 路由；card 与 markdown 是共用件；pages 各页面；最后 app.js 挂载 -->
+  <script src="js/state.js"></script>
+  <script src="js/components/card.js"></script>
+  <script src="js/lib/markdown.js"></script>
+  <script src="js/pages/home.js"></script>
+  <script src="js/pages/list.js"></script>
+  <script src="js/pages/detail.js"></script>
+  <script src="js/pages/booking.js"></script>
+  <script src="js/pages/orders.js"></script>
+  <script src="js/pages/favorites.js"></script>
+  <script src="js/pages/settings.js"></script>
+  <script src="js/pages/login.js"></script>
+  <script src="js/pages/ai.js"></script>
+  <!-- 应用入口：根组件与挂载，必须最后 -->
   <script src="js/app.js"></script>
 </body>
 </html>

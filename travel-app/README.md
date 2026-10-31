@@ -6,15 +6,26 @@
 
 ```
 travel-app/
-├── index.html          # 入口页面（按顺序加载 vue → mock-data → api → app）
-├── css/style.css       # 全站样式
+├── index.html              # 入口页面：按依赖顺序加载下面 15 个脚本
+├── css/style.css           # 全站样式
 ├── js/
-│   ├── mock-data.js    # 本地示例数据（14 目的地 / 42 酒店），仅 file:// 模式使用
-│   ├── api.js          # 数据接口层（全站唯一的数据出口）
-│   └── app.js          # Vue 组件 + 路由
+│   ├── mock-data.js        # 本地示例数据（14 目的地 / 42 酒店），仅 file:// 模式使用
+│   ├── api.js              # 数据接口层（全站唯一的数据出口）
+│   ├── state.js            # 全局状态、localStorage 持久化、hash 路由与登录守卫
+│   ├── components/
+│   │   └── card.js         # 目的地卡片（首页 / 列表 / 收藏共用）
+│   ├── lib/
+│   │   └── markdown.js     # AI 输出的 Markdown 转 HTML（先转义，防 XSS）
+│   ├── pages/              # 一个页面一个文件
+│   │   ├── home.js  list.js  detail.js  booking.js  orders.js
+│   │   └── favorites.js  settings.js  login.js  ai.js
+│   └── app.js              # 根组件（导航 + 路由出口）与挂载
 └── lib/
-    └── vue.global.prod.js   # Vue 3 本地库（离线可用）
+    └── vue.global.prod.js  # Vue 3 本地库（离线可用）
 ```
+
+> 加载顺序就是依赖关系（没有打包工具）：`vue → mock-data → api → state → card → markdown → pages… → app`。
+> 顶层 `const` 在经典脚本里属于全局词法作用域，后面的脚本直接可见，不需要 `import`。
 
 > `mock-data.js` 与 `travel-server/sql/data.sql` 是同一批数据，改的时候两处要一起改。
 

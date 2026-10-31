@@ -1,0 +1,104 @@
+/* =========================================================
+ * pages/detail.js — 目的地详情页
+ * （由原单文件 app.js 拆分，加载顺序见 index.html）
+ * ========================================================= */
+
+const DetailPage = {
+  props: { id: { type: Number, required: true } },
+  setup(props) {
+    const item = ref(null);
+    const loading = ref(true);
+    const error = ref('');
+
+    onMounted(async () => {
+      try {
+        item.value = await api.getDestination(props.id);
+      } catch (e) {
+        error.value = e.message;
+      } finally {
+        loading.value = false;
+      }
+    });
+
+    const bg = computed(() =>
+      item.value
+        ? `background: linear-gradient(120deg, ${item.value.gradient[0]}, ${item.value.gradient[1]})`
+        : ''
+    );
+
+    // 跳到 AI 规划页，并把当前目的地一起带过去（AiPage 里读 query.dest 预选）
+    function planWithAi() {
+      go('/ai?dest=' + props.id);
+    }
+
+    // 同理，跳到预订页并带上当前目的地（BookingPage 里读 query.dest 预选城市）
+    function bookNow() {
+      go('/booking?dest=' + props.id);
+    }
+
+    return { item, loading, error, bg, store, planWithAi, bookNow };
+  },
+  template: `
+    <div class="page container">
+      <div class="loading" v-if="loading"><span></span><br />加载中…</div>
+
+      <div class="empty" v-else-if="error">
+        <div class="icon">🧭</div>
+        <p>{{ error }}</p>
+        <a class="btn btn-outline btn-sm" href="#/destinations">返回列表</a>
+      </div>
+
+      <template v-else>
+        <div class="detail-hero" :style="bg">
+          <div class="en">{{ item.enName }} · {{ item.location }}</div>
+          <h1>{{ item.name }}</h1>
+          <div class="sub">
+            <span>评分 {{ item.rating }}</span>
+            <span>建议游玩 {{ item.days }}</span>
+            <span>最佳季节 {{ item.bestSeason }}</span>
+          </div>
+          <button class="fav-btn" :class="{ on: store.isFav(item.id) }" @click="store.toggleFav(item.id)">
+            {{ store.isFav(item.id) ? '★ 已收藏' : '☆ 收藏' }}
+          </button>
+        </div>
+
+        <div class="detail-layout">
+          <div class="detail-main">
+            <h2>目的地介绍</h2>
+            <p style="color: var(--text-secondary); font-size: 15px;">{{ item.description }}</p>
+
+            <h2>推荐景点</h2>
+            <div class="attraction-item" v-for="a in item.attractions" :key="a.name">
+              <div class="head">
+                <span class="name">{{ a.name }}</span>
+                <span class="time">{{ a.time }}</span>
+              </div>
+              <p>{{ a.desc }}</p>
+            </div>
+          </div>
+
+          <aside class="side-card">
+            <div class="label">行程参考价</div>
+            <div class="price-line">
+              <b>¥{{ item.priceFrom }}</b>
+              <span style="font-size: 13px; color: var(--text-muted);">/ 人起</span>
+            </div>
+            <div class="divider"></div>
+            <div class="label">类别</div>
+            <div class="value">{{ item.category }}</div>
+            <div class="label">位置</div>
+            <div class="value">{{ item.location }}</div>
+            <div class="label">建议游玩</div>
+            <div class="value">{{ item.days }}</div>
+            <div class="label">最佳季节</div>
+            <div class="value">{{ item.bestSeason }}</div>
+            <button class="btn btn-outline" @click="planWithAi">✨ AI 生成行程</button>
+            <button class="btn btn-primary" @click="bookNow">立即预订</button>
+          </aside>
+        </div>
+      </template>
+    </div>
+  `,
+};
+
+// 收藏页
