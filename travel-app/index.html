@@ -11,6 +11,8 @@
 
   <!-- Vue 3 本地运行库，无需联网 -->
   <script src="lib/vue.global.prod.js"></script>
+  <!-- 本地示例数据：只有 file:// 打开时才用，必须先于 api.js 加载 -->
+  <script src="js/mock-data.js"></script>
   <!-- 数据接口层：对接后端时只需修改此文件 -->
   <script src="js/api.js"></script>
   <!-- 应用入口：组件与路由 -->

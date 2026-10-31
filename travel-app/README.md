@@ -6,14 +6,17 @@
 
 ```
 travel-app/
-├── index.html          # 入口页面
+├── index.html          # 入口页面（按顺序加载 vue → mock-data → api → app）
 ├── css/style.css       # 全站样式
 ├── js/
+│   ├── mock-data.js    # 本地示例数据（14 目的地 / 42 酒店），仅 file:// 模式使用
 │   ├── api.js          # 数据接口层（全站唯一的数据出口）
 │   └── app.js          # Vue 组件 + 路由
 └── lib/
     └── vue.global.prod.js   # Vue 3 本地库（离线可用）
 ```
+
+> `mock-data.js` 与 `travel-server/sql/data.sql` 是同一批数据，改的时候两处要一起改。
 
 ## 页面与功能
 

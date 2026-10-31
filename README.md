@@ -46,6 +46,7 @@
 ├── travel-app/                 前端（双击 index.html 即可打开，无需构建）
 │   ├── index.html              唯一入口页面
 │   ├── css/style.css           全站样式（字号统一走 --fs 变量）
+│   ├── js/mock-data.js         本地示例数据（仅 file:// 模式使用）
 │   ├── js/api.js               唯一数据出口：mock 数据 / 后端请求都在这里切换
 │   ├── js/app.js               Vue 组件与路由
 │   └── lib/vue.global.prod.js  Vue 3 本地运行库

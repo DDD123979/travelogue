@@ -24,7 +24,9 @@ travel-server/redis/
 .env.*
 !.env.example
 application-local.yml
-.claude/settings.local.json
+
+# 个人工具配置（Claude Code 的权限白名单里含本机绝对路径，不随项目走）
+.claude/
 
 # 部署用的 SSH 私钥（绝不能进仓库）
 .deploy/
