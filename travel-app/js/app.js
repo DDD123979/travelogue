@@ -63,6 +63,13 @@ const App = {
       { immediate: true }
     );
 
+    // 启动时同步一次服务端资料：换设备 / 换头像后本地会话可能是旧的
+    onMounted(async () => {
+      if (!store.user) return;
+      const fresh = await api.refreshProfile();
+      if (fresh) store.user = { username: fresh.username, avatar: fresh.avatar || '' };
+    });
+
     const avatar = computed(() =>
       store.user ? store.user.username.slice(0, 1).toUpperCase() : '?'
     );

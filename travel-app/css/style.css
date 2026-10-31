@@ -3048,3 +3048,20 @@ input:-webkit-autofill:focus {
   flex: none;
   align-self: center;
 }
+/* 头像图：去掉绿色底，避免图片没铺满时露出色块 */
+.user-avatar.avatar-img {
+  background: transparent;
+  padding: 0;
+  object-fit: cover;
+  image-rendering: -webkit-optimize-contrast;
+}
+
+/* 细密插画类头像在 30px 下会糊，稍微放大一点更好认 */
+.user-chip .avatar-img {
+  width: 34px;
+  height: 34px;
+}
+
+.avatar-preview img {
+  image-rendering: -webkit-optimize-contrast;
+}

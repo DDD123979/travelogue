@@ -225,7 +225,8 @@ const SettingsPage = {
       <section class="settings-card">
         <div class="setting-row">
           <div class="account-left">
-            <span class="user-avatar lg">{{ avatar }}</span>
+            <img v-if="store.user && store.user.avatar" class="user-avatar lg avatar-img" :src="store.user.avatar" alt="头像" />
+            <span v-else class="user-avatar lg">{{ avatar }}</span>
             <div>
               <div class="title">
                 {{ store.user ? store.user.username : '未登录' }}

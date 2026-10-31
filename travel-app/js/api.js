@@ -260,6 +260,23 @@ const api = {
     return data;
   },
 
+  /**
+   * 用服务端的最新资料刷新本地会话（头像可能是在别的设备/浏览器换的）。
+   * 401 时静默失败，交给 request() 里的统一处理。
+   */
+  async refreshProfile() {
+    const session = getSession();
+    if (!session || !session.token || USE_MOCK) return session;
+    try {
+      const me = await request('/api/auth/me');
+      const next = { ...session, username: me.username, avatar: me.avatar || '' };
+      localStorage.setItem(SESSION_KEY, JSON.stringify(next));
+      return next;
+    } catch (e) {
+      return session;
+    }
+  },
+
   /** 退出登录 */
   logout() {
     localStorage.removeItem(SESSION_KEY);
