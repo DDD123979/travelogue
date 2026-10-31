@@ -431,10 +431,12 @@ const api = {
   /* ---------- 社区：旅行分享 ---------- */
 
   /** 帖子列表；传 destinationId 只看某个城市 */
-  getPosts(destinationId) {
+  getPosts(destinationId, favorites) {
     if (USE_MOCK) return Promise.resolve([]);
-    const qs = destinationId ? '?destinationId=' + encodeURIComponent(destinationId) : '';
-    return request('/api/posts' + qs);
+    const params = [];
+    if (destinationId) params.push('destinationId=' + encodeURIComponent(destinationId));
+    if (favorites) params.push('favorites=true');
+    return request('/api/posts' + (params.length ? '?' + params.join('&') : ''));
   },
 
   /** 发布分享：{ destinationId, content, images: [url...] } */
@@ -442,9 +444,31 @@ const api = {
     return request('/api/posts', { method: 'POST', body: JSON.stringify(payload) });
   },
 
-  /** 点赞（可重复点，不做去重） */
+  /** 点赞 / 取消点赞（toggle），返回 { liked, likeCount } */
   likePost(id) {
     return request('/api/posts/' + id + '/like', { method: 'POST' });
+  },
+
+  /** 收藏 / 取消收藏（toggle），返回 { favorited, favoriteCount } */
+  favoritePost(id) {
+    return request('/api/posts/' + id + '/favorite', { method: 'POST' });
+  },
+
+  /* ---------- 评论 ---------- */
+
+  getComments(postId) {
+    return request('/api/posts/' + postId + '/comments');
+  },
+
+  addComment(postId, content) {
+    return request('/api/posts/' + postId + '/comments', {
+      method: 'POST',
+      body: JSON.stringify({ content }),
+    });
+  },
+
+  deleteComment(commentId) {
+    return request('/api/comments/' + commentId, { method: 'DELETE' });
   },
 
   /** 删除自己的分享 */

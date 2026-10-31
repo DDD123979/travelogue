@@ -1,6 +1,8 @@
 package com.youji.travel.controller;
 
 import com.youji.travel.common.ApiException;
+import com.youji.travel.dto.CommentDTO;
+import com.youji.travel.dto.CommentRequest;
 import com.youji.travel.dto.PostDTO;
 import com.youji.travel.dto.PostRequest;
 import com.youji.travel.service.PostService;
@@ -22,10 +24,10 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 社区：旅行分享 + 照片上传。
+ * 社区：旅行分享 + 照片上传 + 点赞 / 收藏 / 评论。
  *
- * 读接口（列表）不要求登录；发布、点赞、删除、上传都要带
- * Authorization: Bearer <token>。
+ * 读接口（列表、评论）不要求登录；写接口都要带
+ * Authorization: Bearer <token>。列表接口就算带了 token 也不强制。
  */
 @RestController
 @RequestMapping("/api")
@@ -43,9 +45,12 @@ public class CommunityController {
         this.tokenService = tokenService;
     }
 
+    /** 列表：可按目的地过滤，favorites=true 只看我收藏的 */
     @GetMapping("/posts")
-    public List<PostDTO> list(@RequestParam(required = false) Long destinationId) {
-        return postService.list(destinationId);
+    public List<PostDTO> list(@RequestParam(required = false) Long destinationId,
+                              @RequestParam(required = false, defaultValue = "false") boolean favorites,
+                              @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorization) {
+        return postService.list(destinationId, tokenService.resolveUsername(authorization), favorites);
     }
 
     @PostMapping("/posts")
@@ -54,11 +59,37 @@ public class CommunityController {
         return postService.create(requireUser(authorization), request);
     }
 
+    /** 点赞 / 取消点赞（toggle） */
     @PostMapping("/posts/{id}/like")
-    public PostDTO like(@PathVariable Long id,
-                        @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorization) {
-        requireUser(authorization);
-        return postService.like(id);
+    public Map<String, Object> like(@PathVariable Long id,
+                                    @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorization) {
+        return postService.toggleLike(id, requireUser(authorization));
+    }
+
+    /** 收藏 / 取消收藏（toggle） */
+    @PostMapping("/posts/{id}/favorite")
+    public Map<String, Object> favorite(@PathVariable Long id,
+                                        @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorization) {
+        return postService.toggleFavorite(id, requireUser(authorization));
+    }
+
+    @GetMapping("/posts/{id}/comments")
+    public List<CommentDTO> comments(@PathVariable Long id) {
+        return postService.comments(id);
+    }
+
+    @PostMapping("/posts/{id}/comments")
+    public CommentDTO addComment(@PathVariable Long id,
+                                 @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorization,
+                                 @RequestBody CommentRequest request) {
+        return postService.addComment(id, requireUser(authorization), request.getContent());
+    }
+
+    @DeleteMapping("/comments/{id}")
+    public Map<String, String> deleteComment(@PathVariable Long id,
+                                             @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorization) {
+        postService.deleteComment(id, requireUser(authorization));
+        return Map.of("message", "评论已删除");
     }
 
     @DeleteMapping("/posts/{id}")

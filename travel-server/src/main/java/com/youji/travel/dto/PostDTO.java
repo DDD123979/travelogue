@@ -26,6 +26,15 @@ public class PostDTO {
 
     private Integer likeCount;
 
+    /** 评论数 */
+    private Long commentCount;
+
+    /** 当前登录用户是否点过赞 */
+    private Boolean liked;
+
+    /** 当前登录用户是否收藏过 */
+    private Boolean favorited;
+
     /** yyyy-MM-dd HH:mm */
     private String createdAt;
 }

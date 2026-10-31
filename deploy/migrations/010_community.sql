@@ -15,6 +15,6 @@ CREATE TABLE IF NOT EXISTS travel_post (
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '社区分享';
 
 INSERT INTO travel_post (username, destination_id, content, images, like_count, created_at) VALUES
-('dou123', 1, '第一次去成都，最大的经验是：熊猫基地一定要早上八点前进园。中午熊猫全在睡觉，看到的都是毛球。下午去宽窄巷子喝茶，一天刚刚好。', '', 12, NOW() - INTERVAL 2 DAY),
-('dou123', 6, '故宫真的太大了，中轴线走完就已经累瘫。建议午门进、神武门出，东西六宫挑两个看，珍宝馆别错过。提前七天抢票，手慢无。', '', 27, NOW() - INTERVAL 1 DAY),
-('dou123', 21, '龙门石窟比想象中震撼，卢舍那大佛那一龛光线最好的是下午。从北门进、南门出，一路走一路看，三个小时不太够。', '/img/destinations/luoyang.jpg', 8, NOW() - INTERVAL 5 HOUR);
+('dou123', 1, '第一次去成都，最大的经验是：熊猫基地一定要早上八点前进园。中午熊猫全在睡觉，看到的都是毛球。下午去宽窄巷子喝茶，一天刚刚好。', '', 0, NOW() - INTERVAL 2 DAY),
+('dou123', 6, '故宫真的太大了，中轴线走完就已经累瘫。建议午门进、神武门出，东西六宫挑两个看，珍宝馆别错过。提前七天抢票，手慢无。', '', 0, NOW() - INTERVAL 1 DAY),
+('dou123', 21, '龙门石窟比想象中震撼，卢舍那大佛那一龛光线最好的是下午。从北门进、南门出，一路走一路看，三个小时不太够。', '/img/destinations/luoyang.jpg',  0, NOW() - INTERVAL 5 HOUR);
