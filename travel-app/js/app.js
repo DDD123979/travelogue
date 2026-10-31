@@ -72,6 +72,77 @@ const App = {
       if (fresh) store.user = { username: fresh.username, avatar: fresh.avatar || '' };
     });
 
+    /* ---------- 社区互动通知（轮询） ---------- */
+    const notices = reactive([]);
+    const NOTIFY_CURSOR = 'youji:notify:cursor';
+    let cursor = Number(localStorage.getItem(NOTIFY_CURSOR) || 0);
+    let notifyTimer = null;
+    let notifyStarted = false;
+
+    const NOTIFY_TEXT = {
+      like: (n) => n + ' 赞了你',
+      favorite: (n) => n + ' 收藏了你的帖子',
+      comment: (n, c) => n + '：' + c,
+    };
+
+    function pushNotice(item) {
+      const id = item.id;
+      notices.push({
+        id,
+        kind: item.type,
+        text: (NOTIFY_TEXT[item.type] || ((n) => n))(item.actorName || item.actor, item.content || ''),
+      });
+      // 5 秒后自动消失
+      setTimeout(() => {
+        const i = notices.findIndex((n) => n.id === id);
+        if (i >= 0) notices.splice(i, 1);
+      }, 5000);
+    }
+
+    async function pollNotices() {
+      if (!store.user || document.hidden) return;
+      try {
+        const list = await api.getNotifications(cursor);
+        if (!list.length) return;
+        const maxId = list[list.length - 1].id;
+        if (cursor === 0) {
+          // 第一次打开：只记录游标，不把历史互动全弹出来
+          cursor = maxId;
+          localStorage.setItem(NOTIFY_CURSOR, String(cursor));
+          return;
+        }
+        list.forEach(pushNotice);
+        cursor = maxId;
+        localStorage.setItem(NOTIFY_CURSOR, String(cursor));
+      } catch (e) {
+        // 未登录 / 网络抖动都静默，不打扰用户
+      }
+    }
+
+    function startNotify() {
+      if (notifyStarted) return;
+      notifyStarted = true;
+      pollNotices();
+      notifyTimer = setInterval(pollNotices, 12000);
+    }
+
+    function openNotice() {
+      go('/community');
+      notices.splice(0, notices.length);
+    }
+
+    onMounted(() => {
+      if (store.user) startNotify();
+    });
+
+    watch(() => store.user && store.user.username, (name) => {
+      if (name) startNotify();
+    });
+
+    onUnmounted(() => {
+      if (notifyTimer) clearInterval(notifyTimer);
+    });
+
     // 展示名：有昵称用昵称，没有退回登录名
     const displayName = computed(() => {
       const u = store.user;
@@ -169,6 +240,16 @@ const App = {
     <footer class="site-footer" v-if="view.name !== 'login'">
       游迹 · 发现你的下一场旅行
     </footer>
+
+    <!-- 社区互动通知：右下角小弹窗 -->
+    <div class="toast-stack" v-if="notices.length">
+      <div class="toast" v-for="n in notices" :key="n.id" @click="openNotice">
+        <span class="toast-kind" :class="'k-' + n.kind">
+          {{ n.kind === 'like' ? '❤️' : (n.kind === 'favorite' ? '⭐' : '💬') }}
+        </span>
+        <span class="toast-text">{{ n.text }}</span>
+      </div>
+    </div>
   `,
 };
 

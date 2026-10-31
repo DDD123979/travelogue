@@ -473,6 +473,11 @@ const api = {
     return request('/api/posts', { method: 'POST', body: JSON.stringify(payload) });
   },
 
+  /** 互动通知：afterId 是上次拿到的最大事件 id，返回比我大的最新 20 条 */
+  getNotifications(afterId) {
+    return request('/api/notifications?afterId=' + (afterId || 0));
+  },
+
   /** 我发布的所有分享（个人主页用） */
   getMyPosts() {
     return request('/api/posts?mine=true');

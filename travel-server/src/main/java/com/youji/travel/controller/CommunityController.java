@@ -78,6 +78,14 @@ public class CommunityController {
         return postService.toggleFavorite(id, requireUser(authorization));
     }
 
+    /** 我的互动通知（轮询用，afterId 是上次拿到的最大 id） */
+    @GetMapping("/notifications")
+    public List<NotifyDTO> notifications(
+            @RequestParam(required = false, defaultValue = "0") Long afterId,
+            @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorization) {
+        return postService.notifications(requireUser(authorization), afterId);
+    }
+
     @GetMapping("/posts/{id}/comments")
     public List<CommentDTO> comments(@PathVariable Long id) {
         return postService.comments(id);

@@ -15,6 +15,9 @@ import com.youji.travel.mapper.PostCommentMapper;
 import com.youji.travel.mapper.PostFavoriteMapper;
 import com.youji.travel.mapper.PostLikeMapper;
 import com.youji.travel.mapper.TravelPostMapper;
+import com.youji.travel.mapper.PostEventMapper;
+import com.youji.travel.dto.NotifyDTO;
+import com.youji.travel.entity.PostEvent;
 import com.youji.travel.mapper.UserMapper;
 import com.youji.travel.entity.User;
 import org.springframework.stereotype.Service;
@@ -50,19 +53,22 @@ public class PostService {
     private final PostFavoriteMapper favoriteMapper;
     private final PostCommentMapper commentMapper;
     private final UserMapper userMapper;
+    private final PostEventMapper eventMapper;
 
     public PostService(TravelPostMapper postMapper,
                        DestinationMapper destinationMapper,
                        PostLikeMapper likeMapper,
                        PostFavoriteMapper favoriteMapper,
                        PostCommentMapper commentMapper,
-                       UserMapper userMapper) {
+                       UserMapper userMapper,
+                       PostEventMapper eventMapper) {
         this.postMapper = postMapper;
         this.destinationMapper = destinationMapper;
         this.likeMapper = likeMapper;
         this.favoriteMapper = favoriteMapper;
         this.commentMapper = commentMapper;
         this.userMapper = userMapper;
+        this.eventMapper = eventMapper;
     }
 
     /* ---------- 列表 ---------- */
@@ -172,6 +178,7 @@ public class PostService {
             like.setCreatedAt(LocalDateTime.now());
             likeMapper.insert(like);
             liked = true;
+            recordEvent(post, username, "like", "");
         } else {
             likeMapper.deleteById(existing.getId());
             liked = false;
@@ -190,7 +197,7 @@ public class PostService {
     /* ---------- 收藏 ---------- */
 
     public Map<String, Object> toggleFavorite(Long postId, String username) {
-        requirePost(postId);
+        TravelPost post = requirePost(postId);
         PostFavorite existing = favoriteMapper.selectOne(Wrappers.<PostFavorite>lambdaQuery()
                 .eq(PostFavorite::getPostId, postId)
                 .eq(PostFavorite::getUsername, username));
@@ -203,6 +210,7 @@ public class PostService {
             fav.setCreatedAt(LocalDateTime.now());
             favoriteMapper.insert(fav);
             favorited = true;
+            recordEvent(post, username, "favorite", "");
         } else {
             favoriteMapper.deleteById(existing.getId());
             favorited = false;
@@ -244,6 +252,7 @@ public class PostService {
         comment.setContent(text);
         comment.setCreatedAt(LocalDateTime.now());
         commentMapper.insert(comment);
+        recordEvent(postMapper.selectById(comment.getPostId()), username, "comment", text);
         return toCommentDto(comment, usersOf(List.of(username)).get(username));
     }
 
@@ -273,6 +282,47 @@ public class PostService {
         favoriteMapper.delete(Wrappers.<PostFavorite>lambdaQuery().eq(PostFavorite::getPostId, id));
         commentMapper.delete(Wrappers.<PostComment>lambdaQuery().eq(PostComment::getPostId, id));
         postMapper.deleteById(id);
+    }
+
+    /** 记录互动事件；自己操作自己的帖子不通知 */
+    private void recordEvent(TravelPost post, String actor, String type, String content) {
+        if (post == null || post.getUsername() == null || post.getUsername().equals(actor)) {
+            return;
+        }
+        PostEvent event = new PostEvent();
+        event.setPostId(post.getId());
+        event.setOwner(post.getUsername());
+        event.setActor(actor);
+        event.setType(type);
+        event.setContent(content == null ? "" : content);
+        event.setCreatedAt(LocalDateTime.now());
+        eventMapper.insert(event);
+    }
+
+    /** 我的未读通知：id 大于游标的最新 20 条 */
+    public List<NotifyDTO> notifications(String owner, Long afterId) {
+        List<PostEvent> events = eventMapper.selectList(Wrappers.<PostEvent>lambdaQuery()
+                .eq(PostEvent::getOwner, owner)
+                .gt(PostEvent::getId, afterId == null ? 0L : afterId)
+                .orderByAsc(PostEvent::getId)
+                .last("limit 20"));
+        if (events.isEmpty()) {
+            return List.of();
+        }
+        Map<String, User> users = usersOf(events.stream().map(PostEvent::getActor).distinct().toList());
+        return events.stream().map(e -> {
+            User actor = users.get(e.getActor());
+            NotifyDTO dto = new NotifyDTO();
+            dto.setId(e.getId());
+            dto.setType(e.getType());
+            dto.setPostId(e.getPostId());
+            dto.setActor(e.getActor());
+            dto.setActorName(nickOf(actor, e.getActor()));
+            dto.setActorAvatar(avatarOf(actor));
+            dto.setContent(e.getContent());
+            dto.setCreatedAt(e.getCreatedAt() == null ? "" : e.getCreatedAt().format(TIME));
+            return dto;
+        }).toList();
     }
 
     /* ---------- 内部工具 ---------- */

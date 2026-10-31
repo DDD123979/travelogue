@@ -3207,3 +3207,65 @@ input:-webkit-autofill:focus {
 .profile-sub, .setting-row .desc {
   letter-spacing: 0.02em;
 }
+/* ============================================================
+ * 社区互动通知：右下角小弹窗
+ * ============================================================ */
+.toast-stack {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 9600;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: min(360px, calc(100vw - 36px));
+}
+
+.toast {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  background: var(--surface);
+  border: 2px solid var(--primary-dim);
+  box-shadow: 4px 4px 0 #05080c, 0 0 18px rgba(53, 224, 143, 0.18);
+  color: var(--text);
+  font-size: calc(13px * var(--fs));
+  cursor: pointer;
+  animation: toast-in 0.22s ease;
+}
+
+@keyframes toast-in {
+  from { opacity: 0; transform: translateX(16px); }
+  to { opacity: 1; transform: none; }
+}
+
+.toast:hover { border-color: var(--primary); }
+
+.toast-kind {
+  flex: none;
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  background: var(--primary-light);
+  border: 1px solid var(--primary-dim);
+}
+
+.toast-text {
+  flex: 1;
+  min-width: 0;
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+/* 三类的强调色略有区别 */
+.toast-kind.k-like { background: rgba(255, 107, 129, 0.14); border-color: rgba(255, 107, 129, 0.5); }
+.toast-kind.k-favorite { background: rgba(245, 196, 81, 0.14); border-color: rgba(245, 196, 81, 0.5); }
+.toast-kind.k-comment { background: rgba(53, 224, 143, 0.14); border-color: var(--primary-dim); }
+
+@media (max-width: 600px) {
+  .toast-stack { right: 10px; left: 10px; bottom: 10px; max-width: none; }
+}
