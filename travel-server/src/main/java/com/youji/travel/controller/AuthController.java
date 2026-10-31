@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
+import com.youji.travel.dto.NicknameRequest;
 import com.youji.travel.dto.PasswordRequest;
 import com.youji.travel.service.UploadService;
 import org.springframework.web.bind.annotation.RequestParam;
