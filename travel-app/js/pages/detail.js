@@ -68,6 +68,12 @@ const DetailPage = {
             <h2>目的地介绍</h2>
             <p style="color: var(--text-secondary); font-size: 15px;">{{ item.description }}</p>
 
+            <!-- 最特色景点的深度介绍：攻略站的核心内容 -->
+            <div class="hl-box" v-if="item.highlight">
+              <div class="hl-head"><span class="hl-badge">必去</span>{{ item.highlight.name }}</div>
+              <p>{{ item.highlight.desc }}</p>
+            </div>
+
             <!-- 景点数据在库里每个目的地都有 3 条，正好排成 3 天；万一是空的就整块不显示 -->
             <template v-if="itinerary.length">
               <h2>参考行程</h2>

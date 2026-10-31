@@ -52,6 +52,8 @@ CREATE TABLE destination (
   gradient_end   VARCHAR(9)   NOT NULL                COMMENT '封面兜底渐变结束色',
   image          VARCHAR(500) NOT NULL DEFAULT ''     COMMENT '封面照片地址，可为空（为空则前端用渐变）',
   description    VARCHAR(500) NOT NULL DEFAULT ''     COMMENT '目的地介绍',
+  highlight_name VARCHAR(80)  NOT NULL DEFAULT '' COMMENT '最特色景点名',
+  highlight_desc VARCHAR(600) NOT NULL DEFAULT '' COMMENT '该景点的详细介绍',
   sort_order     INT          NOT NULL DEFAULT 0      COMMENT '展示顺序',
   PRIMARY KEY (id),
   KEY idx_sort (sort_order)

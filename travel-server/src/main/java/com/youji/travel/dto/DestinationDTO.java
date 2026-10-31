@@ -50,5 +50,10 @@ public class DestinationDTO {
 
     private String description;
 
+    /** 最特色景点：{ name, desc }，攻略页展示 */
+
+    private HighlightDTO highlight;
+
+
     private List<AttractionDTO> attractions = new ArrayList<>();
 }

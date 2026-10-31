@@ -3,6 +3,7 @@ package com.youji.travel.service;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.youji.travel.dto.AttractionDTO;
 import com.youji.travel.dto.DestinationDTO;
+import com.youji.travel.dto.HighlightDTO;
 import com.youji.travel.entity.Destination;
 import com.youji.travel.entity.DestinationAttraction;
 import com.youji.travel.entity.DestinationTag;
@@ -107,6 +108,9 @@ public class DestinationService {
         dto.setImage(d.getImage() == null ? "" : d.getImage());
         dto.setTags(tagMap.getOrDefault(d.getId(), List.of()));
         dto.setDescription(d.getDescription());
+        if (d.getHighlightName() != null && !d.getHighlightName().isEmpty()) {
+            dto.setHighlight(new HighlightDTO(d.getHighlightName(), d.getHighlightDesc()));
+        }
         dto.setAttractions(attractionMap.getOrDefault(d.getId(), List.of()));
         return dto;
     }

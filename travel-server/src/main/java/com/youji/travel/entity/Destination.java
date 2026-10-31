@@ -46,5 +46,12 @@ public class Destination {
 
     private String description;
 
+
+    /** 最特色景点名 + 详细介绍（攻略版块） */
+
+    private String highlightName;
+
+
+    private String highlightDesc;
     private Integer sortOrder;
 }

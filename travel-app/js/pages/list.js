@@ -83,8 +83,43 @@ const ListPage = {
             <button class="link-btn" @click="clearType">清除</button>
           </span>
         </div>
-        <div class="card-grid" v-if="filtered.length">
-          <DestinationCard v-for="d in filtered" :key="d.id" :item="d" />
+        <!-- 汇总清单：一个地区一行，带「最特色景点」的详细介绍 -->
+        <div class="region-list" v-if="filtered.length">
+          <article class="region-item" v-for="d in filtered" :key="d.id">
+            <a
+              class="region-cover"
+              :href="'#/destinations/' + d.id"
+              :style="{ background: 'linear-gradient(135deg,' + d.gradient[0] + ',' + d.gradient[1] + ')' }"
+            >
+              <img
+                v-if="d.image"
+                :src="d.image"
+                :alt="d.name + ' 封面'"
+                loading="lazy"
+                referrerpolicy="no-referrer"
+                @error="$event.target.style.display = 'none'"
+              />
+            </a>
+
+            <div class="region-body">
+              <div class="region-head">
+                <h3><a :href="'#/destinations/' + d.id">{{ d.name }}</a></h3>
+                <span class="region-meta">{{ d.location }} · {{ d.category }} · {{ d.rating }} 分 · 建议 {{ d.days }}</span>
+              </div>
+
+              <p class="region-intro">{{ d.description }}</p>
+
+              <div class="region-hl" v-if="d.highlight">
+                <div class="hl-title"><span class="hl-badge">必去</span>{{ d.highlight.name }}</div>
+                <p>{{ d.highlight.desc }}</p>
+              </div>
+
+              <div class="region-foot">
+                <span class="tag" v-for="t in d.tags" :key="t">{{ t }}</span>
+                <a class="region-more" :href="'#/destinations/' + d.id">查看详情 →</a>
+              </div>
+            </div>
+          </article>
         </div>
         <div class="empty" v-else>
           <div class="icon">🧭</div>
