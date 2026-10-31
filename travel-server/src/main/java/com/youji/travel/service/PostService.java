@@ -72,12 +72,15 @@ public class PostService {
      * @param username      当前登录用户，用来标记「我点过赞 / 收藏过」，可为 null
      * @param favoritesOnly 只看我收藏的
      */
-    public List<PostDTO> list(Long destinationId, String username, boolean favoritesOnly) {
+    public List<PostDTO> list(Long destinationId, String username, boolean favoritesOnly, String author) {
         var query = Wrappers.<TravelPost>lambdaQuery()
                 .orderByDesc(TravelPost::getCreatedAt)
                 .last("limit 100");
         if (destinationId != null) {
             query.eq(TravelPost::getDestinationId, destinationId);
+        }
+        if (author != null) {
+            query.eq(TravelPost::getUsername, author);
         }
         if (favoritesOnly) {
             if (username == null) {
@@ -104,6 +107,7 @@ public class PostService {
 
         // 这三个集合一次查完，避免每条帖子各查一次
         Map<Long, Long> commentCounts = commentCounts(postIds);
+        Map<Long, Long> favoriteCounts = favoriteCounts(postIds);
         Set<Long> myLikes = myLikes(postIds, username);
         Set<Long> myFavs = myFavorites(postIds, username);
         Map<String, String> avatars = avatarsOf(
@@ -112,7 +116,8 @@ public class PostService {
         return posts.stream()
                 .map(p -> toDto(p, destNames.get(p.getDestinationId()), avatars.get(p.getUsername()),
                         myLikes.contains(p.getId()), myFavs.contains(p.getId()),
-                        commentCounts.getOrDefault(p.getId(), 0L)))
+                        commentCounts.getOrDefault(p.getId(), 0L),
+                        favoriteCounts.getOrDefault(p.getId(), 0L)))
                 .toList();
     }
 
@@ -147,7 +152,7 @@ public class PostService {
         postMapper.insert(post);
 
         String destName = destinationMapper.selectById(post.getDestinationId()).getName();
-        return toDto(post, destName, avatarOf(username), false, false, 0);
+        return toDto(post, destName, avatarOf(username), false, false, 0, 0);
     }
 
     /* ---------- 点赞 ---------- */
@@ -290,6 +295,16 @@ public class PostService {
         return counts;
     }
 
+    private Map<Long, Long> favoriteCounts(List<Long> postIds) {
+        List<PostFavorite> all = favoriteMapper.selectList(
+                Wrappers.<PostFavorite>lambdaQuery().in(PostFavorite::getPostId, postIds));
+        Map<Long, Long> counts = new HashMap<>();
+        for (PostFavorite f : all) {
+            counts.merge(f.getPostId(), 1L, Long::sum);
+        }
+        return counts;
+    }
+
     private Set<Long> myLikes(List<Long> postIds, String username) {
         if (username == null) {
             return Set.of();
@@ -311,7 +326,7 @@ public class PostService {
     }
 
     private PostDTO toDto(TravelPost p, String destinationName, String avatar,
-                          boolean liked, boolean favorited, long commentCount) {
+                          boolean liked, boolean favorited, long commentCount, long favoriteCount) {
         PostDTO dto = new PostDTO();
         dto.setId(p.getId());
         dto.setUsername(p.getUsername());
@@ -321,6 +336,7 @@ public class PostService {
         dto.setContent(p.getContent());
         dto.setLikeCount(p.getLikeCount() == null ? 0 : p.getLikeCount());
         dto.setCommentCount(commentCount);
+        dto.setFavoriteCount((int) favoriteCount);
         dto.setLiked(liked);
         dto.setFavorited(favorited);
         dto.setCreatedAt(p.getCreatedAt() == null ? "" : p.getCreatedAt().format(TIME));

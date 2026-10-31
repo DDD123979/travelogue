@@ -49,8 +49,13 @@ public class CommunityController {
     @GetMapping("/posts")
     public List<PostDTO> list(@RequestParam(required = false) Long destinationId,
                               @RequestParam(required = false, defaultValue = "false") boolean favorites,
+                              @RequestParam(required = false, defaultValue = "false") boolean mine,
                               @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorization) {
-        return postService.list(destinationId, tokenService.resolveUsername(authorization), favorites);
+        String username = tokenService.resolveUsername(authorization);
+        if (mine && username == null) {
+            throw ApiException.unauthorized("登录状态已失效，请重新登录");
+        }
+        return postService.list(destinationId, username, favorites, mine ? username : null);
     }
 
     @PostMapping("/posts")

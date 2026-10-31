@@ -478,6 +478,11 @@ const api = {
     return request('/api/posts', { method: 'POST', body: JSON.stringify(payload) });
   },
 
+  /** 我发布的所有分享（个人主页用） */
+  getMyPosts() {
+    return request('/api/posts?mine=true');
+  },
+
   /** 点赞 / 取消点赞（toggle），返回 { liked, likeCount } */
   likePost(id) {
     return request('/api/posts/' + id + '/like', { method: 'POST' });

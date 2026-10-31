@@ -17,6 +17,7 @@ const App = {
       }
       if (segments[0] === 'ranking') return { name: 'ranking' };
       if (segments[0] === 'community') return { name: 'community' };
+      if (segments[0] === 'profile') return { name: 'profile' };
       if (segments[0] === 'ai') return { name: 'ai' };
       // dest 带着 query 一起走，理由和上面 detail 带 id 一样：
       // 根模板的 :key 要用它，而模板里能读到的只有 view（setup 没返回 route）
@@ -32,6 +33,7 @@ const App = {
       if (segments[0] === 'destinations') return 'destinations';
       if (segments[0] === 'ranking') return 'ranking';
       if (segments[0] === 'community') return 'community';
+      if (segments[0] === 'profile') return 'profile';
       if (segments[0] === 'ai') return 'ai';
       return '';
     });
@@ -86,7 +88,7 @@ const App = {
       favCount: computed(() => store.favorites.length),
     };
   },
-  components: { HomePage, ListPage, DetailPage, RankingPage, CommunityPage, FavoritesPage, SettingsPage, LoginPage, AiPage },
+  components: { HomePage, ListPage, DetailPage, RankingPage, CommunityPage, ProfilePage, FavoritesPage, SettingsPage, LoginPage, AiPage },
   template: `
     <header class="site-header" v-if="view.name !== 'login'">
       <div class="header-inner">
@@ -127,7 +129,8 @@ const App = {
                   <div class="dropdown-sub">已登录 · 收藏 {{ favCount }} 个</div>
                 </div>
               </div>
-              <a class="dropdown-item" href="#/favorites">我的收藏</a>
+              <a class="dropdown-item" href="#/profile" @click="closeMenu">👤 我的主页</a>
+            <a class="dropdown-item" href="#/favorites">我的收藏</a>
               <a class="dropdown-item" href="#/settings">设置</a>
               <div class="dropdown-sep"></div>
               <button class="dropdown-item danger" @click="logout">退出登录</button>
@@ -144,6 +147,7 @@ const App = {
       <DetailPage v-else-if="view.name === 'detail'" :id="view.id" :key="view.id" />
       <RankingPage v-else-if="view.name === 'ranking'" />
       <CommunityPage v-else-if="view.name === 'community'" />
+      <ProfilePage v-else-if="view.name === 'profile'" />
       <AiPage v-else-if="view.name === 'ai'" />
       <FavoritesPage v-else-if="view.name === 'favorites'" />
       <SettingsPage v-else-if="view.name === 'settings'" />

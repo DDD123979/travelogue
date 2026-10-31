@@ -29,6 +29,9 @@ public class PostDTO {
 
     private Integer likeCount;
 
+    /** 被收藏次数 */
+    private Integer favoriteCount;
+
     /** 评论数 */
     private Long commentCount;
 
