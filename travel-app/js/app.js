@@ -72,8 +72,15 @@ const App = {
       if (fresh) store.user = { username: fresh.username, avatar: fresh.avatar || '' };
     });
 
+    // 展示名：有昵称用昵称，没有退回登录名
+    const displayName = computed(() => {
+      const u = store.user;
+      if (!u) return '';
+      return u.nickname || u.username;
+    });
+
     const avatar = computed(() =>
-      store.user ? store.user.username.slice(0, 1).toUpperCase() : '?'
+      store.user ? displayName.value.slice(0, 1).toUpperCase() : '?'
     );
 
     return {
@@ -116,7 +123,7 @@ const App = {
             >
               <img v-if="store.user && store.user.avatar" class="user-avatar avatar-img" :src="store.user.avatar" alt="头像" />
               <span v-else class="user-avatar">{{ avatar }}</span>
-              <span class="user-name">{{ store.user.username }}</span>
+              <span class="user-name">{{ displayName }}</span>
               <span class="caret">▾</span>
             </button>
 
@@ -125,7 +132,7 @@ const App = {
                 <img v-if="store.user && store.user.avatar" class="user-avatar lg avatar-img" :src="store.user.avatar" alt="头像" />
                   <span v-else class="user-avatar lg">{{ avatar }}</span>
                 <div>
-                  <div class="dropdown-name">{{ store.user.username }}</div>
+                  <div class="dropdown-name">{{ displayName }}</div>
                   <div class="dropdown-sub">已登录 · 收藏 {{ favCount }} 个</div>
                 </div>
               </div>

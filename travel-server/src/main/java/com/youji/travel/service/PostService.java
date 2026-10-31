@@ -110,11 +110,11 @@ public class PostService {
         Map<Long, Long> favoriteCounts = favoriteCounts(postIds);
         Set<Long> myLikes = myLikes(postIds, username);
         Set<Long> myFavs = myFavorites(postIds, username);
-        Map<String, String> avatars = avatarsOf(
+        Map<String, User> users = usersOf(
                 posts.stream().map(TravelPost::getUsername).distinct().toList());
 
         return posts.stream()
-                .map(p -> toDto(p, destNames.get(p.getDestinationId()), avatars.get(p.getUsername()),
+                .map(p -> toDto(p, destNames.get(p.getDestinationId()), users.get(p.getUsername()),
                         myLikes.contains(p.getId()), myFavs.contains(p.getId()),
                         commentCounts.getOrDefault(p.getId(), 0L),
                         favoriteCounts.getOrDefault(p.getId(), 0L)))
@@ -152,7 +152,7 @@ public class PostService {
         postMapper.insert(post);
 
         String destName = destinationMapper.selectById(post.getDestinationId()).getName();
-        return toDto(post, destName, avatarOf(username), false, false, 0, 0);
+        return toDto(post, destName, usersOf(List.of(username)).get(username), false, false, 0, 0);
     }
 
     /* ---------- 点赞 ---------- */
@@ -222,10 +222,10 @@ public class PostService {
         List<PostComment> rows = commentMapper.selectList(Wrappers.<PostComment>lambdaQuery()
                 .eq(PostComment::getPostId, postId)
                 .orderByAsc(PostComment::getCreatedAt));
-        Map<String, String> avatars = avatarsOf(
+        Map<String, User> users = usersOf(
                 rows.stream().map(PostComment::getUsername).distinct().toList());
         return rows.stream()
-                .map(c -> toCommentDto(c, avatars.get(c.getUsername())))
+                .map(row -> toCommentDto(row, users.get(row.getUsername())))
                 .toList();
     }
 
@@ -244,7 +244,7 @@ public class PostService {
         comment.setContent(text);
         comment.setCreatedAt(LocalDateTime.now());
         commentMapper.insert(comment);
-        return toCommentDto(comment, avatarOf(username));
+        return toCommentDto(comment, usersOf(List.of(username)).get(username));
     }
 
     public void deleteComment(Long commentId, String username) {
@@ -325,12 +325,13 @@ public class PostService {
                 .stream().map(PostFavorite::getPostId).toList());
     }
 
-    private PostDTO toDto(TravelPost p, String destinationName, String avatar,
+    private PostDTO toDto(TravelPost p, String destinationName, User author,
                           boolean liked, boolean favorited, long commentCount, long favoriteCount) {
         PostDTO dto = new PostDTO();
         dto.setId(p.getId());
         dto.setUsername(p.getUsername());
-        dto.setAvatar(avatar == null ? "" : avatar);
+        dto.setNickname(nickOf(author, p.getUsername()));
+        dto.setAvatar(avatarOf(author));
         dto.setDestinationId(p.getDestinationId());
         dto.setDestinationName(destinationName == null ? "" : destinationName);
         dto.setContent(p.getContent());
@@ -344,26 +345,37 @@ public class PostService {
         return dto;
     }
 
-    private CommentDTO toCommentDto(PostComment c, String avatar) {
+    private CommentDTO toCommentDto(PostComment c, User author) {
         CommentDTO dto = new CommentDTO();
         dto.setId(c.getId());
         dto.setPostId(c.getPostId());
         dto.setUsername(c.getUsername());
-        dto.setAvatar(avatar == null ? "" : avatar);
+        dto.setNickname(nickOf(author, c.getUsername()));
+        dto.setAvatar(avatarOf(author));
         dto.setContent(c.getContent());
         dto.setCreatedAt(c.getCreatedAt() == null ? "" : c.getCreatedAt().format(TIME));
         return dto;
     }
 
     /** 一次查出这批用户名的头像，返回 username -> avatar */
-    private Map<String, String> avatarsOf(List<String> usernames) {
+    private Map<String, User> usersOf(List<String> usernames) {
         if (usernames.isEmpty()) {
             return Map.of();
         }
         return userMapper.selectList(Wrappers.<User>lambdaQuery().in(User::getUsername, usernames))
                 .stream()
-                .collect(Collectors.toMap(User::getUsername,
-                        u -> u.getAvatar() == null ? "" : u.getAvatar(), (a, b) -> a));
+                .collect(Collectors.toMap(User::getUsername, u -> u, (a, b) -> a));
+    }
+
+    private String avatarOf(User u) {
+        return u == null || u.getAvatar() == null ? "" : u.getAvatar();
+    }
+
+    private String nickOf(User u, String fallback) {
+        if (u == null || u.getNickname() == null || u.getNickname().isBlank()) {
+            return fallback;
+        }
+        return u.getNickname();
     }
 
     private String avatarOf(String username) {

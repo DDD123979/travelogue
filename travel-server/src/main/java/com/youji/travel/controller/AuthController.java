@@ -51,14 +51,14 @@ public class AuthController {
     @PostMapping("/register")
     public AuthResponse register(@RequestBody AuthRequest request) {
         User user = userService.register(request.getUsername(), request.getPassword());
-        return new AuthResponse(user.getUsername(), tokenService.issue(user.getUsername()), user.getAvatar());
+        return new AuthResponse(user.getUsername(), tokenService.issue(user.getUsername()), nick(user), user.getAvatar());
     }
 
     /** 登录，失败返回 401 + {"message": "用户名或密码错误"} */
     @PostMapping("/login")
     public AuthResponse login(@RequestBody AuthRequest request) {
         User user = userService.login(request.getUsername(), request.getPassword());
-        return new AuthResponse(user.getUsername(), tokenService.issue(user.getUsername()), user.getAvatar());
+        return new AuthResponse(user.getUsername(), tokenService.issue(user.getUsername()), nick(user), user.getAvatar());
     }
 
     /** 退出登录：删掉 Redis 里的 token，立即失效 */
@@ -81,7 +81,7 @@ public class AuthController {
         if (user == null) {
             throw ApiException.unauthorized("登录状态已失效，请重新登录");
         }
-        return new UserDTO(user.getUsername(), user.getAvatar());
+        return new UserDTO(user.getUsername(), nick(user), user.getAvatar());
     }
 
     /** 上传并更新头像，返回 { avatar } */
@@ -104,6 +104,16 @@ public class AuthController {
         return java.util.Map.of("message", "密码已更新");
     }
 
+    /** 改昵称：只影响展示，token 不变 */
+    @PostMapping("/nickname")
+    public Map<String, String> changeNickname(
+            @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorization,
+            @RequestBody NicknameRequest request) {
+        String username = requireLogin(authorization);
+        String nickname = userService.changeNickname(username, request.getNickname());
+        return Map.of("nickname", nickname);
+    }
+
     /** 修改用户名：成功后作废旧 token，下发一个新的（token 里绑的是用户名） */
     @PostMapping("/username")
     public AuthResponse changeUsername(
@@ -114,7 +124,7 @@ public class AuthController {
         tokenService.revoke(authorization);
         String token = tokenService.issue(newName);
         User user = userService.findByUsername(newName);
-        return new AuthResponse(newName, token, user == null ? "" : user.getAvatar());
+        return new AuthResponse(newName, token, user == null ? newName : nick(user), user == null ? "" : user.getAvatar());
     }
 
     /** 忘记密码第一步：生成验证码 */
@@ -145,6 +155,12 @@ public class AuthController {
         userService.resetPassword(username, request.getNewPassword());
         tokenService.revoke(authorization);
         return java.util.Map.of("message", "密码已重设，请用新密码登录");
+    }
+
+    /** 昵称没设置过就退回用户名 */
+    private String nick(User user) {
+        String n = user.getNickname();
+        return (n == null || n.isBlank()) ? user.getUsername() : n;
     }
 
     private String requireLogin(String authorization) {

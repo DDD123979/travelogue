@@ -10,6 +10,9 @@ public class UserDTO {
 
     private String username;
 
+    /** 昵称（展示名） */
+    private String nickname;
+
     /** 头像地址，可为空串 */
     private String avatar;
 }

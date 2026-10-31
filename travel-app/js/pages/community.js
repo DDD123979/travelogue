@@ -348,9 +348,9 @@ const CommunityPage = {
           <article class="post-card" v-for="p in visiblePosts" :key="p.id">
             <header class="post-head">
               <img v-if="p.avatar" class="post-avatar post-avatar-img" :src="p.avatar" :alt="p.username" />
-              <span v-else class="post-avatar">{{ avatarOf(p.username) }}</span>
+              <span v-else class="post-avatar">{{ avatarOf(p.nickname || p.username) }}</span>
               <div class="post-meta">
-                <div class="post-user">{{ p.username }}</div>
+                <div class="post-user">{{ p.nickname || p.username }}</div>
                 <div class="post-time">{{ p.createdAt }}</div>
               </div>
               <a class="post-dest" :href="'#/destinations/' + p.destinationId">📍 {{ p.destinationName }}</a>
@@ -381,7 +381,7 @@ const CommunityPage = {
               <ul class="comment-list" v-else-if="panels[p.id].list.length">
                 <li class="comment-item" v-for="c in panels[p.id].list" :key="c.id">
                   <img v-if="c.avatar" class="comment-avatar" :src="c.avatar" :alt="c.username" />
-                  <span class="comment-who">{{ c.username }}</span>
+                  <span class="comment-who">{{ c.nickname || c.username }}</span>
                   <span class="comment-text">{{ c.content }}</span>
                   <span class="comment-time">{{ c.createdAt }}</span>
                   <button class="comment-del" v-if="isMineComment(c)" @click="removeComment(p, c)">删除</button>

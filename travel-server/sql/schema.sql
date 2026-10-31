@@ -27,6 +27,7 @@ DROP TABLE IF EXISTS t_user;
 CREATE TABLE t_user (
   id            BIGINT       NOT NULL AUTO_INCREMENT COMMENT '主键',
   username      VARCHAR(50)  NOT NULL                COMMENT '登录名',
+  nickname      VARCHAR(50)  NOT NULL DEFAULT ''        COMMENT '昵称（展示名）',
   password_hash VARCHAR(100) NOT NULL                COMMENT 'BCrypt 哈希（定长 60，留够余量）',
   avatar        VARCHAR(255) NOT NULL DEFAULT ''        COMMENT '头像图片地址',
   created_at    DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '注册时间',

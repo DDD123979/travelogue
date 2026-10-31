@@ -75,6 +75,45 @@ const SettingsPage = {
       }
     }
 
+    /* ---------- 改昵称 ---------- */
+    const displayName = computed(() => {
+      const u = store.user;
+      if (!u) return '未登录';
+      return u.nickname || u.username;
+    });
+
+    const nickOpen = ref(false);
+    const newNick = ref('');
+    const savingNick = ref(false);
+
+    function openNick() {
+      newNick.value = store.user ? (store.user.nickname || store.user.username) : '';
+      nickOpen.value = true;
+    }
+
+    function closeNick() {
+      nickOpen.value = false;
+      newNick.value = '';
+    }
+
+    async function submitNick() {
+      if (savingNick.value) return;
+      const nick = newNick.value.trim();
+      if (!nick) return flash('昵称不能为空');
+      if (nick.length > 20) return flash('昵称最多 20 个字');
+      savingNick.value = true;
+      try {
+        await api.changeNickname(nick);
+        store.user = { ...store.user, nickname: nick };
+        flash('昵称已更新');
+        closeNick();
+      } catch (err) {
+        flash(err.message);
+      } finally {
+        savingNick.value = false;
+      }
+    }
+
     /* ---------- 改用户名 ---------- */
     const nameOpen = ref(false);
     const newName = ref('');
@@ -209,6 +248,7 @@ const SettingsPage = {
       newPw2,
       savingPw,
       submitPw,
+      displayName, nickOpen, newNick, savingNick, openNick, closeNick, submitNick,
       nameOpen, newName, namePw, savingName, openName, closeName, submitName,
       pwMode,
       pwOpen,
@@ -229,13 +269,24 @@ const SettingsPage = {
             <span v-else class="user-avatar lg">{{ avatar }}</span>
             <div>
               <div class="title">
-                {{ store.user ? store.user.username : '未登录' }}
+                {{ displayName }}
                 <button class="name-edit" v-if="store.user" @click="openName">修改</button>
               </div>
-              <div class="desc">已登录 · 收藏 {{ store.favorites.length }} 个目的地</div>
+              NaN
             </div>
           </div>
           <button class="btn btn-outline btn-sm" @click="logout">退出登录</button>
+        </div>
+      </section>
+
+      <section class="settings-card">
+        <h2>昵称</h2>
+        <div class="setting-row">
+          <div>
+            <div class="title">{{ displayName }}</div>
+            <div class="desc">社区和主页里显示的名字，可以和登录名不同</div>
+          </div>
+          <button class="btn btn-outline btn-sm" @click="openNick">修改昵称</button>
         </div>
       </section>
 
@@ -346,6 +397,28 @@ const SettingsPage = {
       <transition name="fade">
         <div class="toast" v-if="toast">{{ toast }}</div>
       </transition>
+
+      <!-- 修改昵称弹窗 -->
+      <div class="modal-mask" v-if="nickOpen" @click.self="closeNick">
+        <div class="modal">
+          <div class="modal-head">
+            <span>修改昵称</span>
+            <button class="modal-close" @click="closeNick" aria-label="关闭">×</button>
+          </div>
+          <div class="modal-body">
+            <label class="modal-label">昵称</label>
+            <input class="ai-input" v-model="newNick" placeholder="最多 20 个字" maxlength="20" />
+            <p class="modal-tip">昵称只影响展示，登录时仍然用用户名 @{{ store.user ? store.user.username : '' }}</p>
+          </div>
+          <div class="modal-foot">
+            <span class="modal-spacer"></span>
+            <button class="btn btn-outline btn-sm" @click="closeNick">取消</button>
+            <button class="btn btn-primary btn-sm" :disabled="savingNick" @click="submitNick">
+              {{ savingNick ? '保存中…' : '确定' }}
+            </button>
+          </div>
+        </div>
+      </div>
 
       <!-- 修改用户名弹窗 -->
       <div class="modal-mask" v-if="nameOpen" @click.self="closeName">

@@ -25,6 +25,9 @@ public class User {
     /** BCrypt 哈希，不存明文 */
     private String passwordHash;
 
+    /** 昵称：对外展示用，改它不影响登录 */
+    private String nickname;
+
     /** 头像图片地址（/uploads/xxx.jpg），空串表示还没设置 */
     private String avatar;
 

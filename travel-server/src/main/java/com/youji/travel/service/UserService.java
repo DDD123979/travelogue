@@ -82,6 +82,7 @@ public class UserService {
         User user = new User();
         user.setUsername(name);
         user.setPasswordHash(passwordEncoder.encode(password));
+        user.setNickname(username);
         userMapper.insert(user);
         return user;
     }
@@ -212,6 +213,24 @@ public class UserService {
                 .eq(com.youji.travel.entity.PostFavorite::getUsername, oldName)
                 .set(com.youji.travel.entity.PostFavorite::getUsername, name));
 
+        return name;
+    }
+
+    /** 改昵称：只影响展示，不动登录名，所以不需要再次验证密码 */
+    public String changeNickname(String username, String nickname) {
+        User user = findByUsername(username);
+        if (user == null) {
+            throw ApiException.unauthorized("登录状态已失效，请重新登录");
+        }
+        String name = nickname == null ? "" : nickname.trim();
+        if (name.isEmpty()) {
+            throw ApiException.badRequest("昵称不能为空");
+        }
+        if (name.length() > 20) {
+            throw ApiException.badRequest("昵称最多 20 个字");
+        }
+        user.setNickname(name);
+        userMapper.updateById(user);
         return name;
     }
 

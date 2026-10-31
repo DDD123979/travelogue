@@ -35,7 +35,7 @@ const ProfilePage = {
     });
 
     const avatar = computed(() =>
-      store.user ? store.user.username.slice(0, 1).toUpperCase() : '?'
+      (store.user ? (store.user.nickname || store.user.username) : '?').slice(0, 1).toUpperCase()
     );
 
     async function remove(post) {
@@ -65,7 +65,7 @@ const ProfilePage = {
         </div>
         <div class="profile-info">
           <div class="profile-name">
-            {{ store.user ? store.user.username : '未登录' }}
+            {{ store.user ? (store.user.nickname || store.user.username) : '未登录' }}
             <a class="profile-edit" href="#/settings">编辑资料</a>
           </div>
           <div class="profile-sub">在游迹记录你去过的地方</div>
@@ -90,7 +90,7 @@ const ProfilePage = {
             <header class="post-head">
               <span class="post-avatar">{{ avatar }}</span>
               <div class="post-meta">
-                <div class="post-user">{{ p.username }}</div>
+                <div class="post-user">{{ p.nickname || p.username }}</div>
                 <div class="post-time">{{ p.createdAt }}</div>
               </div>
               <a class="post-dest" :href="'#/destinations/' + p.destinationId">📍 {{ p.destinationName }}</a>

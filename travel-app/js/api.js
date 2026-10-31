@@ -413,6 +413,18 @@ const api = {
     return res.json();
   },
 
+  /** 修改昵称（只影响展示，不改登录名） */
+  async changeNickname(nickname) {
+    const res = await request('/api/auth/nickname', {
+      method: 'POST',
+      body: JSON.stringify({ nickname }),
+    });
+    const session = getSession() || {};
+    session.nickname = res.nickname;
+    localStorage.setItem(SESSION_KEY, JSON.stringify(session));
+    return res;
+  },
+
   /**
    * 修改用户名：需要当前密码。后端会作废旧 token 并下发新的，
    * 这里顺手把本地会话一起换掉，避免下次请求 401。

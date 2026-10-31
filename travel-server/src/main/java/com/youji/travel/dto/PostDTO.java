@@ -14,6 +14,9 @@ public class PostDTO {
 
     private String username;
 
+    /** 作者昵称（展示用，空则用 username） */
+    private String nickname;
+
     /** 作者头像地址，可为空串（没设置过就显示用户名首字） */
     private String avatar;
 
