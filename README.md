@@ -5,6 +5,7 @@
 前端是零构建的 Vue 3 单页应用，后端是 Spring Boot 3.5 服务——**双击一个 `.bat` 就能把 MySQL、Redis、后端和页面全部拉起来**。
 
 > 在线仓库：<https://github.com/DDD123979/travelogue>
+> 线上演示：<http://8.148.81.57> （阿里云轻量 2C2G；AI 与高德未配 Key 时，相关功能会提示"未配置"）
 
 ---
 
