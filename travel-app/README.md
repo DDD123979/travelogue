@@ -9,7 +9,7 @@ travel-app/
 ├── index.html              # 入口页面：按依赖顺序加载下面 15 个脚本
 ├── css/style.css           # 全站样式
 ├── js/
-│   ├── mock-data.js        # 本地示例数据（20 目的地 / 100 景点），仅 file:// 模式使用
+│   ├── mock-data.js        # 本地示例数据（23 目的地 / 115 景点），仅 file:// 模式使用
 │   ├── api.js              # 数据接口层（全站唯一的数据出口）
 │   ├── state.js            # 全局状态、localStorage 持久化、hash 路由与登录守卫
 │   ├── components/
