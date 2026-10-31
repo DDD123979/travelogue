@@ -139,6 +139,25 @@ public class UserService {
         userMapper.updateById(user);
     }
 
+    /**
+     * 忘记原密码时的重设：只要当前是已登录状态（token 有效）就允许。
+     * 安全性由 token 保证；调用方应同时吊销 token，强制用新密码重新登录。
+     */
+    public void resetPassword(String username, String newPassword) {
+        User user = findByUsername(username);
+        if (user == null) {
+            throw ApiException.unauthorized("登录状态已失效，请重新登录");
+        }
+        if (newPassword == null || newPassword.length() < 6) {
+            throw ApiException.badRequest("新密码至少 6 位");
+        }
+        if (passwordEncoder.matches(newPassword, user.getPasswordHash())) {
+            throw ApiException.badRequest("新密码不能和原密码相同");
+        }
+        user.setPasswordHash(passwordEncoder.encode(newPassword));
+        userMapper.updateById(user);
+    }
+
     public User findByUsername(String username) {
         if (username == null || username.isEmpty()) {
             return null;

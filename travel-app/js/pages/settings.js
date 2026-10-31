@@ -80,6 +80,33 @@ const SettingsPage = {
     const newPw = ref('');
     const newPw2 = ref('');
     const savingPw = ref(false);
+    // change = 知道原密码；reset = 忘了原密码，凭登录态直接重设
+    const pwMode = ref('change');
+
+    function togglePwMode() {
+      pwMode.value = pwMode.value === 'change' ? 'reset' : 'change';
+      oldPw.value = newPw.value = newPw2.value = '';
+    }
+
+    async function submitReset() {
+      if (savingPw.value) return;
+      if (newPw.value.length < 6) return flash('新密码至少 6 位');
+      if (newPw.value !== newPw2.value) return flash('两次输入的新密码不一致');
+      savingPw.value = true;
+      try {
+        await api.resetPassword(newPw.value);
+        flash('密码已重设，正在退出…');
+        // 服务端已吊销 token，这里同步清掉本地会话并回登录页
+        setTimeout(() => {
+          logout();
+          go('/login');
+        }, 900);
+      } catch (err) {
+        flash(err.message);
+      } finally {
+        savingPw.value = false;
+      }
+    }
 
     async function submitPw() {
       if (savingPw.value) return;
@@ -123,6 +150,9 @@ const SettingsPage = {
       newPw2,
       savingPw,
       submitPw,
+      pwMode,
+      togglePwMode,
+      submitReset,
     };
   },
   template: `
@@ -160,14 +190,26 @@ const SettingsPage = {
       </section>
 
       <section class="settings-card">
-        <h2>修改密码</h2>
-        <div class="setting-row pw-row">
-          <input class="ai-input" type="password" v-model="oldPw" placeholder="原密码" autocomplete="current-password" />
-          <input class="ai-input" type="password" v-model="newPw" placeholder="新密码（至少 6 位）" autocomplete="new-password" />
-          <input class="ai-input" type="password" v-model="newPw2" placeholder="再输一次新密码" autocomplete="new-password" />
-          <button class="btn btn-primary btn-sm" :disabled="savingPw" @click="submitPw">
-            {{ savingPw ? '保存中…' : '保存新密码' }}
+        <h2>密码</h2>
+        <div class="pw-capsule" :class="{ 'is-reset': pwMode === 'reset' }">
+          <input
+            v-if="pwMode === 'change'"
+            class="pw-input"
+            type="password"
+            v-model="oldPw"
+            placeholder="原密码"
+            autocomplete="current-password"
+          />
+          <input class="pw-input" type="password" v-model="newPw" placeholder="新密码（至少 6 位）" autocomplete="new-password" />
+          <input class="pw-input" type="password" v-model="newPw2" placeholder="确认新密码" autocomplete="new-password" />
+          <button class="pw-submit" :disabled="savingPw" @click="pwMode === 'change' ? submitPw() : submitReset()">
+            {{ savingPw ? '处理中…' : (pwMode === 'change' ? '保存' : '重设') }}
           </button>
+        </div>
+        <div class="pw-foot">
+          <button class="pw-link" v-if="pwMode === 'change'" @click="togglePwMode">忘记原密码？</button>
+          <button class="pw-link" v-else @click="togglePwMode">← 返回修改密码</button>
+          <span class="desc" v-if="pwMode === 'reset'">重设成功后会退出登录，请用新密码重新登录</span>
         </div>
       </section>
 

@@ -396,6 +396,14 @@ const api = {
     return res.json();
   },
 
+  /** 忘记原密码：凭登录态直接重设，成功后服务端会吊销 token，必须重新登录 */
+  resetPassword(newPassword) {
+    return request('/api/auth/password/reset', {
+      method: 'POST',
+      body: JSON.stringify({ newPassword }),
+    });
+  },
+
   /** 修改密码：成功后旧 token 仍然有效，不需要重新登录 */
   changePassword(oldPassword, newPassword) {
     return request('/api/auth/password', {

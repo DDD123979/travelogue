@@ -101,6 +101,17 @@ public class AuthController {
         return java.util.Map.of("message", "密码已更新");
     }
 
+    /** 忘记原密码：凭登录态直接重设，并吊销当前 token（必须用新密码重新登录） */
+    @PostMapping("/password/reset")
+    public java.util.Map<String, String> resetPassword(
+            @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorization,
+            @RequestBody PasswordRequest request) {
+        String username = requireLogin(authorization);
+        userService.resetPassword(username, request.getNewPassword());
+        tokenService.revoke(authorization);
+        return java.util.Map.of("message", "密码已重设，请用新密码登录");
+    }
+
     private String requireLogin(String authorization) {
         String username = tokenService.resolveUsername(authorization);
         if (username == null) {
