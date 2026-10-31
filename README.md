@@ -1,6 +1,6 @@
-# 游迹 · 旅游预订与 AI 行程规划平台
+# 游迹 · 旅游攻略与 AI 行程规划
 
-一个前后端分离的旅游网站：检索目的地、按日历预订酒店、管理订单与收藏，并能调用大模型流式生成个性化行程，再结合高德地图的真实交通数据把行程"落到地上"。
+一个前后端分离的旅游攻略站：按景点类型逛目的地、看逐日参考行程与景点攻略，并能调用大模型流式生成个性化行程，再结合高德地图的真实交通数据把行程"落到地上"。
 
 前端是零构建的 Vue 3 单页应用，后端是 Spring Boot 3.5 服务——**双击一个 `.bat` 就能把 MySQL、Redis、后端和页面全部拉起来**。
 
@@ -15,8 +15,8 @@
 |---|---|
 | 登录 / 注册 | 用户名密码注册登录，JWT 令牌 + Redis 登录态，路由白名单守卫（未登录一律拦截） |
 | 目的地 | 14 个目的地，按分类筛选 + 关键词搜索，详情页含推荐景点与参考价 |
-| 预订 | 选目的地 / 酒店 / 日历选入住日期（今天起两个月内）/ 天数 / 人数，右侧实时显示房间数与总价 |
-| 订单 | 下单、列表、取消（后端按数据库单价重算总价，防止改请求体篡改价格） |
+| 景点分类 | 侧边栏按 自然生态 / 人文古迹 / 街区市集 / 观景夜景 浏览，每个类型可展开看目的地 |
+| 参考行程 | 详情页用景点数据自动排 Day 1/2/3 时间轴 |
 | 收藏 | 本地持久化收藏列表 |
 | 设置 | 字号缩放（85%~130%）、封面图开关、动画开关、清空数据 |
 | AI 行程 | 接入 DeepSeek，SSE 流式输出逐字返回的行程方案 |
@@ -32,7 +32,7 @@
 |---|---|
 | 前端 | Vue 3.5.42（本地库，离线可用）、原生 CSS、hash 路由，无打包工具 |
 | 后端 | Java 21、Spring Boot 3.5.16、MyBatis-Plus 3.5.17、Lombok、BCrypt |
-| 数据库 | MySQL 8（14 目的地 / 42 景点 / 42 标签 / 42 酒店） |
+| 数据库 | MySQL 8（14 目的地 / 42 景点 / 42 标签） |
 | 缓存 | Redis 7.0.8：登录令牌、目的地列表、高德路线结果 |
 | 外部服务 | DeepSeek Chat API（SSE 流式）、高德开放平台 Web 服务 API |
 | 脚本 | Windows `.bat` + `.vbs` 隐藏窗口启动、`generate.js`（docx 生成需求文档） |
@@ -44,10 +44,9 @@
 | 决定 | 理由 | 代价 |
 |---|---|---|
 | 前端不用打包工具，直接 `<script>` 加载 | 双击 `index.html` 就能跑，答辩/演示不依赖网络和环境 | 没有组件单文件、没有热更新，`app.js` 只能一个文件写完 |
-| 一套数据两套来源（mock / 后端） | 断网也能完整演示预订流程，不用先装 MySQL | 改酒店数据要同步两处（`mock-data.js` 与 `data.sql`） |
+| 一套数据两套来源（mock / 后端） | 断网也能完整演示，不用先装 MySQL | 改数据要同步两处（`mock-data.js` 与 `data.sql`） |
 | AI 用 SSE 流式而不是等 JSON 返回 | 行程要写十几秒，等完整结果体验太差；流式能边生成边读 | Nginx 必须关掉 `proxy_buffering`，后端要处理断连 |
 | 高德只做"增强"而不是依赖 | 没有 Key 也能出行程，只是交通耗时不精确 | 多了一层降级逻辑和缓存策略 |
-| 总价由后端按库里的单价重算 | 前端传上来的 `totalAmount` 一律忽略，防止改请求体一块钱订酒店 | 前端要再算一遍做展示，两边算法必须一致 |
 | 登录失败 5 次锁 15 分钟 | 密码只要求 6 位，站点又公开，不限流等于敞开撞库 | 正常的输错用户也会被短暂挡一下 |
 
 ---
@@ -67,7 +66,7 @@
 ├── travel-server/              后端（Spring Boot 3.5）
 │   ├── src/main/java/com/youji/travel/
 │   │   ├── controller/         REST 接口
-│   │   ├── service/            业务逻辑（AI 行程、高德接地、预订、鉴权）
+│   │   ├── service/            业务逻辑（AI 行程、高德接地、目的地、鉴权）
 │   │   ├── mapper/             MyBatis-Plus Mapper
 │   │   ├── entity/ dto/ config/ common/
 │   │   └── TravelApplication.java
@@ -109,7 +108,7 @@ mysql -uroot -p123456 --default-character-set=utf8mb4 < sql/data.sql
 
 ### 2. 配置密钥（可选，不配也能跑）
 
-AI 与高德都是增强能力，缺了不影响浏览、预订主流程：
+AI 与高德都是增强能力，缺了不影响浏览主流程：
 
 ```powershell
 setx DEEPSEEK_API_KEY "sk-你的key"     # AI 行程生成
@@ -169,12 +168,8 @@ java -jar target\travel-server-1.0.0.jar
 | 方法 | 路径 | 说明 |
 |---|---|---|
 | GET | `/api/destinations`、`/api/destinations/{id}` | 目的地列表 / 详情（走 Redis 缓存） |
-| GET | `/api/hotels?destinationId=` | 酒店列表 |
 | POST | `/api/auth/register`、`/api/auth/login`、`/api/auth/logout` | 注册 / 登录 / 退出 |
 | GET | `/api/auth/me` | 当前登录用户 |
-| POST | `/api/bookings` | 下单（需 `Authorization: Bearer <token>`） |
-| GET | `/api/bookings` | 我的订单 |
-| POST | `/api/bookings/{id}/cancel` | 取消订单 |
 | POST | `/api/ai/itinerary` | AI 生成行程（SSE 流式） |
 | GET | `/api/ai/status` | AI 配置自检 |
 | GET | `/api/amap/status`、`POST /api/amap/warmup` | 高德自检 / 预热路线缓存 |

@@ -54,8 +54,6 @@ mysql -uroot -p123456 --default-character-set=utf8mb4 < sql/data.sql
 SELECT COUNT(*) FROM travel_db.destination;             -- 应为 14
 SELECT COUNT(*) FROM travel_db.destination_tag;         -- 应为 42
 SELECT COUNT(*) FROM travel_db.destination_attraction;  -- 应为 42
-SELECT COUNT(*) FROM travel_db.hotel;                   -- 应为 42
-SELECT COUNT(*) FROM travel_db.booking_order;           -- 新库应为 0
 ```
 
 > `schema.sql` 带 `DROP TABLE`，重跑会把 `t_user` 一起清掉，演示账号由后端启动时的
@@ -79,14 +77,10 @@ SELECT COUNT(*) FROM travel_db.booking_order;           -- 新库应为 0
 |---|---|---|---|---|
 | GET | `/api/destinations` | 全部目的地（走 Redis 缓存） | 200 数组 | — |
 | GET | `/api/destinations/{id}` | 单个目的地 | 200 对象 | 404 `{message}` |
-| GET | `/api/hotels` | 酒店列表，可带 `?destinationId=`（不带就返回全部 42 家） | 200 数组 | — |
 | POST | `/api/auth/register` | 注册，body `{username,password}` | 200 `{username,token}` | 400 / 409 |
 | POST | `/api/auth/login` | 登录，body `{username,password}`。同一用户名连续失败 **5 次锁定 15 分钟**（计数存 Redis），登录成功即清零 | 200 `{username,token}` | 401 / **429** |
 | POST | `/api/auth/logout` | 退出，头 `Authorization: Bearer <token>` | 200 `{message}` | — |
 | GET | `/api/auth/me` | 当前登录用户（演示 Redis 登录态用） | 200 `{username}` | 401 |
-| POST | `/api/bookings` | 下单，头 `Authorization`，body `{destinationId,hotelId,checkIn,days,people}`。`checkIn` 须在 **今天起两个月内**（`MAX_MONTHS_AHEAD`） | 200 订单 | 400 / 401 / 404 |
-| GET | `/api/bookings` | 我的订单，按下单时间倒序 | 200 数组 | 401 |
-| POST | `/api/bookings/{id}/cancel` | 取消订单（改状态，不删行） | 200 订单 | 401 / 404 / 409 |
 | POST | `/api/ai/itinerary` | AI 生成行程（SSE 流式，详见第五节） | 200 事件流 | 流内 `error` 事件 |
 | GET | `/api/ai/status` | AI 配置自检：Key 配没配、模型名能不能用 | 200 对象 | — |
 | GET | `/api/amap/status` | 高德自检：Key 配没配、通不通、哪些城市预热过（详见第六节） | 200 对象 | — |
@@ -97,25 +91,16 @@ SELECT COUNT(*) FROM travel_db.booking_order;           -- 新库应为 0
 ```bash
 curl http://localhost:8080/api/destinations
 curl http://localhost:8080/api/destinations/1
-curl "http://localhost:8080/api/hotels?destinationId=1"     # 公开，不需要 token
 curl -X POST http://localhost:8080/api/auth/login \
      -H "Content-Type: application/json" \
      -d '{"username":"dou123","password":"123456"}'
 ```
 
-下单要带登录拿到的 token（下面的 `$TOKEN` 换成上一步返回的 token）：
 
 ```bash
-curl -X POST http://localhost:8080/api/bookings \
-     -H "Content-Type: application/json" -H "Authorization: Bearer $TOKEN" \
-     -d '{"destinationId":1,"hotelId":2,"checkIn":"2026-09-20","days":3,"people":3}'
 
-curl http://localhost:8080/api/bookings -H "Authorization: Bearer $TOKEN"
-curl -X POST http://localhost:8080/api/bookings/1/cancel -H "Authorization: Bearer $TOKEN"
 ```
 
-不带 `Authorization` 会拿到 **401 `{"message":"登录状态已失效，请重新登录"}`**。
-如果拿到的是 400「缺少请求头」，说明 `@RequestHeader` 上漏了 `required = false` —— 见 `BookingController` 里的注释。
 
 ---
 
@@ -165,16 +150,11 @@ redis/redis-cli.exe -p 6379 ttl youji:amap:ground:v1:10:1     # 1800 = 降级结
 | `destination` | 目的地主表 |
 | `destination_tag` | 卡片上的标签，靠 `sort_order` 保证顺序 |
 | `destination_attraction` | 推荐景点 |
-| `hotel` | 酒店，每个目的地 3 家，共 42 家 |
-| `booking_order` | 预订订单 |
 
 几个刻意为之、别改回去的点：
 
 - **表名 `t_user`**：`user` 是 MySQL 保留字。
-- **表名 `booking_order`**：`order` 同样是保留字，理由和 `t_user` 一样。
-- **列名 `attr_desc` / `hotel_desc`**：`desc` 是 MySQL 保留字。实体字段叫 `attrDesc` / `hotelDesc`（若叫 `desc`，MyBatis-Plus 会生成 `hotel_desc AS desc`，别名照样是保留字，直接语法错误）；对外 JSON 仍是 `desc`。
-- **订单上的三个「快照」列**（`destination_name` / `hotel_name` / `unit_price`）：酒店调价、改名、下架，历史订单上的金额和名字都不跟着变。订单记的是「当时谈好的事」，不是「现在数据库里是什么」。顺带让「我的订单」成了一次单表查询，不用 JOIN。
-- **`total_amount` 一律后端算**：请求体里就算塞了 `totalAmount` 也直接忽略，否则改一下请求体就能一块钱订五星酒店。
+- **列名 `attr_desc`**：`desc` 是 MySQL 保留字。实体字段叫 `attrDesc`（若叫 `desc`，MyBatis-Plus 会生成 `attr_desc AS desc`，别名照样是保留字，直接语法错误）；对外 JSON 仍是 `desc`。
 - **`days` / `best_season` 用 VARCHAR**：前端展示的是「3-4 天」「3-5 月 / 9-11 月」，建成 INT 会只剩数字。
 - **`rating` 用 DECIMAL(2,1)**：用 float 会被序列化成 `4.800000190734863`。
 - 数据用「3 次批量查询 + 内存分组」组装嵌套 JSON，不用 XML 嵌套 resultMap —— 没有 N+1，也不会踩 JOIN 笛卡尔积。
