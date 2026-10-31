@@ -572,7 +572,7 @@ const MOCK_DESTINATIONS = [
     days: '3 天',
     bestSeason: '4-5 月 / 9-10 月',
     gradient: ['#C9A227', '#93761A'],
-    image: '',
+    image: 'img/destinations/luoyang.jpg',
     tags: ['古都', '石窟', '牡丹'],
     description: '十三朝古都：伊河两岸的佛龛、白马寺的钟声、四月满城的牡丹，还有一碗牛肉汤配饼的早晨。',
     highlight: {
@@ -599,7 +599,7 @@ const MOCK_DESTINATIONS = [
     days: '2 天',
     bestSeason: '3-5 月 / 9-11 月',
     gradient: ['#C58B58', '#8D5A32'],
-    image: '',
+    image: 'img/destinations/kaifeng.jpg',
     tags: ['宋韵', '夜市', '实景演出'],
     description: '北宋汴京的旧地：清明上河园把画里的市井搬了出来，鼓楼夜市从傍晚一直吃到深夜。',
     highlight: {
@@ -626,7 +626,7 @@ const MOCK_DESTINATIONS = [
     days: '3 天',
     bestSeason: '5-10 月',
     gradient: ['#6FB6C9', '#3D7E93'],
-    image: '',
+    image: 'img/destinations/weihai.jpg',
     tags: ['海岸线', '日出', '海鲜'],
     description: '山东半岛最东端：海岸线干净、人比青岛少，成山头的日出、刘公岛的历史、海鲜市场的实惠都在这。',
     highlight: {
