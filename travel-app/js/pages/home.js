@@ -28,11 +28,10 @@ const HomePage = {
       } finally {
         loading.value = false;
       }
-      // 首页一打开：选中并展开第一个类型（自然生态）
-      if (!activeType.value && attractionTypes.value.length) {
-        const first = attractionTypes.value[0].name;
-        activeType.value = first;
-        expanded.value[first] = true;
+      // 首页一打开：选中并展开「全部」，先把 20 个城市都铺出来
+      if (!activeType.value && groups.value.length) {
+        activeType.value = '全部';
+        expanded.value['全部'] = true;
       }
     });
 
@@ -77,10 +76,31 @@ const HomePage = {
         });
     });
 
-    // 右侧列表跟着选中类型走
+    // 全部：所有城市按热度排序，作为侧边栏的第一项
+    const allDestinations = computed(() =>
+      [...list.value].sort((a, b) => {
+        const dh = (b.hotScore || 0) - (a.hotScore || 0);
+        return dh || Number(b.rating) - Number(a.rating);
+      })
+    );
+
+    // 侧边栏的数据源：第一项是「全部」，后面是四种景点类型
+    const groups = computed(() => [
+      { name: '全部', destinations: allDestinations.value },
+      ...attractionTypes.value,
+    ]);
+
+    // 右侧列表跟着当前选中项走
     const activeDestinations = computed(() => {
-      const hit = attractionTypes.value.find((t) => t.name === activeType.value);
+      const hit = groups.value.find((t) => t.name === activeType.value);
       return hit ? hit.destinations : [];
+    });
+
+    // 右侧标题下的一行说明，随选中项变化
+    const activeSub = computed(() => {
+      const n = activeDestinations.value.length;
+      if (activeType.value === '全部') return `共 ${n} 个目的地，全部城市都在这里`;
+      return `共 ${n} 个目的地，都能逛到「${activeType.value}」类的景点`;
     });
 
     // 点类型名：选中它，并顺手展开（收缩状态由右边的箭头单独控制）
@@ -101,6 +121,8 @@ const HomePage = {
       search,
       heroBg,
       attractionTypes,
+      groups,
+      activeSub,
       activeType,
       activeDestinations,
       expanded,
@@ -131,11 +153,11 @@ const HomePage = {
 
         <div class="browse" v-else-if="attractionTypes.length">
           <aside class="type-side">
-            <h3 class="side-title">按景点类型逛</h3>
+            <h3 class="side-title">全部 · 景点类型</h3>
 
             <div
               class="type-group"
-              v-for="t in attractionTypes"
+              v-for="t in groups"
               :key="t.name"
               :class="{ active: t.name === activeType }"
             >
@@ -166,9 +188,7 @@ const HomePage = {
             <div class="section-head with-sub">
               <div>
                 <h2>{{ activeType || '目的地' }}</h2>
-                <p class="section-sub" v-if="activeDestinations.length">
-                  共 {{ activeDestinations.length }} 个目的地，都能逛到「{{ activeType }}」类的景点
-                </p>
+                <p class="section-sub" v-if="activeDestinations.length">{{ activeSub }}</p>
               </div>
               <a href="#/destinations">查看全部目的地 →</a>
             </div>
