@@ -10,6 +10,8 @@ const ListPage = {
     const loading = ref(true);
     const keyword = ref(route.value.query.q || '');
     const category = ref(route.value.query.cat || '全部');
+    // 景点类型：从首页「自然生态 / 人文古迹 …」跳过来时带 ?atype=
+    const atype = ref(route.value.query.atype || '');
 
     // 响应路由参数变化（例如从首页搜索跳转过来）
     watch(
@@ -17,6 +19,7 @@ const ListPage = {
       (q) => {
         if (q.q !== undefined) keyword.value = q.q;
         if (q.cat !== undefined) category.value = q.cat;
+        if (q.atype !== undefined) atype.value = q.atype;
       }
     );
 

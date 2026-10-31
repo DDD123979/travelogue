@@ -148,7 +148,13 @@ guardRoute();
 /* Vue 会自己捕获渲染错误（不会冒泡到 window.onerror），
    所以这里挂一个 errorHandler 把真实报错写到页面底部，白屏时能一眼看到原因。 */
 function reportVueError(err, info) {
-  const msg = (err && (err.stack || err.message)) || String(err);
+  // err 有时是 Proxy（Vue 内部对象），直接 String() 会抛 "Cannot convert object to primitive value"
+  let msg = '';
+  try {
+    msg = (err && (err.stack || err.message)) ? String(err.stack || err.message) : String(err);
+  } catch (e) {
+    msg = "（错误对象无法序列化）";
+  }
   console.error('[vue]', msg, info);
   let box = document.getElementById('boot-error');
   if (!box) {
@@ -161,7 +167,7 @@ function reportVueError(err, info) {
   }
   box.textContent += '[vue:' + info + '] ' + msg + '\n';
   // 同时写进标签标题，截图里的 tab 就能直接看到
-  document.title = '[ERR] ' + ((err && err.message) || String(err)).slice(0, 80);
+  document.title = '[ERR] ' + msg.split('\n')[0].slice(0, 80);
 }
 
 const app = createApp(App);
