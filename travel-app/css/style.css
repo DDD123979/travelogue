@@ -4526,3 +4526,86 @@ body::after { display: none !important; }
   .map-hint { display: none; }
   .map-bubble { width: 208px; }
 }
+
+
+/* ============================================================
+ * 小迹 AI 智能导游：常驻右下角悬浮窗
+ * 圆形白底 + 线性描边，图片只在悬停时放大，不做漂浮/脉冲。
+ * ============================================================ */
+.ai-fab {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 95;
+  width: 62px;
+  height: 62px;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: #fff;
+  box-shadow: 0 10px 26px -12px rgba(34, 40, 42, 0.35), 0 2px 6px rgba(34, 40, 42, 0.08);
+  transition: transform 0.18s var(--ease), box-shadow 0.18s var(--ease), border-color 0.18s var(--ease);
+}
+.ai-fab-img {
+  width: 50px;
+  height: 50px;
+  display: block;
+  border-radius: 50%;
+  object-fit: cover;
+  transition: transform 0.18s var(--ease);
+}
+.ai-fab:hover {
+  transform: translateY(-2px);
+  border-color: var(--brand);
+  box-shadow: 0 16px 34px -14px rgba(34, 40, 42, 0.42), 0 2px 8px rgba(34, 40, 42, 0.1);
+}
+.ai-fab:hover .ai-fab-img,
+.ai-fab:focus-visible .ai-fab-img { transform: scale(1.12); }
+.ai-fab:focus-visible { outline: 2px solid var(--brand); outline-offset: 3px; }
+
+/* 悬停时外圈淡入，提示"可点" */
+.ai-fab-ring {
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  border: 1px solid rgba(60, 122, 136, 0.25);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.18s var(--ease);
+}
+.ai-fab:hover .ai-fab-ring,
+.ai-fab:focus-visible .ai-fab-ring { opacity: 1; }
+
+/* 左侧文字提示 */
+.ai-fab-tip {
+  position: absolute;
+  right: calc(100% + 10px);
+  top: 50%;
+  transform: translate(6px, -50%);
+  padding: 5px 10px;
+  white-space: nowrap;
+  font-size: calc(11.5px * var(--fs));
+  letter-spacing: 0.02em;
+  color: var(--ink-2);
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  box-shadow: var(--shadow-sm);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.18s var(--ease), transform 0.18s var(--ease);
+}
+.ai-fab:hover .ai-fab-tip,
+.ai-fab:focus-visible .ai-fab-tip { opacity: 1; transform: translate(0, -50%); }
+
+@media (max-width: 560px) {
+  .ai-fab { right: 14px; bottom: 14px; width: 54px; height: 54px; }
+  .ai-fab-img { width: 44px; height: 44px; }
+  .ai-fab-tip { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ai-fab, .ai-fab-img { transition: none; }
+  .ai-fab:hover { transform: none; }
+}

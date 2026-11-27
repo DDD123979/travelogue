@@ -7,6 +7,15 @@
 /* ---------- 根组件（导航 + 路由出口 + 页脚） ---------- */
 const App = {
   setup() {
+    // 悬浮窗：已在 AI 页就滚回顶部，否则跳转过去
+    function openAi() {
+      if (view.value.name === 'ai') {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else {
+        go('/ai');
+      }
+    }
+
     const view = computed(() => {
       const { segments } = route.value;
       if (segments.length === 0) return { name: 'home' };
@@ -189,6 +198,7 @@ const App = {
     );
 
     return {
+      openAi,
       view,
       navActive,
       menuOpen,
@@ -222,7 +232,6 @@ const App = {
           <a class="nav-link" href="#/destinations" :class="{ active: navActive === 'destinations' }">目的地🤑</a>
           <a class="nav-link" href="#/ranking" :class="{ active: navActive === 'ranking' }">排行😋</a>
           <a class="nav-link" href="#/community" :class="{ active: navActive === 'community' }">社区💬</a>
-          <a class="nav-link nav-ai" href="#/ai" :class="{ active: navActive === 'ai' }">小迹AI智能导游🤖</a>
 
           <!-- 收藏不再占导航位：右上角用户菜单里已经有「我的收藏」，收藏数量也在菜单头部显示 -->
 
@@ -283,6 +292,20 @@ const App = {
     <footer class="site-footer" v-if="view.name !== 'login'">
       游迹 · 旅游攻略与 AI 行程规划
     </footer>
+
+    <!-- 小迹 AI 智能导游：常驻右下角，任何页面都在（登录页除外） -->
+    <button
+      class="ai-fab"
+      type="button"
+      v-if="view.name !== 'login'"
+      aria-label="打开小迹 AI 智能导游"
+      title="小迹 AI 智能导游"
+      @click="openAi"
+    >
+      <span class="ai-fab-ring" aria-hidden="true"></span>
+      <img class="ai-fab-img" src="img/ai-bot.png" alt="" draggable="false" />
+      <span class="ai-fab-tip" aria-hidden="true">小迹 AI 智能导游</span>
+    </button>
 
     <!-- 图片查看器：点帖子里的图打开，可左右滑动 -->
     <div class="viewer-mask" v-if="viewer.open" @click.self="closeViewer">
