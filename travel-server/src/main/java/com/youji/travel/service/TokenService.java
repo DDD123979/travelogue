@@ -39,8 +39,9 @@ public class TokenService {
         String token = UUID.randomUUID().toString().replace("-", "");
         try {
             redis.opsForValue().set(PREFIX + token, username, TTL);
-            log.info("已签发 token 给 {}，Redis key = {}{}（{} 秒后过期）",
-                    username, PREFIX, token, TTL.toSeconds());
+            // 只打印前 6 位：完整 token 写进日志等于把会话凭据抄了一份
+            log.info("已签发 token 给 {}，Redis key = {}{}…（{} 秒后过期）",
+                    username, PREFIX, mask(token), TTL.toSeconds());
         } catch (Exception e) {
             log.error("写入 Redis 失败，无法签发 token", e);
             throw ApiException.unavailable(
@@ -75,7 +76,7 @@ public class TokenService {
         }
         try {
             redis.delete(PREFIX + token);
-            log.info("已注销 token {}{}", PREFIX, token);
+            log.info("已注销 token {}{}…", PREFIX, mask(token));
         } catch (Exception e) {
             log.warn("删除 Redis 中的 token 失败：{}", e.getMessage());
         }
@@ -91,5 +92,13 @@ public class TokenService {
             value = value.substring(BEARER.length()).trim();
         }
         return value.isEmpty() ? null : value;
+    }
+
+    /** 日志脱敏：只保留前 6 位，避免完整凭据落盘 */
+    private String mask(String token) {
+        if (token == null) {
+            return "";
+        }
+        return token.length() <= 6 ? "***" : token.substring(0, 6);
     }
 }

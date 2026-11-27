@@ -1,5 +1,8 @@
 server:
-  port: 8080          # 前端 README 里原本建议用 8080 起静态服务，已改为 5173，把 8080 让给后端
+  port: 8080
+  # 只监听本机：外部访问统一走 Nginx（它负责 80/443、gzip 与静态资源）。
+  # 监听 0.0.0.0 会让后端端口在安全组放行时被直接访问，绕过 Nginx 且没有 TLS。
+  address: 127.0.0.1
 
 spring:
   servlet:
@@ -34,13 +37,15 @@ spring:
   # allowPublicKeyRetrieval=true 是必须的：MySQL 8 默认用 caching_sha2_password，
   # 非 TLS 连接下驱动默认拒绝向服务器索取 RSA 公钥，少了这个参数会直接连不上：
   #   SQLNonTransientConnectionException: Public Key Retrieval is not allowed
-  # 账号密码走环境变量：默认值保证本地开箱即用，线上由 systemd 的 EnvironmentFile 注入
-  # （Windows 本地不设变量时，下面的 :root / :123456 生效）
+  # 账号密码都走环境变量，线上由 systemd 的 EnvironmentFile 注入（见 .env.example）
+  # 两者都【不设默认值】：缺 DB_USERNAME / DB_PASSWORD 时启动直接失败，
+  # 不会静默退回到弱口令或 root 账号。
+  # 生产环境请用最小权限账号（如 youji），不要用 root。
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: "${DB_URL:jdbc:mysql://localhost:3306/travel_db?useUnicode=true&characterEncoding=utf8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai&createDatabaseIfNotExist=true}"
-    username: ${DB_USERNAME:root}
-    password: ${DB_PASSWORD:123456}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
 
   # ---------- Redis ----------
   # timeout 设短一点：Redis 没启动时快速失败，接口不至于卡住

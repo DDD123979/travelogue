@@ -4,6 +4,10 @@ target/
 *.class
 *.jar
 *.war
+*.tmp
+*.bak
+*.orig
+*.rej
 
 # ========== 日志与运行时数据 ==========
 logs/
@@ -14,22 +18,32 @@ dump.rdb
 # Redis 免安装包（第三方二进制，约 40MB，不入库）
 travel-server/redis/
 
-# ========== 数据库本地备份 ==========
+# ========== 数据库备份 ==========
 *.sql.bak
+*.sql.gz
 *.dump
 
-# ========== 密钥 / 本地配置 ==========
-# 真实密钥放环境变量（DEEPSEEK_API_KEY / AMAP_API_KEY），不要写进仓库
+# ========== 密钥 / 凭据（绝不能入库）==========
+# 真实配置放 .env 或服务器环境变量，仓库里只保留 .env.example 占位模板
 .env
 .env.*
 !.env.example
 application-local.yml
+application-local.properties
+*.pem
+*.key
+*.p12
+*.jks
+*.keystore
+id_rsa*
+id_ed25519*
+known_hosts
 
-# 个人工具配置（Claude Code 的权限白名单里含本机绝对路径，不随项目走）
-.claude/
-
-# 部署用的 SSH 私钥（绝不能进仓库）
+# 部署用的 SSH 私钥目录（本地部署工具，不随项目走）
 .deploy/
+
+# 个人工具配置（含本机绝对路径白名单）
+.claude/
 
 # 本机一键启停脚本：只在本机用，线上走 systemd
 /启动游迹.bat
@@ -44,10 +58,8 @@ application-local.yml
 Thumbs.db
 desktop.ini
 
-# pnpm 本地缓存（测试工具留下的，不要入库）
+# ========== 其他本地缓存 ==========
 .pnpm-store/
-.deploy/
 
 # 用户上传的照片（运行时产生，不入库）
 travel-app/uploads/
-

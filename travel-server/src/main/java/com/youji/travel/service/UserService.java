@@ -125,7 +125,7 @@ public class UserService {
 
     /**
      * 生成 6 位验证码并写入 Redis；用户不存在时返回 null（调用方给同样的提示，避免暴露账号是否存在）。
-     * 真实项目这里应该发邮件 / 短信，本项目没有接消息服务，验证码会写进服务端日志。
+     * 真实项目这里应发邮件 / 短信。验证码本身不写日志：日志可读就等于账号可被接管。
      */
     public String createResetCode(String username) {
         String name = username == null ? "" : username.trim();
@@ -134,7 +134,7 @@ public class UserService {
         }
         String code = String.format("%06d", RANDOM.nextInt(1000000));
         redis.opsForValue().set(RESET_KEY + name, code, RESET_TTL);
-        log.info("重置密码验证码：{} → {}（{} 分钟内有效）", name, code, RESET_TTL.toMinutes());
+        log.info("已为 {} 生成重置验证码（{} 分钟内有效，内容不落日志）", name, RESET_TTL.toMinutes());
         return code;
     }
 

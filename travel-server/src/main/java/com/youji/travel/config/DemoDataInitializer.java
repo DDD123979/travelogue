@@ -20,6 +20,11 @@ public class DemoDataInitializer implements ApplicationRunner {
 
     private static final Logger log = LoggerFactory.getLogger(DemoDataInitializer.class);
 
+    /**
+     * 演示账号。
+     * 注意：仍保留固定口令（P2 计划改为随机口令 / 仅 dev profile 创建），
+     * 因此这里只打日志说明"已创建"，不打印口令，避免日志成为凭据来源。
+     */
     private static final String DEMO_USERNAME = "dou123";
     private static final String DEMO_PASSWORD = "123456";
 
@@ -34,7 +39,7 @@ public class DemoDataInitializer implements ApplicationRunner {
         try {
             if (userService.findByUsername(DEMO_USERNAME) == null) {
                 userService.register(DEMO_USERNAME, DEMO_PASSWORD);
-                log.info("已创建演示账号：{} / {}", DEMO_USERNAME, DEMO_PASSWORD);
+                log.info("已创建演示账号：{}（口令未写入日志）", DEMO_USERNAME);
             }
         } catch (Exception e) {
             log.warn("跳过演示账号初始化（{}）。如果还没建表，请先执行 sql/schema.sql 和 sql/data.sql",
