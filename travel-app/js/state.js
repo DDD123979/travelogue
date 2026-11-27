@@ -124,9 +124,13 @@ function parseHash() {
 }
 
 const route = ref(parseHash());
+// 上一个路由：详情页的「返回」需要知道用户是从哪个页面点进来的
+const prevRoute = ref(null);
 
 function applyRoute() {
-  route.value = parseHash();
+  const next = parseHash();
+  if (route.value && route.value.path !== next.path) prevRoute.value = route.value;
+  route.value = next;
   window.scrollTo(0, 0);
 }
 

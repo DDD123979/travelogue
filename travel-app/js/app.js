@@ -10,12 +10,25 @@ const App = {
     /* 二级页面的「上一级」去处：用固定父级而不是 history.back()，
        避免用户从外部链接直接进来时退到站外。 */
     const BACK_LINKS = {
-      detail: { href: '#/destinations', label: '目的地' },
       favorites: { href: '#/', label: '首页' },
       profile: { href: '#/', label: '首页' },
       settings: { href: '#/', label: '首页' },
       ai: { href: '#/', label: '首页' },
     };
+
+    /* 详情页的「上一级」跟着来路走：从首页点进来就回首页，从排行点进来就回排行。
+       记住的是上一个非详情页的路由名；刷新后仍在（sessionStorage），
+       没有记录（直接开链接）时回落到目的地列表。 */
+    const DETAIL_PARENTS = {
+      home: { href: '#/', label: '首页' },
+      list: { href: '#/destinations', label: '目的地' },
+      ranking: { href: '#/ranking', label: '排行' },
+      community: { href: '#/community', label: '社区' },
+      favorites: { href: '#/favorites', label: '我的收藏' },
+      profile: { href: '#/profile', label: '我的主页' },
+      ai: { href: '#/ai', label: 'AI 规划' },
+    };
+
 
     // 悬浮窗：已在 AI 页就滚回顶部，否则跳转过去
     function openAi() {
@@ -207,7 +220,29 @@ const App = {
       store.user ? displayName.value.slice(0, 1).toUpperCase() : '?'
     );
 
-    const backLink = computed(() => BACK_LINKS[view.value.name] || null);
+    /* 详情页的父级按「来路」决定：home → 首页、ranking → 排行……
+       来路取 state.js 里记录的上一个路由，取不到时回落到目的地列表。 */
+    const DETAIL_PARENTS_BY_SEGMENT = {
+      '': { href: '#/', label: '首页' },
+      destinations: { href: '#/destinations', label: '目的地' },
+      ranking: { href: '#/ranking', label: '排行' },
+      community: { href: '#/community', label: '社区' },
+      favorites: { href: '#/favorites', label: '我的收藏' },
+      profile: { href: '#/profile', label: '我的主页' },
+      ai: { href: '#/ai', label: 'AI 规划' },
+    };
+
+    const backLink = computed(() => {
+      const name = view.value.name;
+      if (name === 'detail') {
+        const prev = prevRoute.value;
+        // 直接打开详情链接时没有来路，回落到目的地列表而不是首页
+        if (!prev) return { href: '#/destinations', label: '目的地' };
+        const seg = (prev.segments && prev.segments[0]) || '';
+        return DETAIL_PARENTS_BY_SEGMENT[seg] || { href: '#/destinations', label: '目的地' };
+      }
+      return BACK_LINKS[name] || null;
+    });
 
     return {
       openAi,
