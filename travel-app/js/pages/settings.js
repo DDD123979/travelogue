@@ -345,10 +345,19 @@ const SettingsPage = {
         <h2>关于</h2>
         <div class="setting-row">
           <div>
-            <div class="title">游迹 · 前端演示版</div>
-            <div class="desc">Vue 3 · 数据来自本地示例数据（js/api.js），尚未接入后端</div>
+            <div class="title">游迹 · 旅游攻略与 AI 行程规划</div>
+            <div class="desc">Java 21 · Spring Boot 3.5 · MySQL 8 · Redis 7 · Vue 3</div>
+            <div class="desc">AI 行程由 DeepSeek 流式生成，交通耗时来自高德（均可降级）</div>
           </div>
-          <span class="version">v1.0</span>
+          <span class="version">v1.3</span>
+        </div>
+        <div class="setting-row">
+          <div>
+            <div class="title">开源仓库</div>
+            <div class="desc">
+              <a href="https://github.com/DDD123979/travelogue" target="_blank" rel="noopener">github.com/DDD123979/travelogue</a>
+            </div>
+          </div>
         </div>
       </section>
 
