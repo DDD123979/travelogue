@@ -99,6 +99,24 @@ list.forEach((d, i) => {
   out.push('');
 });
 
+// 社区示例帖：只在新库（帖子表为空）时插入，避免重跑 data.sql 覆盖用户内容
+const posts = [
+  ['dou123', 1, '第一次去成都，最大的经验是：熊猫基地一定要早上八点前进园。中午熊猫全在睡觉，看到的都是毛球。下午去宽窄巷子喝茶，一天刚刚好。', '', 0, 48],
+  ['dou123', 6, '故宫真的太大了，中轴线走完就已经累瘫。建议午门进、神武门出，东西六宫挑两个看，珍宝馆别错过。提前七天抢票，手慢无。', '', 0, 24],
+  ['dou123', 21, '龙门石窟比想象中震撼，卢舍那大佛那一龛光线最好的是下午。从北门进、南门出，一路走一路看，三个小时不太够。', '/img/destinations/luoyang.jpg', 0, 5],
+];
+
+out.push('-- 社区示例帖（仅当帖子表为空时插入，重跑不会覆盖已有内容）');
+out.push('INSERT INTO travel_post (username, destination_id, content, images, like_count, created_at)');
+out.push('SELECT u, d, c, i, l, t FROM (');
+posts.forEach((p, i) => {
+  const cols = ' AS u, ' + n(p[1]) + ' AS d, ' + q(p[2]) + ' AS c, ' + q(p[3]) + ' AS i, ' + n(p[4]) + ' AS l, NOW() - INTERVAL ' + p[5] + ' HOUR AS t';
+  out.push((i === 0 ? '  SELECT ' : '  UNION ALL SELECT ') + q(p[0]) + cols);
+});
+out.push(') AS seed');
+out.push('WHERE NOT EXISTS (SELECT 1 FROM travel_post);');
+out.push('');
+
 fs.writeFileSync(outPath, out.join('\n'), 'utf8');
 console.log('已生成 ' + outPath);
 console.log('  目的地 ' + list.length +

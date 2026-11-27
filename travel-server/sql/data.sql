@@ -243,3 +243,12 @@ INSERT INTO destination_attraction (destination_id, name, attraction_type, durat
   (23, '那香海 · 海水浴场', '自然生态', '半天', '沙质细、人比青岛少，夏天适合下海。', 3),
   (23, '华夏城', '人文古迹', '半天', '废弃矿坑改成的山水园区，晚上有实景演出。', 4),
   (23, '威海海鲜市场', '街区市集', '2 小时', '买了就近找店加工，价格比景区便宜不少。', 5);
+
+-- 社区示例帖（仅当帖子表为空时插入，重跑不会覆盖已有内容）
+INSERT INTO travel_post (username, destination_id, content, images, like_count, created_at)
+SELECT u, d, c, i, l, t FROM (
+  SELECT 'dou123' AS u, 1 AS d, '第一次去成都，最大的经验是：熊猫基地一定要早上八点前进园。中午熊猫全在睡觉，看到的都是毛球。下午去宽窄巷子喝茶，一天刚刚好。' AS c, '' AS i, 0 AS l, NOW() - INTERVAL 48 HOUR AS t
+  UNION ALL SELECT 'dou123' AS u, 6 AS d, '故宫真的太大了，中轴线走完就已经累瘫。建议午门进、神武门出，东西六宫挑两个看，珍宝馆别错过。提前七天抢票，手慢无。' AS c, '' AS i, 0 AS l, NOW() - INTERVAL 24 HOUR AS t
+  UNION ALL SELECT 'dou123' AS u, 21 AS d, '龙门石窟比想象中震撼，卢舍那大佛那一龛光线最好的是下午。从北门进、南门出，一路走一路看，三个小时不太够。' AS c, '/img/destinations/luoyang.jpg' AS i, 0 AS l, NOW() - INTERVAL 5 HOUR AS t
+) AS seed
+WHERE NOT EXISTS (SELECT 1 FROM travel_post);
