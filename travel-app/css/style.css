@@ -3968,7 +3968,7 @@ body::after { display: none !important; }
 
 .hero {
   /* 首屏底图：相对本文件（css/）解析，http 与 file:// 都能加载 */
-  --hero-img: url("../img/hero-lake.webp");
+  --hero-img: url("../img/hero-beach.webp");
   /* --hero-shift 由 js/motion.js 写在 <html> 上，这里直接继承 */
   padding: 88px 0 64px;
   border-bottom: 1px solid var(--line-soft);
@@ -3994,7 +3994,7 @@ body::after { display: none !important; }
 
 /* 蒙版只留底部一条过渡：照片整块保持清晰，文字改由纸色卡片承托 */
 .hero::after {
-  background: linear-gradient(180deg, rgba(244, 242, 237, 0) 0%, rgba(244, 242, 237, 0.12) 62%, rgba(244, 242, 237, 0.92) 100%);
+  background: linear-gradient(180deg, rgba(244, 242, 237, 0) 0%, rgba(244, 242, 237, 0.1) 68%, rgba(244, 242, 237, 0.9) 100%);
 }
 
 .hero h1 {
