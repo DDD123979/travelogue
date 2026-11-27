@@ -17,7 +17,7 @@ mvn spring-boot:run        # 或者 java -jar target/travel-server-1.0.0.jar
 
 启动后自动打开页面到 **http://localhost:8080**，停止按 `Ctrl+C`。
 
-演示账号 **dou123 / 123456**。
+演示账号由后端启动时自动创建（口令不在仓库中公开，可用自己的账号注册登录）。
 
 > **后端顺便把前端页面也托管了**（`application.yml` 里配了 `spring.web.resources.static-locations`），
 > 所以不用再开 python 静态服务、也不会遇到跨域问题 —— 一个 8080 端口就是整个应用。
@@ -37,30 +37,29 @@ java -jar target\travel-server-1.0.0.jar     # 或 mvn spring-boot:run
 # 3) 浏览器打开 http://localhost:8080
 ```
 
-看到 `Started TravelApplication` 就成功了。**首次启动会自动创建演示账号 `dou123 / 123456`**，
-也可以在前端页面上自己注册。
+看到 `Started TravelApplication` 就成功了。首次启动会自动创建演示账号，也可以在前端页面自行注册。
 
 ### 建库 + 灌数据（新环境只需要做一次）
 
 ```bash
 cd travel-server
-mysql -uroot -p123456 --default-character-set=utf8mb4 < sql/schema.sql
-mysql -uroot -p123456 --default-character-set=utf8mb4 < sql/data.sql
+mysql -u <user> -p --default-character-set=utf8mb4 < sql/schema.sql
+mysql -u <user> -p --default-character-set=utf8mb4 < sql/data.sql
 ```
 
 执行完可以自查一下：
 
 ```sql
-SELECT COUNT(*) FROM travel_db.destination;             -- 应为 14
-SELECT COUNT(*) FROM travel_db.destination_tag;         -- 应为 42
-SELECT COUNT(*) FROM travel_db.destination_attraction;  -- 应为 42
+SELECT COUNT(*) FROM travel_db.destination;             -- 应为 23
+SELECT COUNT(*) FROM travel_db.destination_tag;         -- 应为 69
+SELECT COUNT(*) FROM travel_db.destination_attraction;  -- 应为 115
 ```
 
 > `schema.sql` 带 `DROP TABLE`，重跑会把 `t_user` 一起清掉，演示账号由后端启动时的
 > `DemoDataInitializer` 重建，不用手动补。
 
-> MySQL 账号密码在 `src/main/resources/application.yml` 里，默认 `root / 123456`，
-> 不是这个的话改那里就行。
+> MySQL 账号与密码都走环境变量（见 `travel-server/.env.example`），**均无默认值**：
+> 缺失时后端直接启动失败，避免静默使用 root 或弱口令；请使用最小权限业务账号。
 
 ### 直接双击前端 index.html 呢？
 
@@ -93,7 +92,7 @@ curl http://localhost:8080/api/destinations
 curl http://localhost:8080/api/destinations/1
 curl -X POST http://localhost:8080/api/auth/login \
      -H "Content-Type: application/json" \
-     -d '{"username":"dou123","password":"123456"}'
+     -d '{"username":"<user>","password":"<password>"}'
 ```
 
 
@@ -281,7 +280,7 @@ curl http://localhost:8080/api/amap/status
 列出哪些城市已经预热过 —— 空列表说明首次生成会多等几秒。
 
 ```bash
-curl -X POST http://localhost:8080/api/amap/warmup                # 全部 14 个城市
+curl -X POST http://localhost:8080/api/amap/warmup                # 全部目的地（当前 23 个）
 curl -X POST "http://localhost:8080/api/amap/warmup?destinationId=1"
 curl -X POST "http://localhost:8080/api/amap/warmup?force=true"   # 已缓存的也重算
 ```

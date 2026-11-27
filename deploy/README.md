@@ -5,8 +5,8 @@
 ```
 浏览器 ──80/443──> Nginx ──127.0.0.1:8080──> travel-server.jar
                                               ├── 静态页面：/opt/youji/travel-app/
-                                              ├── MySQL 8：127.0.0.1:3306
-                                              └── Redis 7：127.0.0.1:6379
+                                              ├── MySQL 8（仅本机回环，不对外）
+                                              └── Redis 7（仅本机回环，不对外）
 ```
 
 ## 目录约定
@@ -41,8 +41,8 @@ git clone https://github.com/DDD123979/travelogue.git /opt/youji
 
 # 4. 建库导数据（schema.sql 自带 CREATE DATABASE，末尾有 DROP TABLE，只能在新库上跑）
 cd /opt/youji/travel-server
-mysql -uroot -p --default-character-set=utf8mb4 < sql/schema.sql
-mysql -uroot -p --default-character-set=utf8mb4 < sql/data.sql
+mysql -u <user> -p --default-character-set=utf8mb4 < sql/schema.sql
+mysql -u <user> -p --default-character-set=utf8mb4 < sql/data.sql
 
 # 5. 密钥（不要用 git 管理这个文件）
 cat > /opt/youji/.env <<'EOF'
@@ -89,7 +89,7 @@ ls -lh /var/backups/youji/
 **异地**才是真备份——建议每周 `scp` 一份到本地电脑：
 
 ```bash
-scp root@8.148.81.57:/var/backups/youji/travel_*.sql.gz ./
+scp <user>@<your-host>:/var/backups/youji/travel_*.sql.gz ./
 ```
 
 ## 生产关闭 SQL 日志
@@ -123,6 +123,6 @@ bash /opt/youji/deploy/deploy.sh
 
 ## 上线前务必改掉
 
-- `application.yml` 里 `root` / `123456` 的数据库账号密码 → 建专用用户并用 `${DB_PASSWORD}` 注入
-- `DemoDataInitializer` 启动时创建的 `dou123 / 123456` 演示账号 → 上线后删除或改密码
+- 数据库账号与密码均改为环境变量注入（**无默认值**），生产请建最小权限业务账号，不要用 root
+- `DemoDataInitializer` 启动时创建的演示账号（口令固定在代码中）→ 上线后删除该账号或改为随机口令
 - `sql/schema.sql` 的 `DROP TABLE` → 生产环境不要重跑

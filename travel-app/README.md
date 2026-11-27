@@ -182,7 +182,7 @@ GET /api/destinations/{id}
 POST /api/auth/register
 Content-Type: application/json
 
-{ "username": "xiaowang", "password": "123456" }
+{ "username": "xiaowang", "password": "<password>" }
 
 响应 200: { "username": "xiaowang" }
 响应 409/400: { "message": "该用户名已被注册" }
@@ -194,9 +194,9 @@ Content-Type: application/json
 POST /api/auth/login
 Content-Type: application/json
 
-{ "username": "xiaowang", "password": "123456" }
+{ "username": "xiaowang", "password": "<password>" }
 
-响应 200: { "username": "xiaowang", "token": "jwt-token" }
+响应 200: { "username": "xiaowang", "token": "<32 位不透明 token>" }
 响应 401: { "message": "用户名或密码错误" }
 ```
 
