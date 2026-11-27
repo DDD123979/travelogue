@@ -281,7 +281,7 @@ const App = {
     </main>
 
     <footer class="site-footer" v-if="view.name !== 'login'">
-      游迹 · 发现你的下一场旅行
+      游迹 · 旅游攻略与 AI 行程规划
     </footer>
 
     <!-- 图片查看器：点帖子里的图打开，可左右滑动 -->
