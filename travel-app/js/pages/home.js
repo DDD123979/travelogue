@@ -25,7 +25,7 @@ const HOT_SEARCHES = ['成都', '大理', '三亚', '杭州', '厦门'];
 
 
 const HomePage = {
-  components: { DestinationCard },
+  components: { DestinationCard, MapGuide },
   setup() {
     const keyword = ref('');
     const list = ref([]);
@@ -166,28 +166,33 @@ const HomePage = {
     <div>
       <section class="hero" :style="heroBg">
         <div class="hero-inner">
-          <h1>去<em>想去</em>的地方，见想见的风景</h1>
-          <p>从城市到海岛，从一口吃食到一段古迹，挑一个就出发</p>
-          <div class="search-box">
-            <input
-              v-model="keyword"
-              placeholder="搜索目的地，如：成都、大理、海岛…"
-              @keyup.enter="search"
-            />
-            <button class="btn btn-primary" @click="search">搜 索</button>
+          <div class="hero-copy">
+            <h1>去<em>想去</em>的地方，见想见的风景</h1>
+            <p>从城市到海岛，从一口吃食到一段古迹，挑一个就出发</p>
+            <div class="search-box">
+              <input
+                v-model="keyword"
+                placeholder="搜索目的地，如：成都、大理、海岛…"
+                @keyup.enter="search"
+              />
+              <button class="btn btn-primary" @click="search">搜 索</button>
+            </div>
+
+            <!-- 热搜：极简文字标签，点击即搜索 -->
+            <div class="hot-searches" v-if="hotSearches.length">
+              <span class="hot-label">热门</span>
+              <button
+                v-for="t in hotSearches"
+                :key="t"
+                type="button"
+                class="hot-item"
+                @click="pickHot(t)"
+              >{{ t }}</button>
+            </div>
           </div>
 
-          <!-- 热搜：极简文字标签，点击即搜索 -->
-          <div class="hot-searches" v-if="hotSearches.length">
-            <span class="hot-label">热门</span>
-            <button
-              v-for="t in hotSearches"
-              :key="t"
-              type="button"
-              class="hot-item"
-              @click="pickHot(t)"
-            >{{ t }}</button>
-          </div>
+          <!-- 地图导览：绿色中国地图 + 目的地打点 -->
+          <MapGuide :items="list" />
         </div>
       </section>
 

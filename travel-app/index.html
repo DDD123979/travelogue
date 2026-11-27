@@ -6,7 +6,7 @@
   <meta name="description" content="游迹：旅游攻略与 AI 行程规划。Vue 3 + Spring Boot，按类型浏览目的地、看逐日行程，AI 流式生成个性化行程并用高德校准交通耗时。">
   <title>游迹 · 旅游攻略与 AI 行程规划</title>
   <link rel="icon" type="image/svg+xml" href="img/logo.svg">
-  <link rel="stylesheet" href="css/style.css?v=20261128a">
+  <link rel="stylesheet" href="css/style.css?v=20261128c">
   <!-- 首页克制动效增强层：覆盖在 style.css 之上，不改原有结构 -->
   <link rel="stylesheet" href="css/motion.css?v=20261128a">
 </head>
@@ -52,7 +52,9 @@
   <!-- 以下按依赖顺序加载（没有打包工具，顺序就是依赖关系）：
        state 定义 store / 路由；card 与 markdown 是共用件；pages 各页面；最后 app.js 挂载 -->
   <script src="js/state.js?v=20261031c"></script>
+  <script src="js/data/china-pins.js?v=20261128c"></script>
   <script src="js/components/card.js?v=20261031c"></script>
+  <script src="js/components/map-guide.js?v=20261128c"></script>
   <script src="js/lib/markdown.js?v=20261031c"></script>
   <script src="js/pages/home.js?v=20261031c"></script>
   <script src="js/pages/list.js?v=20261031c"></script>

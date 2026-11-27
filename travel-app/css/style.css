@@ -4330,3 +4330,199 @@ body::after { display: none !important; }
 @media (prefers-reduced-motion: reduce) {
   .fav-btn, .type-head { transition: none !important; }
 }
+
+/* ============================================================
+ * 地图导览（首屏右栏）
+ * 一张绿色中国地图 + 23 个目的地打点：
+ *   悬停 → 地名放大；点击 → 气泡（简介 + 详细查看）
+ * 打点坐标见 js/data/china-pins.js，与本文件里的百分比一一对应。
+ * ============================================================ */
+
+/* 首屏改两栏：左侧文案与搜索，右侧地图 */
+.hero { text-align: left; }
+.hero-inner {
+  position: relative;
+  z-index: 1;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 440px;
+  gap: 48px;
+  align-items: center;
+}
+.hero-copy .search-box { margin: 0; max-width: 520px; }
+.hero-copy .hot-searches { justify-content: flex-start; margin-top: 18px; }
+.hero-copy h1 { margin-bottom: 10px; }
+.hero-copy p { margin-bottom: 24px; }
+
+/* 地图卡片：哑光白 + 细边，与全站卡片同一语言 */
+.map-guide {
+  padding: 12px 12px 8px;
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  box-shadow: var(--card-shadow);
+  backdrop-filter: blur(6px);
+}
+.map-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 6px;
+  padding: 0 2px;
+}
+.map-title {
+  font-size: calc(15px * var(--fs));
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--ink);
+}
+.map-hint {
+  font-size: calc(10.5px * var(--fs));
+  letter-spacing: 0.04em;
+  color: var(--ink-3);
+}
+
+.map-canvas { position: relative; aspect-ratio: 1000 / 735; }
+/* 静默标签：默认藏起来，悬停/选中时才出现 */
+/* 静默标签：密集区默认只显示圆点，悬停 / 选中时才显示地名 */
+.map-pin.quiet .pin-label { opacity: 0; }
+.map-pin.quiet:hover .pin-label,
+.map-pin.quiet.is-active .pin-label { opacity: 1; }
+.map-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  user-select: none;
+  pointer-events: none;
+}
+
+/* 打点：小圆点 + 常驻地名，悬停放大 */
+.map-pin {
+  position: absolute;
+  z-index: 2;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  transform: translate(-50%, -50%);
+  display: grid;
+  place-items: center;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+.pin-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--brand);
+  box-shadow: 0 0 0 2.5px rgba(255, 255, 255, 0.9);
+  transition: transform 0.22s var(--ease), background-color 0.22s var(--ease);
+}
+.map-pin:hover .pin-dot,
+.map-pin.is-active .pin-dot {
+  transform: scale(1.7);
+  background: var(--brand-ink);
+}
+.pin-label {
+  position: absolute;
+  opacity: 1;
+  transition: transform 0.22s var(--ease), color 0.22s var(--ease), opacity 0.18s var(--ease);
+  white-space: nowrap;
+  font-size: calc(9.5px * var(--fs));
+  line-height: 1;
+  letter-spacing: 0.02em;
+  color: var(--ink-2);
+  /* 白描边让文字压在地图色块上也不糊 */
+  text-shadow: 0 0 3px #fff, 0 0 3px #fff, 0 1px 2px #fff;
+  pointer-events: none;
+}
+.map-pin:hover .pin-label,
+.map-pin.is-active .pin-label { color: var(--brand-ink); z-index: 3; }
+
+/* 地名方位：由 MAP_LABEL_POS 决定，避免华东一片叠在一起 */
+.pos-top .pin-label { left: 50%; bottom: 14px; transform: translateX(-50%); }
+.pos-top:hover .pin-label { transform: translateX(-50%) scale(1.35); }
+.pos-bottom .pin-label { left: 50%; top: 14px; transform: translateX(-50%); }
+.pos-bottom:hover .pin-label { transform: translateX(-50%) scale(1.35); }
+.pos-left .pin-label { right: 14px; top: 50%; transform: translateY(-50%); }
+.pos-left:hover .pin-label { transform: translateY(-50%) scale(1.35); }
+.pos-right .pin-label { left: 14px; top: 50%; transform: translateY(-50%); }
+.pos-right:hover .pin-label { transform: translateY(-50%) scale(1.35); }
+
+/* 气泡：坐标由组件测量后写入（保证不越出卡片），这里只管外观 */
+.map-bubble {
+  position: absolute;
+  z-index: 9;
+  width: 236px;
+  /* 水平居中到 JS 写入的 left，垂直由 top 决定 */
+  transform: translateX(-50%);
+  padding: 11px 12px 10px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  box-shadow: 0 18px 40px -18px rgba(34, 40, 42, 0.38);
+}
+
+.bubble-close {
+  position: absolute;
+  right: 6px;
+  top: 4px;
+  width: 20px;
+  height: 20px;
+  line-height: 1;
+  border-radius: 6px;
+  color: var(--ink-3);
+  font-size: 14px;
+}
+.bubble-close:hover { background: var(--paper-2); color: var(--ink); }
+.bubble-name {
+  margin: 0 18px 2px 0;
+  font-size: calc(14px * var(--fs));
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: var(--ink);
+}
+.bubble-meta {
+  margin: 0 0 6px;
+  font-size: calc(10.5px * var(--fs));
+  color: var(--ink-3);
+  letter-spacing: 0.04em;
+}
+.bubble-desc {
+  margin: 0 0 8px;
+  font-size: calc(11.5px * var(--fs));
+  line-height: 1.7;
+  color: var(--ink-2);
+  /* 简介最多四行，超出省略，气泡高度稳定 */
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.bubble-link {
+  display: inline-block;
+  font-size: calc(11.5px * var(--fs));
+  letter-spacing: 0.04em;
+  color: var(--brand-ink);
+  border-bottom: 1px solid var(--brand);
+}
+
+/* 中等屏幕：地图收窄 */
+@media (max-width: 1080px) {
+  .hero-inner { grid-template-columns: minmax(0, 1fr) 360px; gap: 32px; }
+}
+/* 窄屏：文案在上、地图在下 */
+@media (max-width: 900px) {
+  .hero-inner { grid-template-columns: 1fr; gap: 28px; }
+  .map-guide { max-width: 520px; }
+  .hero-copy .hot-searches { justify-content: flex-start; }
+}
+@media (max-width: 560px) {
+  .hero-inner { padding: 0 14px; }
+  .map-hint { display: none; }
+  .map-bubble { width: 208px; }
+}
