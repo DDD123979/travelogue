@@ -4862,3 +4862,168 @@ a, button, .nav-link, .ai-fab { -webkit-tap-highlight-color: transparent; }
   .ai-fab-img { width: 50px; height: 50px; }
   main { padding-bottom: 96px; }
 }
+
+
+/* ============================================================
+ * 移动端改造：底部标签栏 + 双列瀑布流（参考小红书形态）
+ * 只在 ≤768px 生效；桌面保持原有顶部导航与三列网格
+ * ============================================================ */
+
+/* 底部标签栏默认隐藏 */
+.tabbar { display: none; }
+
+@media (max-width: 768px) {
+  /* 1) 顶栏收成「logo + 头像」，导航让位给底部标签栏 */
+  .main-nav { display: none; }
+  .header-inner { justify-content: space-between; }
+  .site-header { height: 56px; }
+  :root { --header-h: 56px; }
+
+  /* 2) 底部标签栏 */
+  .tabbar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 100;
+    display: flex;
+    align-items: stretch;
+    justify-content: space-around;
+    height: calc(56px + env(safe-area-inset-bottom, 0px));
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    background: rgba(252, 250, 246, 0.94);
+    border-top: 1px solid var(--line-soft);
+    backdrop-filter: saturate(160%) blur(12px);
+  }
+  .tab-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    font-size: calc(10.5px * var(--fs));
+    letter-spacing: 0.02em;
+    color: var(--ink-3);
+    transition: color 0.18s var(--ease);
+  }
+  .tab-item svg { color: currentColor; }
+  .tab-item.active { color: var(--brand-ink); font-weight: 600; }
+
+  /* 3) 给底部栏与悬浮窗让出空间 */
+  main { padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px)); }
+  .site-footer { padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px)); }
+  .ai-fab { bottom: calc(68px + env(safe-area-inset-bottom, 0px)); }
+
+  /* 4) 首页：双列瀑布流 */
+  .section.container { padding-top: 24px; }
+  .card-grid {
+    display: block;                 /* 关掉网格，改用多列实现瀑布流 */
+    column-count: 2;
+    column-gap: 10px;
+  }
+  .card-grid > .card {
+    break-inside: avoid;
+    margin: 0 0 10px;
+    display: inline-block;
+    width: 100%;
+  }
+
+  /* 图片高度错落，形成瀑布的节奏 */
+  .card-grid > .card .card-media { aspect-ratio: 3 / 4; }
+  .card-grid > .card:nth-child(3n + 2) .card-media { aspect-ratio: 1 / 1; }
+  .card-grid > .card:nth-child(5n) .card-media { aspect-ratio: 4 / 5; }
+
+  /* 卡片信息更像信息流：图 + 标题 + 一行元信息 */
+  .card-body { padding: 10px 12px 12px; gap: 6px; }
+  .card-head .name { font-size: calc(15px * var(--fs)); line-height: 1.35; }
+  .card-head .rating { font-size: calc(11px * var(--fs)); }
+  .card-sub { display: none; }
+  .card-tags { display: none; }
+  .card-facts {
+    margin-top: 2px;
+    padding-top: 8px;
+    gap: 8px;
+    font-size: calc(10.5px * var(--fs));
+  }
+  .card-facts .card-go { display: none; }
+  .card-body .fact:nth-child(2) { display: none; }   /* 双列里只留「最佳出行季」 */
+  .card-badge { font-size: calc(10px * var(--fs)); padding: 2px 7px; }
+  .card .fav-btn { width: 30px; height: 30px; }
+  .card .fav-btn svg { width: 15px; height: 15px; }
+
+  /* 5) 筛选栏：横向滚动一行，不换行 */
+  .type-side, .browse > aside.type-side {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 8px;
+    padding: 8px;
+    scrollbar-width: none;
+  }
+  .type-side::-webkit-scrollbar { display: none; }
+  .type-side .side-title { display: none; }
+  .type-group { flex: none; }
+  .type-head { padding: 8px 14px; border-radius: 999px; background: #fff; border: 1px solid var(--line-soft); }
+  .type-num, .type-toggle { display: none; }
+
+  /* 6) 首屏压缩：只留搜索与标题，避免一屏看不到内容 */
+  .hero { padding: 28px 0 24px; }
+  .hero-copy { padding: 18px 16px 16px; border-radius: 16px; }
+  .hero-copy h1 { font-size: calc(22px * var(--fs)); line-height: 1.4; }
+  .hero-copy p { display: none; }
+  .hero-copy .hot-searches { display: none; }
+  .search-box { margin-top: 14px; }
+  .map-guide { display: none; }       /* 手机上先隐藏地图卡片，把首屏留给内容 */
+}
+
+@media (max-width: 560px) {
+  .card-grid { column-gap: 9px; }
+  .card-grid > .card { margin-bottom: 9px; }
+}
+
+
+/* ---------- 社区：手机端同样是双列瀑布 ---------- */
+@media (max-width: 768px) {
+  .post-list {
+    display: block;
+    column-count: 2;
+    column-gap: 10px;
+  }
+  .post-card {
+    break-inside: avoid;
+    margin: 0 0 10px;
+    display: inline-block;
+    width: 100%;
+    padding: 0 0 10px;
+    border-radius: 14px;
+    overflow: hidden;
+  }
+  /* 图片提到最上面，其余信息按信息流的顺序往下排 */
+  .post-card { display: flex; flex-direction: column; }
+  .post-gallery { order: -1; margin: 0 0 8px; border-radius: 0; }
+  .post-gallery img { border-radius: 0; border: 0; }
+  .post-head { padding: 0 10px; gap: 6px; }
+  .post-avatar { width: 22px; height: 22px; font-size: 11px; border-radius: 50%; }
+  .post-user { font-size: calc(11.5px * var(--fs)); }
+  .post-time { display: none; }
+  .post-content {
+    padding: 0 10px;
+    margin: 6px 0 8px;
+    font-size: calc(12.5px * var(--fs));
+    line-height: 1.6;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .post-dest { font-size: calc(10.5px * var(--fs)); }
+  .post-foot { margin: 0 10px; padding-top: 8px; gap: 6px; flex-wrap: wrap; }
+  .post-action, .post-del { font-size: calc(10.5px * var(--fs)); padding: 4px 8px; white-space: nowrap; }
+  /* 图片限高，避免单张长图把整列拉得过长 */
+  .post-gallery img { max-height: 240px; object-fit: cover; }
+
+  /* 筛选条：右侧留出滚动余量，避免最后一个标签被切 */
+  .type-side { padding-right: 16px; scroll-snap-type: x proximity; }
+  .type-group { scroll-snap-align: start; }
+}

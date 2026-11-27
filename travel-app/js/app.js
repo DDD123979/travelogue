@@ -356,6 +356,30 @@ const App = {
       游迹 · 旅游攻略与 AI 行程规划
     </footer>
 
+    <!-- 移动端底部标签栏（窄屏显示，桌面隐藏） -->
+    <nav class="tabbar" v-if="view.name !== 'login'" aria-label="主导航">
+      <a class="tab-item" href="#/" :class="{ active: navActive === 'home' }">
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M4 10.5L12 4l8 6.5V20a1 1 0 0 1-1 1h-4.5v-6h-5v6H5a1 1 0 0 1-1-1z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+        <span>首页</span>
+      </a>
+      <a class="tab-item" href="#/destinations" :class="{ active: navActive === 'destinations' }">
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="10" r="6.2" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M12 16.4V21M12 21l-2.6-2.4M12 21l2.6-2.4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <span>目的地</span>
+      </a>
+      <a class="tab-item" href="#/ranking" :class="{ active: navActive === 'ranking' }">
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M5 19V11M12 19V5M19 19v-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        <span>排行</span>
+      </a>
+      <a class="tab-item" href="#/community" :class="{ active: navActive === 'community' }">
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M4.5 6.5h15v9h-8L7 19v-3.5H4.5z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+        <span>社区</span>
+      </a>
+      <a class="tab-item" href="#/profile" :class="{ active: navActive === 'profile' }">
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="8.5" r="3.6" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M5 20c1.4-3.4 4-5 7-5s5.6 1.6 7 5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <span>我的</span>
+      </a>
+    </nav>
+
     <!-- 小迹 AI 智能导游：常驻右下角，任何页面都在（登录页除外） -->
     <button
       class="ai-fab"
