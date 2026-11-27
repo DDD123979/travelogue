@@ -100,36 +100,6 @@ CREATE TABLE destination_attraction (
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '推荐景点';
 
 -- ---------------------------------------------------------
--- 酒店（「预订」页用户可选的住宿）
---   price_per_night：单价按【每间每晚】记，不按人头 ——
---     酒店报价天然是房价，按人头会把「2 大人带 1 小孩住一间」算成 3 份钱。
---     人数对总价的影响通过 booking_order.rooms 体现（每间住 2 人）。
---   hotel_desc：同样躲 desc 保留字，理由见上面 destination_attraction 那段。
---   star 不用单独存「档次」文案：前端按星级渲染成 ★，多一列反而要和 star 保持同步。
---   没有 image 列：酒店在页面上是文字行不是照片卡，省掉 42 张外链图片的逐条验证成本
---     （见 api.js 里关于 Bing CDN 的那段注释）。以后要加封面，补列 + 在 HotelDTO 里多塞字段即可。
--- ---------------------------------------------------------
-
--- ---------------------------------------------------------
--- 预订订单
---   表名不能叫 order：order 是 MySQL 保留字（和 user → t_user 同一类问题），
---   建表叫 `order` 会让后面的 SELECT 直接语法错误。
---
---   四处【下单时的快照】是刻意的：destination_name / hotel_name / unit_price / rooms。
---     酒店改名、调价、甚至下架，历史订单上的成交信息都不会跟着变 ——
---     订单记的是「当时谈好的事」，不是「现在数据库里是什么」。
---     顺带的好处：「我的订单」一条 SQL 就够，不用 join 三张表。
---
---   username 存用户名而不是 user_id：token 里存的就是用户名
---     （TokenService.resolveUsername 返回 String），前端拿不到用户 id。
---
---   rooms = ceil(people / 2)，每间住 2 人，恒 ≥ 1 间 —— 1 人也要占一间。
---   total_amount = unit_price × rooms × days，由【后端】算，绝不接受前端传值。
---
---   金额一律 INT（整元）：没有精度问题，和 destination.price_from 的口径也一致。
--- ---------------------------------------------------------
-
--- ---------------------------------------------------------
 -- 社区分享（旅行心得 + 照片）
 --   images 存逗号分隔的地址，不单独开图片表：一条最多 4 张，拆表要多个 join
 -- ---------------------------------------------------------
@@ -145,3 +115,51 @@ CREATE TABLE travel_post (
   KEY idx_time (created_at),
   KEY idx_destination (destination_id, created_at)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '社区分享';
+
+-- ---------------------------------------------------------
+-- 社区互动：点赞 / 收藏 / 评论（一人一条，唯一键去重）
+--   点赞改为按人去重后，like_count 只作为冗余展示值，真实数据以 post_like 为准
+-- ---------------------------------------------------------
+CREATE TABLE post_like (
+  id         BIGINT      NOT NULL AUTO_INCREMENT COMMENT '主键',
+  post_id    BIGINT      NOT NULL                COMMENT '帖子 ID',
+  username   VARCHAR(50) NOT NULL                COMMENT '点赞人',
+  created_at DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  UNIQUE KEY uk_like_post_user (post_id, username)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '帖子点赞（一人一条）';
+
+CREATE TABLE post_favorite (
+  id         BIGINT      NOT NULL AUTO_INCREMENT COMMENT '主键',
+  post_id    BIGINT      NOT NULL                COMMENT '帖子 ID',
+  username   VARCHAR(50) NOT NULL                COMMENT '收藏人',
+  created_at DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  UNIQUE KEY uk_fav_post_user (post_id, username)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '帖子收藏（一人一条）';
+
+CREATE TABLE post_comment (
+  id         BIGINT       NOT NULL AUTO_INCREMENT COMMENT '主键',
+  post_id    BIGINT       NOT NULL                COMMENT '帖子 ID',
+  username   VARCHAR(50)  NOT NULL                COMMENT '评论人',
+  content    VARCHAR(300) NOT NULL                COMMENT '评论内容',
+  created_at DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  KEY idx_comment_post (post_id, created_at)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '帖子评论';
+
+-- ---------------------------------------------------------
+-- 互动通知：别人赞 / 收藏 / 评论我的帖子时留一条事件
+--   自增主键同时作为轮询游标，前端记录 afterId 只取增量，不用建已读表
+-- ---------------------------------------------------------
+CREATE TABLE post_event (
+  id         BIGINT       NOT NULL AUTO_INCREMENT COMMENT '主键（同时作为游标）',
+  post_id    BIGINT       NOT NULL                COMMENT '被互动的帖子',
+  owner      VARCHAR(50)  NOT NULL                COMMENT '帖子作者（收通知的人）',
+  actor      VARCHAR(50)  NOT NULL                COMMENT '操作人',
+  type       VARCHAR(12)  NOT NULL                COMMENT 'like / favorite / comment',
+  content    VARCHAR(300) NOT NULL DEFAULT ''     COMMENT '评论内容（仅 comment）',
+  created_at DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  KEY idx_owner_id (owner, id)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '帖子互动通知';

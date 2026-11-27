@@ -92,6 +92,14 @@ Controller（路由 + requireUser 鉴权）
 
 **降级**：外部服务（AI / 高德）失败不能抛给用户，要返回可用的兜底结果。
 
+**种子数据**：`travel-server/sql/data.sql` 由 `travel-app/js/mock-data.js` 生成，**不要手改**。改数据只改 `mock-data.js`，再执行：
+
+```bash
+node travel-server/sql/generate-data.js
+```
+
+脚本会按 `schema.sql` 的列顺序重写 data.sql，并把目的地 / 标签 / 景点一起刷新。
+
 ### 3.2 数据库变更
 
 1. `deploy/migrations/` 新建 `0NN_描述.sql`（序号递增）；
