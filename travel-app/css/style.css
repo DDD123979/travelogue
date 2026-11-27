@@ -4790,3 +4790,75 @@ a, button, .nav-link, .ai-fab { -webkit-tap-highlight-color: transparent; }
   .main-nav { margin-left: 0; }
   .user-menu { margin-left: 0; }
 }
+
+
+/* ============================================================
+ * 移动端留白：把手机上的排版松一档
+ * 目标：390px 下不拥挤——更大的页面边距、更松的卡片内边距、
+ *       更高的搜索框与顶栏，正文行高统一拉到 1.7+
+ * ============================================================ */
+@media (max-width: 560px) {
+  :root { --header-h: 64px; }          /* 顶栏高一点，导航不贴边 */
+
+  /* 1) 页面与分区留白 */
+  .container { padding: 0 16px; }
+  .header-inner { padding: 0 16px; }
+  .section { padding: 32px 0; }
+  .page { padding-top: 24px; padding-bottom: 56px; }
+  .section-head { margin-bottom: 16px; }
+  .page-title { margin-bottom: 18px; }
+
+  /* 2) 首屏：文案卡片更松，标题行高更舒展 */
+  .hero { padding: 68px 0 52px; }
+  .hero-copy { padding: 22px 20px 20px; border-radius: 18px; }
+  .hero-copy h1 { font-size: calc(26px * var(--fs)); line-height: 1.45; margin-bottom: 12px; }
+  .hero-copy p { font-size: calc(14px * var(--fs)); line-height: 1.72; margin-bottom: 22px; }
+  .search-box { padding: 6px; }
+  .search-box input { height: 46px; padding: 0 16px; }
+  .search-box .btn { height: 46px; padding: 0 20px; }
+  .hot-searches { margin-top: 18px; gap: 10px 16px; }
+
+  /* 3) 地图卡片 */
+  .map-guide { padding: 14px 14px 12px; }
+  .map-head { margin-bottom: 12px; }
+
+  /* 4) 左侧筛选 / 列表筛选 */
+  .type-side { padding: 14px 12px; gap: 6px; }
+  .filter-bar { gap: 10px; margin-bottom: 20px; }
+  .filter-tab, .rank-tab { padding: 0 16px; }
+
+  /* 5) 目的地卡片：内边距与信息间距放大 */
+  .card-grid { gap: 18px; }
+  .card-body { padding: 16px 16px 18px; gap: 10px; }
+  .card-head .name { font-size: calc(18px * var(--fs)); }
+  .card-sub { line-height: 1.6; }
+  .card-facts { padding-top: 12px; gap: 12px; }
+
+  /* 6) 目的地列表 / 排行 */
+  .region-item { padding: 16px; gap: 14px; }
+  .rank-list { gap: 12px; }
+  .rank-item { padding: 16px; gap: 12px; }
+
+  /* 7) 详情页 */
+  .detail-hero { padding: 28px 22px; }
+  .detail-hero .sub { line-height: 1.72; }
+  .timeline-slot { padding: 14px 0 14px 14px; }
+  .hl-box, .region-hl { padding: 16px; }
+
+  /* 8) 社区 */
+  .post-card { padding: 18px; }
+  .post-content { line-height: 1.8; margin-bottom: 12px; }
+  .post-foot { padding-top: 12px; }
+  .post-gallery { gap: 6px; }
+
+  /* 9) 设置 / 表单 */
+  .settings-card { padding: 0 18px; margin-bottom: 16px; }
+  .setting-row { padding: 18px 0; gap: 16px; }
+  .ai-layout { gap: 18px; }
+  .ai-form, .ai-output { padding: 16px; }
+
+  /* 10) 悬浮窗略收一档，减少对正文的遮挡；页面底部再多留一点滚动余量 */
+  .ai-fab { width: 60px; height: 60px; }
+  .ai-fab-img { width: 50px; height: 50px; }
+  main { padding-bottom: 96px; }
+}
