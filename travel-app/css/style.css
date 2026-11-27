@@ -4774,3 +4774,19 @@ a, button, .nav-link, .ai-fab { -webkit-tap-highlight-color: transparent; }
   .ai-fab { bottom: calc(14px + env(safe-area-inset-bottom)); }
   .site-footer { padding-bottom: calc(84px + env(safe-area-inset-bottom)); }
 }
+
+
+/* ============================================================
+ * 顶栏结构：用户菜单已移出 .main-nav
+ * （导航在窄屏是 overflow-x:auto 的滚动容器，下拉会被它裁掉）
+ * ============================================================ */
+.header-inner { gap: 12px; }
+.main-nav { margin-left: auto; }
+.user-menu { flex: none; margin-left: 4px; }
+.nav-login { flex: none; }
+
+@media (max-width: 560px) {
+  /* 窄屏导航可以横向滑动，头像固定在最右不被卷走 */
+  .main-nav { margin-left: 0; }
+  .user-menu { margin-left: 0; }
+}

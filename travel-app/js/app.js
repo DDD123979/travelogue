@@ -283,6 +283,9 @@ const App = {
 
           <!-- 收藏不再占导航位：右上角用户菜单里已经有「我的收藏」，收藏数量也在菜单头部显示 -->
 
+          <a v-if="!store.user" class="nav-link nav-login" href="#/login">登录 / 注册</a>
+        </nav>
+
           <!-- 用户中心：头像 + 用户名即入口，退出登录收进下拉里 -->
           <div class="user-menu" v-if="store.user">
             <button
@@ -314,8 +317,6 @@ const App = {
               <button class="dropdown-item danger" @click="logout">退出登录</button>
             </div>
           </div>
-          <a v-else class="nav-link nav-login" href="#/login">登录 / 注册</a>
-        </nav>
       </div>
     </header>
 
