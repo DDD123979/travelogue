@@ -45,21 +45,14 @@ Spring Boot :8080 ── REST / SSE / multipart 上传
    └── 高德 API     驾车耗时（缓存 + 降级）
 ```
 
+分层设计、认证机制、缓存与外部服务细节见 [架构说明](docs/architecture.md)。
+
 ## 技术亮点
 
-- **零构建前端 + 同源部署**：页面是一组静态文件，`<script>` 直接加载，改完刷新即生效；后端同时托管前端，天然无跨域。代价是没有单文件组件与热更新。
+- **零构建前端 + 同源部署**：页面是一组静态文件，`<script>` 直接加载，改完刷新即生效；后端同时托管前端，天然无跨域。
 - **Redis 不透明令牌**：登录态是 UUID token → 用户名（TTL 2 小时）。选它的根本原因是**服务端可随时吊销**——退出登录、改密码后旧会话立即失效。
-- **AI 流式 + 高德接地，且可降级**：行程逐字返回（SSE），生成后补真实交通耗时；高德不可用时用估算值继续输出，**绝不阻断出行程**。两层缓存（目的地 60s、高德 7 天）都有失败兜底。
-- **图片上传全链路压缩**：手机原图最大 25MB，落盘前按长边 1600px 重编码并生成 480px 缩略图；解码采用**降采样**避免大图撑爆 1.6G 内存的机器。
-
-## 设计取舍
-
-| 决策 | 理由 | 代价 |
-|---|---|---|
-| 前端不用打包工具 | 双击 `index.html` 就能演示，不依赖 Node 环境 | 无 SFC / 热更新，组件写在单个 JS |
-| 后端托管前端 | 同源、免跨域、只暴露一个端口 | 静态文件也走 JVM（已改为 Nginx 直发缓解） |
-| Redis 会话令牌 | 可主动吊销、改密即失效 | 依赖 Redis 可用性 |
-| 通知用轮询而非消息队列 | 数据量小，引入 MQ 收益不足 | 通知最多延迟约 12 秒 |
+- **AI 流式 + 高德接地，且可降级**：行程逐字返回，生成后补真实交通耗时；高德不可用时用估算值继续输出，**绝不阻断出行程**。
+- **图片上传全链路压缩**：手机原图最大 25MB，落盘前压到长边 1600px 并生成缩略图；解码采用降采样，避免大图撑爆 1.6G 内存。
 
 ## 项目结构
 
@@ -76,7 +69,7 @@ travel-server/              后端（Spring Boot）
 └── sql/                    建表与种子数据
 
 deploy/                     部署配置与脚本（Nginx、systemd、迁移、备份）
-docs/                       需求、架构与开发文档
+docs/                       需求、架构、开发与接口文档
 ```
 
 各目录的详细说明与开发约定见 [开发说明](docs/development.md)。
@@ -87,7 +80,7 @@ docs/                       需求、架构与开发文档
 
 ## 快速开始
 
-环境：JDK 21、Maven 3.9+、MySQL 8、Redis 7（Node.js 仅用于重新生成需求文档，可选）。
+环境：JDK 21、Maven 3.9+、MySQL 8、Redis 7。
 
 ```bash
 # 1. 初始化数据库
@@ -96,50 +89,16 @@ mysql -u<user> -p --default-character-set=utf8mb4 < sql/schema.sql
 mysql -u<user> -p --default-character-set=utf8mb4 < sql/data.sql
 
 # 2. 配置（数据库账号与密码都必填，无默认值）
-cp .env.example .env      # 填写 DB_USERNAME / DB_PASSWORD；可选 DEEPSEEK_API_KEY / AMAP_API_KEY
+cp .env.example .env      # 填写 DB_USERNAME / DB_PASSWORD
 set -a; source .env; set +a
 
 # 3. 启动（后端同时托管前端）
 mvn spring-boot:run
 ```
 
-打开 <http://localhost:8080> 即为完整应用。`schema.sql` 自带 `DROP TABLE`，重复执行会清空数据。
+打开 <http://localhost:8080> 即为完整应用。AI 与高德可选配 Key（`DEEPSEEK_API_KEY` / `AMAP_API_KEY`），不配不影响浏览。完整环境变量与常见问题见 [开发说明](docs/development.md)。
 
 > `file://` 直接打开 `travel-app/index.html` 会进入离线模式，使用内置示例数据，无需数据库。
-
-## 环境变量
-
-| 变量 | 必填 | 说明 |
-|---|---|---|
-| `DB_USERNAME` | ✅ | 数据库账号。**无默认值**；请用最小权限业务账号，不要用 root |
-| `DB_PASSWORD` | ✅ | 数据库密码。**无默认值**，缺失时后端启动失败 |
-| `DB_URL` | | 默认连本机 `travel_db`（含默认端口，无需填写） |
-| `DEEPSEEK_API_KEY` | | 不配则 AI 行程提示"未配置" |
-| `AMAP_API_KEY` | | 不配则交通耗时退化为估算值 |
-| `MYBATIS_LOG_IMPL` | | 生产建议关闭 SQL 日志 |
-
-完整模板见 [`travel-server/.env.example`](travel-server/.env.example)。
-
-## 接口概览
-
-| 方法 | 路径 | 说明 |
-|---|---|---|
-| GET | `/api/destinations`、`/api/destinations/{id}` | 目的地列表 / 详情（走 Redis 缓存） |
-| POST | `/api/auth/register`、`/api/auth/login`、`/api/auth/logout` | 注册 / 登录 / 退出 |
-| POST | `/api/ai/itinerary` | AI 生成行程（SSE 流式） |
-| GET | `/api/posts` | 社区列表（可按城市、收藏过滤） |
-| POST | `/api/posts/{id}/like`、`/favorite`、`/comments` | 点赞 / 收藏 / 评论 |
-| GET | `/api/notifications` | 互动通知（轮询） |
-
-完整清单见 [后端说明](travel-server/README.md)。
-
-## 常见问题
-
-**页面一直转圈 / 提示"请求失败"**：依次确认 Redis 是否启动、后端 8080 是否在监听、页面是否用 `http://localhost:8080` 打开（`file://` 会进入离线模式）。
-
-**AI 生成报错**：访问 `/api/ai/status` 自查 Key 与模型名（模型名会过期，以接口返回的 `availableModels` 为准）。
-
-**高德接口返回 10002**：Key 的服务平台选成了"Web端(JS API)"，需重新申请"Web服务"类型。
 
 ## 已知限制
 
@@ -148,15 +107,15 @@ mvn spring-boot:run
 | 未启用 HTTPS | 线上仅 HTTP，会话凭据为明文传输；需域名与证书后才能开启 |
 | 单机部署 | 一台服务器承载应用 + 数据库，无冗余；依赖每日备份与 systemd 自动重启 |
 | 演示账号口令固定 | 初始化代码中固定，计划改为环境变量 / 随机口令 |
-| 通知为轮询 | 最多约 12 秒延迟，未引入消息队列 |
 | 无内容审核 | UGC 目前依赖人工，审核能力在计划中 |
 
 ## 文档
 
 - [需求说明](docs/requirements.md)：功能范围、业务规则、已实现 / 计划功能
-- [架构说明](docs/architecture.md)：分层、数据模型、认证与外部服务设计
-- [开发说明](docs/development.md)：完整目录、开发约定、数据库变更与踩坑记录
-- [前端说明](travel-app/README.md) / [后端说明](travel-server/README.md)：路由、接口与实现细节
+- [架构说明](docs/architecture.md)：分层、认证、数据模型、缓存、外部服务集成
+- [开发说明](docs/development.md)：目录结构、前后端规范、数据库变更、排错
+- [接口说明](docs/api.md)：接口清单、鉴权、错误码与典型请求
+- [前端说明](travel-app/README.md) / [后端说明](travel-server/README.md)：各自的启动与使用
 - [部署说明](deploy/README.md)：Nginx + systemd 上线流程、备份与排错
 
 ## 说明

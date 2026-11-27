@@ -63,3 +63,6 @@ desktop.ini
 
 # 用户上传的照片（运行时产生，不入库）
 travel-app/uploads/
+
+# 旧版需求文档：已由 docs/requirements.md 取代，仓库不再跟踪（本地保留副本）
+/旅游软件需求文档.docx
