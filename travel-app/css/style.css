@@ -3992,9 +3992,9 @@ body::after { display: none !important; }
   mask-image: linear-gradient(180deg, #000 78%, transparent 100%);
 }
 
-/* 蒙版：左浓右淡——文字压在近纸色的一侧，右侧露出湖面 */
+/* 蒙版只留底部一条过渡：照片整块保持清晰，文字改由纸色卡片承托 */
 .hero::after {
-  background: linear-gradient(90deg, rgba(244, 242, 237, 0.86) 0%, rgba(244, 242, 237, 0.78) 36%, rgba(244, 242, 237, 0.42) 70%, rgba(244, 242, 237, 0.24) 100%);
+  background: linear-gradient(180deg, rgba(244, 242, 237, 0) 0%, rgba(244, 242, 237, 0.12) 62%, rgba(244, 242, 237, 0.92) 100%);
 }
 
 .hero h1 {
@@ -4360,7 +4360,23 @@ body::after { display: none !important; }
   gap: 48px;
   align-items: center;
 }
-.hero-copy .search-box { margin: 0; max-width: 520px; }
+.hero-copy {
+  /* 纸色卡片压在照片上：文字区清晰，照片保持锐利 */
+  min-width: 0;
+  padding: 26px 30px 24px;
+  background: rgba(250, 248, 244, 0.96);
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  border-radius: 20px;
+  box-shadow: 0 20px 46px -26px rgba(20, 40, 50, 0.5);
+  backdrop-filter: blur(3px);
+}
+.hero-copy h1 {
+  font-size: calc(36px * var(--fs));
+  letter-spacing: 0.03em;
+  text-wrap: balance;   /* 真要换行时也均分，不出现单字落行 */
+}
+.hero-copy .search-box { margin: 0; max-width: 520px; min-width: 0; }
+.hero-copy .search-box input { min-width: 0; }
 .hero-copy .hot-searches { justify-content: flex-start; margin-top: 18px; }
 .hero-copy h1 { margin-bottom: 10px; }
 .hero-copy p { margin-bottom: 24px; }
@@ -4663,7 +4679,8 @@ main.has-back .page { padding-top: 14px; }
 
 /* 窄屏：文案横跨整行，横向渐变保护不到，改用竖向更实的蒙版 */
 @media (max-width: 900px) {
+  .hero-copy { padding: 20px 18px 18px; border-radius: 16px; width: 100%; box-sizing: border-box; }
   .hero::after {
-    background: linear-gradient(180deg, rgba(244, 242, 237, 0.9) 0%, rgba(244, 242, 237, 0.8) 55%, rgba(244, 242, 237, 0.68) 100%);
+    background: linear-gradient(180deg, rgba(244, 242, 237, 0) 0%, rgba(244, 242, 237, 0.35) 70%, rgba(244, 242, 237, 0.92) 100%);
   }
 }
