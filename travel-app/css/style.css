@@ -3968,7 +3968,7 @@ body::after { display: none !important; }
 
 .hero {
   /* 首屏底图：相对本文件（css/）解析，http 与 file:// 都能加载 */
-  --hero-img: url("../img/hero-lake.jpg");
+  --hero-img: url("../img/hero-lake.webp");
   /* --hero-shift 由 js/motion.js 写在 <html> 上，这里直接继承 */
   padding: 88px 0 64px;
   border-bottom: 1px solid var(--line-soft);
@@ -3982,17 +3982,19 @@ body::after { display: none !important; }
 .hero::after { z-index: 1; }
 .hero-inner { position: relative; z-index: 2; }
 
-/* 底图：实景湖景照片铺满首屏；底部用遮罩淡出到页面底色，避免硬边 */
+/* 底图：实景湖景照片铺满首屏（高清，不做虚化）；底部用遮罩淡出到页面底色 */
 .hero::before {
-  filter: blur(2px) saturate(0.98) brightness(1.01);
+  filter: none;
   opacity: 1;
+  background-size: cover;
+  background-position: center;
   -webkit-mask-image: linear-gradient(180deg, #000 78%, transparent 100%);
   mask-image: linear-gradient(180deg, #000 78%, transparent 100%);
 }
 
 /* 蒙版：左浓右淡——文字压在近纸色的一侧，右侧露出湖面 */
 .hero::after {
-  background: linear-gradient(90deg, rgba(244, 242, 237, 0.93) 0%, rgba(244, 242, 237, 0.86) 38%, rgba(244, 242, 237, 0.58) 72%, rgba(244, 242, 237, 0.38) 100%);
+  background: linear-gradient(90deg, rgba(244, 242, 237, 0.86) 0%, rgba(244, 242, 237, 0.78) 36%, rgba(244, 242, 237, 0.42) 70%, rgba(244, 242, 237, 0.24) 100%);
 }
 
 .hero h1 {
@@ -4657,3 +4659,11 @@ main.has-back .page { padding-top: 14px; }
 
 /* 首屏最终层级：内容必须在蒙版之上（后面的 .hero-inner 规则会把 z-index 改回 1） */
 .hero-inner { position: relative; z-index: 2; }
+
+
+/* 窄屏：文案横跨整行，横向渐变保护不到，改用竖向更实的蒙版 */
+@media (max-width: 900px) {
+  .hero::after {
+    background: linear-gradient(180deg, rgba(244, 242, 237, 0.9) 0%, rgba(244, 242, 237, 0.8) 55%, rgba(244, 242, 237, 0.68) 100%);
+  }
+}
