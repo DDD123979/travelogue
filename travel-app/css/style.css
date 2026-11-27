@@ -381,7 +381,8 @@ input { font-family: inherit; }
 .card-overlay .tag-link:hover { background: rgba(255, 255, 255, 0.36); }
 
 /* ---------- 列表页工具栏 ---------- */
-.page { padding: 32px 0 56px; }
+/* 只设上下内边距：左右交给 .container，否则会把容器的 20px 吃掉 */
+.page { padding-top: 32px; padding-bottom: 56px; }
 
 .page-title { font-size: calc(24px * var(--fs)); font-weight: 600; margin-bottom: 20px; }
 
@@ -4683,4 +4684,93 @@ main.has-back .page { padding-top: 14px; }
   .hero::after {
     background: linear-gradient(180deg, rgba(244, 242, 237, 0) 0%, rgba(244, 242, 237, 0.35) 70%, rgba(244, 242, 237, 0.92) 100%);
   }
+}
+
+
+/* ============================================================
+ * 移动端适配（触控与安全区）
+ * 目标：390px 不横向溢出、点击目标够大、悬浮窗不挡内容
+ * ============================================================ */
+
+/* 详情页收藏：窄屏不被压成竖排 */
+.detail-hero .fav-btn { white-space: nowrap; min-width: 62px; }
+
+@media (max-width: 900px) {
+  /* 1) 右下角悬浮窗会盖住页面底部，给内容留出滚动余量 */
+  main { padding-bottom: 84px; }
+  .site-footer { padding-bottom: 84px; }
+
+  /* 2) 触控目标不小于 36px */
+  .nav-link { min-height: 36px; display: inline-flex; align-items: center; }
+  .filter-tab, .rank-tab { min-height: 36px; display: inline-flex; align-items: center; }
+  .back-link { height: 36px; }
+  .type-head { min-height: 40px; }
+  .dropdown-item { min-height: 40px; display: flex; align-items: center; }
+  .post-action { min-height: 34px; }
+  .card .fav-btn { width: 36px; height: 36px; }
+
+  /* 3) 页面头部：标题和操作按钮允许换行，不互相挤压 */
+  .page-head { flex-wrap: wrap; }
+
+  /* 4) 地图打点：圆点视觉不变，热区放大到 26px 方便手指 */
+  .map-pin { width: 26px; height: 26px; }
+
+  /* 5) 安卓/iOS 上更稳的表单高度 */
+  .btn { min-height: 44px; }
+  .btn-sm { min-height: 36px; }
+}
+
+@media (max-width: 560px) {
+  /* 表单字号 ≥16px：iOS 聚焦时不会自动放大整页 */
+  input, textarea, select { font-size: 16px !important; }
+
+  .container { padding: 0 14px; }
+  .section { padding: 24px 0; }
+  .page { padding-top: 20px; padding-bottom: 40px; }
+
+  .hero-copy { padding: 18px 16px 16px; border-radius: 16px; }
+  .hero-copy h1 { font-size: calc(24px * var(--fs)); }
+  .search-box { padding: 5px; }
+  .search-box input { height: 44px; }
+  .search-box .btn { height: 44px; padding: 0 18px; }
+  .hot-searches { gap: 6px 12px; font-size: calc(12px * var(--fs)); }
+
+  /* 卡片信息区更紧凑，底部「详情」换行不顶边 */
+  .card-body { padding: 13px 14px 14px; gap: 8px; }
+  .card-facts { gap: 10px; flex-wrap: wrap; }
+  .card-go { margin-left: 0; }
+
+  /* 详情首屏：更紧凑，收藏按钮挪到右上角横排 */
+  .detail-hero { padding: 24px 18px; }
+  .detail-hero h1 { font-size: calc(24px * var(--fs)); }
+  .detail-hero .sub { gap: 8px 14px; }
+  .detail-hero .fav-btn {
+    right: 14px;
+    top: 14px;
+    bottom: auto;
+    padding: 6px 12px;
+    font-size: calc(12px * var(--fs));
+  }
+
+  /* 时间轴：留出左侧竖线的呼吸 */
+  .timeline-slot { padding-left: 12px; }
+
+  /* 地图卡片标题行更紧凑 */
+  .map-title { font-size: calc(14px * var(--fs)); }
+  .map-head { align-items: flex-start; }
+
+  /* 设置项：说明与控件换行不挤压 */
+  .setting-row { flex-wrap: wrap; }
+}
+
+
+/* ---------- 移动端细节：安全区、点击高亮、长按菜单 ---------- */
+html { -webkit-text-size-adjust: 100%; }
+a, button, .nav-link, .ai-fab { -webkit-tap-highlight-color: transparent; }
+.ai-fab-img { -webkit-touch-callout: none; user-select: none; }
+
+@supports (padding: env(safe-area-inset-bottom)) {
+  /* iPhone 刘海屏底部有 home 指示条：悬浮窗与页脚要避开 */
+  .ai-fab { bottom: calc(14px + env(safe-area-inset-bottom)); }
+  .site-footer { padding-bottom: calc(84px + env(safe-area-inset-bottom)); }
 }
