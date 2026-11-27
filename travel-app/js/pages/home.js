@@ -6,6 +6,24 @@
 /* 景点类型的固定展示顺序：类型只有 4 个，固定顺序比按数量排更好认 */
 const TYPE_ORDER = ['自然生态', '人文古迹', '街区市集', '观景夜景'];
 
+/* 左侧筛选项的线性图标：统一 24 视框、1.3 描边、不走填充，保证"同一套笔"的观感 */
+const TYPE_ICONS = {
+  全部:
+    '<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><rect x="3.5" y="4.5" width="7" height="7" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"/><rect x="13.5" y="4.5" width="7" height="7" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"/><rect x="3.5" y="14.5" width="7" height="5" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"/><rect x="13.5" y="14.5" width="7" height="5" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>',
+  自然生态:
+    '<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M3 18.5l5.2-7.3 3.1 4.1 2.4-3.1 5.3 6.3z" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><circle cx="16.6" cy="7" r="2.1" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>',
+  人文古迹:
+    '<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M3.5 9.5L12 4l8.5 5.5M5 10v8M9.5 10v8M14.5 10v8M19 10v8M3.5 19.5h17" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>',
+  街区市集:
+    '<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M4 9.5h16M5.5 9.5v9h13v-9M9 9.5V6.8A1.8 1.8 0 0 1 10.8 5h2.4A1.8 1.8 0 0 1 15 6.8v2.7" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>',
+  观景夜景:
+    '<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M20 13.4A8 8 0 0 1 10.6 4a8.2 8.2 0 1 0 9.4 9.4z" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>',
+};
+
+/* 首屏热搜词：纯文字标签，不做彩色胶囊按钮 */
+const HOT_SEARCHES = ['成都', '大理', '三亚', '杭州', '厦门'];
+
+
 const HomePage = {
   components: { DestinationCard },
   setup() {
@@ -19,6 +37,7 @@ const HomePage = {
     // 每个类型自己的展开状态：{ '自然生态': true, ... }
     // 与 activeType 分开，才能做到「收缩名字但不取消选中」
     const expanded = ref({});
+
 
     onMounted(async () => {
       try {
@@ -37,6 +56,16 @@ const HomePage = {
 
     function search() {
       go('/destinations?q=' + encodeURIComponent(keyword.value.trim()));
+    }
+
+    /* 热搜标签：填进输入框并直接搜索，和手动输入走同一个入口 */
+    const hotSearches = HOT_SEARCHES;
+    function pickHot(name) {
+      keyword.value = name;
+      search();
+    }
+    function typeIcon(name) {
+      return TYPE_ICONS[name] || TYPE_ICONS['全部'];
     }
 
     // 首屏大图：取第一个带封面图的目的地。列表是异步来的，加载完会自动换上，
@@ -119,6 +148,9 @@ const HomePage = {
       list,
       loading,
       search,
+      hotSearches,
+      pickHot,
+      typeIcon,
       heroBg,
       attractionTypes,
       groups,
@@ -144,6 +176,18 @@ const HomePage = {
             />
             <button class="btn btn-primary" @click="search">搜 索</button>
           </div>
+
+          <!-- 热搜：极简文字标签，点击即搜索 -->
+          <div class="hot-searches" v-if="hotSearches.length">
+            <span class="hot-label">热门</span>
+            <button
+              v-for="t in hotSearches"
+              :key="t"
+              type="button"
+              class="hot-item"
+              @click="pickHot(t)"
+            >{{ t }}</button>
+          </div>
         </div>
       </section>
 
@@ -157,6 +201,7 @@ const HomePage = {
             <div class="type-group all-group" :class="{ active: activeType === '全部' }">
               <div class="type-row">
                 <button class="type-head" type="button" @click="selectType('全部')">
+                  <span class="type-ico" aria-hidden="true" v-html="typeIcon('全部')"></span>
                   <span class="type-name">全部</span>
                   <span class="type-num">{{ groups[0].destinations.length }}</span>
                 </button>
@@ -169,11 +214,17 @@ const HomePage = {
                   @click.stop="toggleExpand('全部')"
                 >▾</button>
               </div>
-              <ul class="type-dests" v-show="expanded['全部']">
-                <li v-for="d in groups[0].destinations" :key="d.id">
-                  <a :href="'#/destinations/' + d.id">{{ d.name }}</a>
-                </li>
-              </ul>
+              <!-- 展开/收起过渡：外层包一层 wrap 做 grid-rows 折叠，
+                   里面的 ul 保持原有布局（窄屏横排不受影响） -->
+              <Transition name="type-expand">
+                <div class="type-dests-wrap" v-show="expanded['全部']">
+                  <ul class="type-dests">
+                    <li v-for="d in groups[0].destinations" :key="d.id">
+                      <a :href="'#/destinations/' + d.id">{{ d.name }}</a>
+                    </li>
+                  </ul>
+                </div>
+              </Transition>
             </div>
 
             <h3 class="side-title">景点类型</h3>
@@ -186,6 +237,7 @@ const HomePage = {
             >
               <div class="type-row">
                 <button class="type-head" type="button" @click="selectType(t.name)">
+                  <span class="type-ico" aria-hidden="true" v-html="typeIcon(t.name)"></span>
                   <span class="type-name">{{ t.name }}</span>
                   <span class="type-num">{{ t.destinations.length }}</span>
                 </button>
@@ -199,11 +251,15 @@ const HomePage = {
                 >▾</button>
               </div>
 
-              <ul class="type-dests" v-show="expanded[t.name]">
-                <li v-for="d in t.destinations" :key="d.id">
-                  <a :href="'#/destinations/' + d.id">{{ d.name }}</a>
-                </li>
-              </ul>
+              <Transition name="type-expand">
+                <div class="type-dests-wrap" v-show="expanded[t.name]">
+                  <ul class="type-dests">
+                    <li v-for="d in t.destinations" :key="d.id">
+                      <a :href="'#/destinations/' + d.id">{{ d.name }}</a>
+                    </li>
+                  </ul>
+                </div>
+              </Transition>
             </div>
           </aside>
 

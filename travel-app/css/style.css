@@ -3894,3 +3894,439 @@ select:focus,
   .detail-hero { padding: 28px 20px; }
   .detail-hero h1 { font-size: calc(26px * var(--fs)); }
 }
+
+/* ============================================================
+ * 主题：高级简约质感（首页 & 全站卡片）
+ * ------------------------------------------------------------
+ * 设计目标：在保留骨架（导航 / Slogan+搜索 / 左侧筛选 / 卡片网格）
+ * 的前提下，用「纸面底色 + 哑光白卡 + 细线 + 极轻阴影」建立层次，
+ * 不引入高饱和色、漂浮装饰和花哨动效。
+ *
+ * 配色（均已通过 WCAG AA 校验）：
+ *   纸底 #F4F2ED · 炭灰 #22282A (14.9:1) · 次级 #5A6469 (6.1:1)
+ *   主色 #3C7A88（白字 4.85:1）· 主色文字 #2C5E6A（7.2:1）
+ * 动效：统一 0.28–0.35s，prefers-reduced-motion 下全部降级为无动画。
+ * ============================================================ */
+
+:root {
+  --paper: #f4f2ed;           /* 页面底：暖米灰，不是死白 */
+  --paper-2: #faf8f4;         /* 更浅一档，用于标签底 */
+  --ink: #22282a;             /* 标题：深炭灰 */
+  --ink-2: #5a6469;           /* 正文 / 次级 */
+  --ink-3: #767f84;           /* 弱化说明 */
+  --line: #e6e1d8;            /* 分割线（浅灰细线） */
+  --line-soft: #efece5;       /* 更淡的分割线 */
+  --brand: #3c7a88;           /* 低饱和青蓝，主色 */
+  --brand-ink: #2c5e6a;       /* 主色文字（更深，保证可读） */
+  --brand-soft: #eaf1f2;      /* 主色浅底 */
+  --card-shadow: 0 1px 2px rgba(34, 40, 42, 0.05), 0 10px 24px -14px rgba(34, 40, 42, 0.18);
+  --card-shadow-hover: 0 2px 6px rgba(34, 40, 42, 0.07), 0 22px 44px -18px rgba(34, 40, 42, 0.24);
+  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --dur: 0.32s;
+}
+
+/* ---------- 1. 页面基底：纸面 + 极淡噪点 ---------- */
+
+body {
+  background-color: var(--paper);
+  background-image:
+    radial-gradient(1200px 620px at 50% -12%, #fbf9f5 0%, rgba(244, 242, 237, 0) 60%);
+  background-attachment: fixed;
+  color: var(--ink);
+}
+
+/* 细腻颗粒：几乎看不见，只在放大或大面积留白时提供"纸"的触感 */
+body::before {
+  display: block !important;           /* 覆盖上一版主题的 display:none */
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.045;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 180px 180px;
+}
+body::after { display: none !important; }
+
+/* ---------- 2. 顶栏：更薄、更安静 ---------- */
+
+.site-header {
+  background: rgba(250, 248, 244, 0.82);
+  border-bottom: 1px solid var(--line-soft);
+  backdrop-filter: saturate(140%) blur(14px);
+}
+.nav-link { color: var(--ink-2); border-radius: 8px; }
+.nav-link:hover { background: rgba(60, 122, 136, 0.07); color: var(--brand-ink); }
+.nav-link.active {
+  background: var(--brand-soft);
+  color: var(--brand-ink);
+  box-shadow: none;
+}
+
+/* ---------- 3. 首屏 Banner：哑光渐变蒙版 + 微视差 ---------- */
+
+.hero {
+  /* --hero-shift 由 js/motion.js 写在 <html> 上，这里直接继承 */
+  padding: 88px 0 64px;
+  border-bottom: 1px solid var(--line-soft);
+  background: linear-gradient(180deg, #f8f6f1 0%, #f2f0ea 100%);
+  background-image:
+    radial-gradient(900px 460px at 50% 0%, rgba(255, 255, 255, 0.9) 0%, rgba(244, 242, 237, 0) 62%),
+    linear-gradient(180deg, #f8f6f1 0%, #f2f0ea 100%);
+}
+
+/* 底图：更弱的可见度，只作为"环境色"存在；位移交给 motion.css */
+.hero::before {
+  filter: blur(20px) saturate(0.66) brightness(1.03);
+  opacity: 0.5;
+}
+
+/* 哑光蒙版：自上而下由米白过渡到纸色，并在中间留一点通透 */
+.hero::after {
+  background:
+    linear-gradient(180deg, rgba(250, 248, 244, 0.86) 0%, rgba(247, 245, 240, 0.72) 46%, rgba(244, 242, 237, 0.96) 100%);
+}
+
+.hero h1 {
+  font-size: calc(42px * var(--fs));
+  font-weight: 600;
+  letter-spacing: 0.045em;
+  color: var(--ink);
+  text-shadow: none;
+}
+.hero h1 em { color: var(--brand-ink); font-style: normal; }
+.hero p {
+  color: var(--ink-2);
+  font-size: calc(15px * var(--fs));
+  letter-spacing: 0.06em;
+  margin-bottom: 30px;
+}
+
+/* 搜索框：弱毛玻璃 + 细边框，聚焦时只做低对比度提亮 */
+.search-box {
+  max-width: 560px;
+  gap: 0;
+  padding: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.52);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.7) inset,
+    0 12px 30px -20px rgba(34, 40, 42, 0.4);
+  backdrop-filter: blur(10px) saturate(115%);
+  transition: border-color var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+}
+.search-box input {
+  height: 42px;
+  padding: 0 14px;
+  border: 0 !important;
+  border-radius: 8px !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+.search-box input:focus { box-shadow: none !important; }
+.search-box .btn {
+  height: 42px;
+  padding: 0 22px;
+  border-radius: 8px;
+  background: var(--brand);
+  box-shadow: none;
+  letter-spacing: 0.08em;
+}
+.search-box .btn:hover { background: var(--brand-ink); }
+/* 聚焦：整块容器提亮，而不是输入框自己发光 */
+.search-box:focus-within {
+  border-color: rgba(60, 122, 136, 0.42);
+  box-shadow:
+    0 0 0 4px rgba(60, 122, 136, 0.07),
+    0 12px 30px -20px rgba(34, 40, 42, 0.4);
+}
+
+/* 热搜：纯文字下划线标签，不用彩色胶囊 */
+.hot-searches {
+  margin-top: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+  font-size: calc(12.5px * var(--fs));
+  color: var(--ink-3);
+}
+.hot-label {
+  font-size: calc(11px * var(--fs));
+  letter-spacing: 0.2em;
+  color: var(--ink-3);
+}
+.hot-item {
+  padding: 2px 0;
+  color: var(--ink-2);
+  border-bottom: 1px solid transparent;
+  transition: color var(--dur) var(--ease), border-color var(--dur) var(--ease);
+}
+.hot-item:hover { color: var(--brand-ink); border-bottom-color: var(--brand); }
+
+/* ---------- 4. 左侧筛选：哑光卡片 + 线性图标 + 左侧标识线 ---------- */
+
+.section.container { padding-top: 40px; }
+
+.type-side {
+  padding: 10px 10px 12px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid var(--line-soft);
+  border-radius: 16px;
+  box-shadow: var(--card-shadow);
+}
+.side-title {
+  margin: 14px 6px 6px;
+  font-size: calc(11px * var(--fs));
+  letter-spacing: 0.2em;
+  font-weight: 500;
+  color: var(--ink-3);
+}
+.type-group { position: relative; }
+.type-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 9px 10px 9px 12px;
+  border-radius: 9px;
+  color: var(--ink-2);
+  transition: background-color var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+.type-ico { display: inline-flex; color: var(--ink-3); transition: color var(--dur) var(--ease); }
+.type-name { flex: 1; text-align: left; font-size: calc(13.5px * var(--fs)); letter-spacing: 0.02em; }
+.type-num {
+  font-size: calc(11.5px * var(--fs));
+  color: var(--ink-3);
+  font-variant-numeric: tabular-nums;
+}
+.type-head:hover { background: rgba(60, 122, 136, 0.06); color: var(--brand-ink); }
+.type-head:hover .type-ico { color: var(--brand); }
+
+/* 选中态：低饱和底色 + 2px 左侧标识线，不用高亮色块 */
+.type-group.active .type-head {
+  background: var(--brand-soft);
+  color: var(--brand-ink);
+  box-shadow: none !important;
+}
+.type-group.active .type-head::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 9px;
+  bottom: 9px;
+  width: 2px;
+  border-radius: 2px;
+  background: var(--brand);
+}
+.type-group.active .type-ico { color: var(--brand); }
+.type-group.active .type-num { color: var(--brand-ink); opacity: 0.75; }
+
+.type-toggle { color: var(--ink-3); border-radius: 7px; transition: transform var(--dur) var(--ease), color var(--dur) var(--ease); }
+.type-toggle:hover { color: var(--brand); }
+.type-toggle.open { transform: rotate(180deg); }
+
+/* 展开过渡由 motion.css 用 grid-template-rows 实现（无需猜高度） */
+
+/* ---------- 5. 目的地卡片：哑光白底 + 图片暗角 + 信息分层 ---------- */
+
+.card {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  color: var(--ink);
+  background: #fff;
+  border: 1px solid var(--line-soft);
+  border-radius: 14px;
+  box-shadow: var(--card-shadow);
+  overflow: hidden;
+  transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease), border-color 0.3s var(--ease);
+}
+/* 旧结构的压暗层已不再使用，清掉避免重复遮罩 */
+.card.has-img::after { content: none; }
+
+/* hover 的位移与阴影由 motion.css 接管，这里只保留静止态 */
+.card:hover { border-color: var(--line); }
+
+/* 图片区 */
+.card-media {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  background: #e9e4db;
+}
+.card-fallback { position: absolute; inset: 0; }
+.card-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: saturate(0.92) contrast(1.02);
+}
+
+/* 暗角：四周极轻的一圈压暗，把注意力收到中间 */
+.card-vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(115% 95% at 50% 42%, rgba(20, 24, 26, 0) 48%, rgba(20, 24, 26, 0.26) 100%);
+}
+
+.card-badge {
+  position: absolute;
+  left: 12px;
+  top: 12px;
+  z-index: 3;
+  padding: 3px 9px;
+  border-radius: 6px;
+  font-size: calc(11px * var(--fs));
+  letter-spacing: 0.06em;
+  color: #fff;
+  background: rgba(24, 30, 32, 0.42);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  backdrop-filter: blur(6px);
+}
+
+/* 收藏：精致线性图标，选中只换填充 + 主色，不再用 ★ 字符 */
+.fav-btn {
+  position: absolute;
+  right: 12px;
+  top: 12px;
+  z-index: 4;
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: rgba(255, 255, 255, 0.92);
+  background: rgba(24, 30, 32, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  backdrop-filter: blur(6px);
+  transition: background-color 0.28s var(--ease), color 0.28s var(--ease), border-color 0.28s var(--ease);
+}
+.fav-btn:hover { background: rgba(24, 30, 32, 0.46); border-color: rgba(255, 255, 255, 0.42); }
+.fav-btn.on { color: #fff; background: rgba(60, 122, 136, 0.86); border-color: rgba(255, 255, 255, 0.5); }
+.fav-btn.on svg path { fill: currentColor; }
+
+/* 信息区 */
+.card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  padding: 15px 17px 15px;
+}
+.card-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+.card-head .name {
+  margin: 0;
+  font-size: calc(17px * var(--fs));
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: var(--ink);
+  text-shadow: none;
+}
+.card-head .rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: calc(12px * var(--fs));
+  color: var(--ink-2);
+  font-variant-numeric: tabular-nums;
+}
+.card-head .rating svg { color: #b39a5f; }
+
+.card-sub {
+  margin: 0;
+  font-size: calc(12px * var(--fs));
+  letter-spacing: 0.04em;
+  color: var(--ink-3);
+}
+
+.card-tags { display: flex; flex-wrap: wrap; gap: 6px; margin: 2px 0 0; padding: 0; list-style: none; }
+.card-tags li {
+  padding: 2px 8px;
+  font-size: calc(11px * var(--fs));
+  letter-spacing: 0.04em;
+  color: var(--ink-2);
+  background: var(--paper-2);
+  border: 1px solid var(--line-soft);
+  border-radius: 999px;
+}
+
+.card-facts {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 4px;
+  padding-top: 11px;
+  border-top: 1px solid var(--line-soft);
+  font-size: calc(11.5px * var(--fs));
+  color: var(--ink-3);
+  letter-spacing: 0.03em;
+}
+.fact { display: inline-flex; align-items: center; gap: 5px; }
+.fact svg { color: var(--ink-3); opacity: 0.9; }
+.card-go { margin-left: auto; color: var(--brand-ink); opacity: 0.7; transition: opacity var(--dur) var(--ease); }
+.card:hover .card-go { opacity: 1; }
+
+.card-stretch { position: absolute; inset: 0; z-index: 2; border-radius: 13px; }
+/* 键盘可达性：整卡链接聚焦时给一圈低对比度的内描边 */
+.card-stretch:focus-visible { outline: 2px solid var(--brand); outline-offset: -6px; }
+.fav-btn:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
+/* 收藏按钮在拉伸链接之上，保证可点 */
+.fav-btn { z-index: 4; }
+
+/* ---------- 6. 右侧标题区：拉开层级 ---------- */
+
+.section-head h2 {
+  font-size: calc(20px * var(--fs));
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--ink);
+}
+.section-sub { color: var(--ink-3); font-size: calc(12.5px * var(--fs)); letter-spacing: 0.03em; }
+.section-head a {
+  font-size: calc(12.5px * var(--fs));
+  color: var(--brand-ink);
+  letter-spacing: 0.04em;
+}
+.section-head a:hover { text-decoration: none; border-bottom: 1px solid var(--brand); }
+
+/* ---------- 7. 滚动入场：缓慢淡入 + 微上移 ---------- */
+
+/* 滚动入场由 motion.css 接管（html.motion-ready 门控，脚本失败也不会白屏） */
+
+/* ---------- 8. 移动端：保持同样的质感，只做必要收缩 ---------- */
+
+@media (max-width: 900px) {
+  .hero { padding: 76px 0 58px; }
+  .hero h1 { font-size: calc(30px * var(--fs)); }
+  .type-side { display: flex; flex-wrap: wrap; gap: 4px; padding: 8px; }
+  .type-side .side-title { width: 100%; margin: 6px 8px 2px; }
+  .type-group { flex: 0 0 auto; }
+  .type-group.active .type-head::before { display: none; }
+}
+
+@media (max-width: 560px) {
+  /* 导航 5 项在 390px 下仍会超出：把字号与内边距再压一档，尽量不靠横向滚动 */
+  .main-nav .nav-link { font-size: calc(12px * var(--fs)); padding: 5px 6px; }
+  .logo { gap: 5px; }
+  .logo-text { font-size: calc(15px * var(--fs)); }
+  .hero { padding: 60px 0 46px; }
+  .hero h1 { font-size: calc(24px * var(--fs)); letter-spacing: 0.03em; }
+  .hero p { font-size: calc(13px * var(--fs)); }
+  .search-box { max-width: 100%; }
+  .hot-searches { gap: 6px 14px; }
+  .card-body { padding: 13px 14px; }
+  .card-facts { gap: 10px; flex-wrap: wrap; }
+  .card-go { margin-left: 0; }
+}
+
+/* 用户关闭动画时：所有过渡与入场效果直接失效 */
+@media (prefers-reduced-motion: reduce) {
+  .fav-btn, .type-head { transition: none !important; }
+}

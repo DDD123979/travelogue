@@ -1,0 +1,156 @@
+/* ============================================================
+ * motion.css — 游迹首页「克制动效」增强层
+ *
+ * 定位：只加氛围，不改结构、不抢内容。五个效果全部是
+ *       「小位移 + 低对比 + 短时长」，没有任何漂浮物或闪烁。
+ *
+ * 加载顺序：必须放在 style.css 之后（本文件是覆盖层）。
+ * 依赖：js/motion.js —— 滚动入场与 banner 视差需要它加类 / 写变量。
+ *      只引 CSS 也不会坏：脚本没跑时所有内容默认可见。
+ *
+ * 关闭动效：沿用项目已有的两条通道，无需改本文件
+ *   1) 设置 → 界面动画 关闭 → <html class="no-anim">（全局 !important 掐断）
+ *   2) 系统「减少动态效果」→ prefers-reduced-motion: reduce
+ * ============================================================ */
+
+:root {
+  --motion-ease: cubic-bezier(0.22, 0.61, 0.36, 1); /* 起步快、收尾缓，不弹跳 */
+  --motion-fast: 0.18s;   /* 悬停反馈 */
+  --motion-normal: 0.26s; /* 展开 / 收起 */
+  --motion-slow: 0.34s;   /* 滚动入场 */
+  --hero-shift-max: 18px; /* banner 视差最大位移，务必小于 ::before 的外扩余量 */
+}
+
+/* ------------------------------------------------------------
+ * 1. 目的地卡片 hover：整卡轻抬 3px + 照片极慢放大 4.5%
+ *    只动 transform / box-shadow（合成层属性），不触发重排；
+ *    照片放大的部分被 .card 的 overflow:hidden 裁掉，不会撑破网格。
+ * ------------------------------------------------------------ */
+.card {
+  transition:
+    transform var(--motion-fast) var(--motion-ease),
+    box-shadow var(--motion-fast) var(--motion-ease),
+    border-color var(--motion-fast) var(--motion-ease);
+}
+
+.card:hover,
+.card:focus-within { /* 键盘 Tab 聚焦也给同样反馈 */
+  transform: translate3d(0, -3px, 0);
+  box-shadow: 0 12px 28px rgba(20, 60, 70, 0.13);
+  border-color: #d7e3df;
+}
+
+.card .card-img {
+  transform: translateZ(0);
+  transition: transform 0.45s var(--motion-ease);
+}
+
+.card:hover .card-img,
+.card:focus-within .card-img {
+  transform: scale(1.045);
+}
+
+/* ------------------------------------------------------------
+ * 2. 滚动入场：进入视口后 14px 上浮 + 淡入，错峰 10ms（见 js/motion.js）
+ *    关键：只有 JS 成功运行且浏览器支持 IntersectionObserver 时，
+ *    <html> 才会带上 .motion-ready。脚本失败 / 被禁用时
+ *    .reveal 不生效，内容照常显示，绝不出现「空白页」。
+ * ------------------------------------------------------------ */
+html.motion-ready .reveal {
+  opacity: 0;
+  transform: translate3d(0, 14px, 0);
+  transition:
+    opacity var(--motion-slow) var(--motion-ease),
+    transform var(--motion-slow) var(--motion-ease);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+html.motion-ready .reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* ------------------------------------------------------------
+ * 4. 筛选展开过渡：外层 .type-dests-wrap 用 grid-rows 从 0fr → 1fr
+ *    配合 home.js 里的 <Transition name="type-expand">（v-show 才能有过渡）。
+ *    相比 max-height 写法，grid-rows 不需要猜列表有多高；
+ *    用外层包装而不是改 .type-dests 本身，是为了不破坏它在窄屏下的 flex 横排。
+ * ------------------------------------------------------------ */
+.type-expand-enter-active,
+.type-expand-leave-active {
+  transition:
+    grid-template-rows var(--motion-normal) var(--motion-ease),
+    opacity var(--motion-normal) ease;
+  overflow: hidden;
+}
+
+.type-expand-enter-from,
+.type-expand-leave-to {
+  grid-template-rows: 0fr;
+  opacity: 0;
+}
+
+.type-expand-enter-to,
+.type-expand-leave-from {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+
+.type-dests-wrap {
+  display: grid;
+  grid-template-rows: 1fr;
+  min-height: 0; /* grid 折叠的必要条件，少写它 0fr 不会真的缩到 0 */
+}
+
+/* 间距写在盒子内部的 padding 上：折叠时会被 overflow:hidden 一起裁掉，
+   写 margin 的话折叠到 0 还会残留 12px 空白 */
+.type-dests-wrap .type-dests {
+  min-height: 0;
+  margin: 0;
+  padding-top: 4px;
+  padding-bottom: 6px;
+  overflow: hidden;
+}
+
+@media (max-width: 900px) {
+  /* 窄屏下城市名横排，原有 padding-left:0 要保住；过渡时长略缩短 */
+  .type-dests-wrap .type-dests { padding-left: 0; }
+  .type-expand-enter-active,
+  .type-expand-leave-active { transition-duration: 0.2s; }
+}
+
+/* ------------------------------------------------------------
+ * 5. Banner 视差：只让背景照片层动，文字和搜索框完全静止
+ *    js/motion.js 按滚动位置写入 --hero-shift（-18px ~ +18px）。
+ *    ::before 外扩到 -40px 并放大 1.06，位移后边缘不会露白。
+ *    渐变遮罩 ::after 不动 → 白字对比度始终稳定。
+ * ------------------------------------------------------------ */
+.hero::before {
+  inset: -40px;
+  transform: translate3d(0, var(--hero-shift, 0px), 0) scale(1.06);
+  will-change: transform; /* 常驻合成层，滚动时不必每帧重新栅格化虚化图 */
+}
+
+/* ------------------------------------------------------------
+ * 降级一：系统偏好减少动效
+ * ------------------------------------------------------------ */
+@media (prefers-reduced-motion: reduce) {
+  html.motion-ready .reveal { opacity: 1; transform: none; }
+  .hero::before { transform: scale(1.05); } /* 保留静态放大，取消视差 */
+  .card:hover,
+  .card:focus-within,
+  .card:hover .card-img,
+  .card:focus-within .card-img { transform: none; }
+}
+
+/* ------------------------------------------------------------
+ * 降级二：移动端不跑视差（滚动性能优先），其余动效照常
+ * ------------------------------------------------------------ */
+@media (max-width: 720px) {
+  .hero::before { transform: scale(1.05); }
+  /* 触屏没有真实 hover，避免点按后卡在抬升态 */
+  .card:hover,
+  .card:focus-within,
+  .card:hover .card-img,
+  .card:focus-within .card-img { transform: none; }
+}
