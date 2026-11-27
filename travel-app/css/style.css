@@ -4609,3 +4609,40 @@ body::after { display: none !important; }
   .ai-fab, .ai-fab-img { transition: none; }
   .ai-fab:hover { transform: none; }
 }
+
+
+/* ============================================================
+ * 二级页面：左上角「返回上一级」
+ * 与页面内容同容器对齐；有返回栏时把 .page 的顶部内边距收短一点
+ * ============================================================ */
+.back-bar { padding: 16px 0 0; }
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 32px;
+  padding: 0 12px 0 9px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  font-size: calc(12.5px * var(--fs));
+  letter-spacing: 0.02em;
+  color: var(--ink-2);
+  transition: color 0.18s var(--ease), background-color 0.18s var(--ease),
+    border-color 0.18s var(--ease), box-shadow 0.18s var(--ease);
+}
+.back-link svg { transition: transform 0.18s var(--ease); }
+.back-link:hover {
+  color: var(--brand-ink);
+  background: #fff;
+  border-color: var(--line);
+  box-shadow: var(--shadow-sm);
+}
+.back-link:hover svg { transform: translateX(-2px); }
+.back-link:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+
+/* 有返回栏时页面顶部不再叠两层留白 */
+main.has-back .page { padding-top: 14px; }
+
+@media (max-width: 560px) {
+  .back-bar { padding: 12px 0 0; }
+}

@@ -7,6 +7,16 @@
 /* ---------- 根组件（导航 + 路由出口 + 页脚） ---------- */
 const App = {
   setup() {
+    /* 二级页面的「上一级」去处：用固定父级而不是 history.back()，
+       避免用户从外部链接直接进来时退到站外。 */
+    const BACK_LINKS = {
+      detail: { href: '#/destinations', label: '目的地' },
+      favorites: { href: '#/', label: '首页' },
+      profile: { href: '#/', label: '首页' },
+      settings: { href: '#/', label: '首页' },
+      ai: { href: '#/', label: '首页' },
+    };
+
     // 悬浮窗：已在 AI 页就滚回顶部，否则跳转过去
     function openAi() {
       if (view.value.name === 'ai') {
@@ -197,8 +207,11 @@ const App = {
       store.user ? displayName.value.slice(0, 1).toUpperCase() : '?'
     );
 
+    const backLink = computed(() => BACK_LINKS[view.value.name] || null);
+
     return {
       openAi,
+      backLink,
       view,
       navActive,
       menuOpen,
@@ -271,7 +284,21 @@ const App = {
       </div>
     </header>
 
-    <main>
+    <main :class="{ 'has-back': backLink }">
+
+      <!-- 二级页面：左上角返回上一级 -->
+      <div class="back-bar" v-if="backLink">
+        <div class="container">
+          <a class="back-link" :href="backLink.href">
+            <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true">
+              <path d="M14.5 5.5L8 12l6.5 6.5" fill="none" stroke="currentColor" stroke-width="1.6"
+                    stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            返回{{ backLink.label }}
+          </a>
+        </div>
+      </div>
+
       <HomePage v-if="view.name === 'home'" />
       <ListPage v-else-if="view.name === 'list'" />
       <DetailPage v-else-if="view.name === 'detail'" :id="view.id" :key="view.id" />
